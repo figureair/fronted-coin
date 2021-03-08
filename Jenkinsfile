@@ -11,8 +11,10 @@ pipeline{
         }
         stage("package"){
             steps{
-                echo "packge code"
-                sh "npm run build"
+                echo "build start..."
+                sh "node -v"
+                sh "npm -v"
+                echo "build success"
             }
         }
         stage("deploy"){
