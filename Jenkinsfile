@@ -12,7 +12,6 @@ pipeline{
         stage("package"){
             steps{
                 echo "build start..."
-                sh 'npm install --registry=https://registry.npm.taobao.org'
                 sh 'npm run build'
                 echo "build success"
             }
