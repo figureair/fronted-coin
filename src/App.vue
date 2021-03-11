@@ -1,17 +1,18 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>知识图谱可视化系统</h1>
+    <h4 id="tools">Echarts+Vue+SpringBoot+Neo4j</h4>
+    <KG/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import KG from './components/KG.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    KG
   }
 }
 </script>
@@ -23,6 +24,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+#tools{
+  margin-top: -20px;
 }
 </style>
