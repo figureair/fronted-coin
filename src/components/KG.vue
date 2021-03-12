@@ -1,7 +1,6 @@
 <template>
   <div id="box">
     <div id="myChart">
-      <div id='myChart-pic'></div>
     </div>
     <div id="text-box">
       <select id="selector" @change="changeTo()">
@@ -53,7 +52,7 @@ export default {
         });
         option1 = {
           tooltip: {
-            position:'right',
+            position: 'right',
             extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
           },
           //图例
@@ -118,7 +117,7 @@ export default {
         });
         option2 = {
           tooltip: {
-            position:'right',
+            position: 'right',
             extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
           },
           //图例
@@ -163,7 +162,7 @@ export default {
         });
         option3 = {
           tooltip: {
-            position:'right',
+            position: 'right',
             extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
           },
           //图例
@@ -252,9 +251,4 @@ export default {
   margin-left: 20px;
 }
 
-#myChart-pic {
-  width: 20%;
-  height: 20%;
-  background-image: url("../assets/echarts_background.jpeg");
-}
 </style>
