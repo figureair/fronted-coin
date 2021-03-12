@@ -10,7 +10,7 @@
           <el-option :value=2>力引导图</el-option>
           <el-option :value=3>环形关系图</el-option>
         </el-select></div>
-      <el-button type="primary" plain icon="el-icon-download">下载</el-button>
+      <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载</el-button>
 <!--      暂时不引入后端接口-->
       <el-upload
           action=""
@@ -127,37 +127,27 @@ export default {
               }
             }
           }
-        ]
-      };
-      myChart.setOption(option1);
-              emphasis: {
-                scale: true,
-                focus: 'adjacency',
-                lineStyle: {
-                  width: 10
-                }
-              }
-            }
-          ],
+        ],
 
-          toolbox: {
-            id: 'pie-chart',
-            itemSize: 15,
-            itemGap: 10,
-            right: 10,
+        toolbox: {
+          id: 'pie-chart',
+          itemSize: 15,
+          itemGap: 10,
+          right: 10,
 
-            feature: {
-              dataView: {
-                show: true,
-              },
+          feature: {
+            dataView: {
+              show: true,
+            },
 
-              restore: {
-                show: true,
-              }
+            restore: {
+              show: true,
             }
           }
-        };
-        myChart.setOption(option1);
+        }
+      };
+
+      myChart.setOption(option1);
 
       //预存option2
       graph = JSON.parse(JSON.stringify(savedgraph))
@@ -256,8 +246,21 @@ export default {
           }
         ]
       };
-    },
 
+      console.log(option1.toString());
+
+      myChart.on('click', 'series.graph', function (e) {
+        console.log(e);
+        // var targetId = e.data.id;
+
+        var opt = myChart.getOption();
+
+        console.log(opt);
+
+
+
+      });
+    },
 
     changeTo(value) {
       console.log(value)
@@ -285,7 +288,7 @@ export default {
         console.log(savedgraph)
         that.initpage()
       }
-    }
+    },
 
     downloadImg() {
       var img = new Image();
