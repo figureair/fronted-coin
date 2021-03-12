@@ -10,7 +10,7 @@
           <el-option :value=2>力引导图</el-option>
           <el-option :value=3>环形关系图</el-option>
         </el-select></div>
-      <el-button type="primary" plain icon="el-icon-download">下载</el-button>
+      <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载</el-button>
     </div>
   </div>
 </template>
@@ -111,7 +111,24 @@ export default {
                 }
               }
             }
-          ]
+          ],
+
+          toolbox: {
+            id: 'pie-chart',
+            itemSize: 15,
+            itemGap: 10,
+            right: 10,
+
+            feature: {
+              dataView: {
+                show: true,
+              },
+
+              restore: {
+                show: true,
+              }
+            }
+          }
         };
         myChart.setOption(option1);
 
@@ -229,8 +246,21 @@ export default {
           myChart.setOption(option3);
           break;
       }
-    }
+    },
 
+    downloadImg() {
+      var img = new Image();
+      img.src = myChart.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        excludeComponents: ['toolbox']
+      })
+      var a = document.createElement('a');
+      var e = new MouseEvent('click');
+      a.download = this.$data.value || "knowledge-graph.png";
+      a.href = img.src;
+      a.dispatchEvent(e);
+    }
   }
 }
 </script>
