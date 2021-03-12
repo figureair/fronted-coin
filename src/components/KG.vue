@@ -237,7 +237,7 @@ export default {
 
 #myChart {
   width: 70%;
-  height: 500px;
+  height: 80vh;
   border: 1px solid rgba(200, 200, 200, 0.75);
   border-radius: 10px;
   margin-left: 30px;
@@ -245,7 +245,7 @@ export default {
 
 #text-box {
   width: 24%;
-  height: 500px;
+  height: 80vh;
   border: 1px solid rgba(200, 200, 200, 0.75);
   border-radius: 10px;
   margin-left: 20px;
