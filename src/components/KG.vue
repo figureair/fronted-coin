@@ -3,11 +3,14 @@
     <div id="myChart">
     </div>
     <div id="text-box">
-      <select id="selector" @change="changeTo()">
-        <option>关系图</option>
-        <option>力引导图</option>
-        <option>环形关系图</option>
-      </select>
+      <div id="selector-box">
+        <div>样式选择:</div>
+        <el-select id="selector" v-model="value" @change="changeTo" placeholder="关系图">
+          <el-option :value=1>关系图</el-option>
+          <el-option :value=2>力引导图</el-option>
+          <el-option :value=3>环形关系图</el-option>
+        </el-select></div>
+      <el-button type="primary" plain icon="el-icon-download">下载</el-button>
     </div>
   </div>
 </template>
@@ -30,6 +33,11 @@ let option3;
 
 export default {
   name: "KG",
+  data(){
+    return{
+      value:''
+    }
+  },
   mounted() {
     this.drawLine();
   },
@@ -207,11 +215,10 @@ export default {
       });
     },
 
-    changeTo() {
-      let index = document.getElementById("selector").selectedIndex + 1;
-      console.log(index)
+    changeTo(value) {
+      console.log(value)
       myChart.clear();
-      switch (index) {
+      switch (value) {
         case 1:
           myChart.setOption(option1);
           break;
@@ -249,6 +256,13 @@ export default {
   border: 1px solid rgba(200, 200, 200, 0.75);
   border-radius: 10px;
   margin-left: 20px;
+  text-align: center;
+}
+
+#selector-box {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
 }
 
 </style>
