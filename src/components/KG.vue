@@ -6,16 +6,20 @@
       <div id="selector-box">
         <div>样式选择:</div>
         <el-select id="selector" v-model="value" @change="changeTo" placeholder="关系图">
-          <el-option :value=1>关系图</el-option>
-          <el-option :value=2>力引导图</el-option>
-          <el-option :value=3>环形关系图</el-option>
-        </el-select></div>
+          <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
       <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载</el-button>
-<!--      暂时不引入后端接口-->
+      <!--      暂时不引入后端接口-->
       <el-upload
           action=""
           :on-change="analysis"
-        >
+      >
         <el-button type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>
         <div slot="tip">只能导入json文件，且需符合格式</div>
       </el-upload>
@@ -44,9 +48,19 @@ let localFile;
 
 export default {
   name: "KG",
-  data(){
-    return{
-      value:'',
+  data() {
+    return {
+      options: [{
+        value: '1',
+        label: '关系图'
+      }, {
+        value: '2',
+        label: '力引导图'
+      }, {
+        value: '3',
+        label: '环形关系图'
+      }],
+      value: '',
     }
   },
   mounted() {
@@ -55,7 +69,7 @@ export default {
   methods: {
     initdata() {
       // 初始化echarts实例
-      var that=this
+      var that = this
       myChart = this.$echarts.init(document.getElementById('myChart'))
       myChart.showLoading();
       $.getJSON(ROOT_PATH, function (graph) {
@@ -66,7 +80,7 @@ export default {
       });
     },
 
-    initpage(){
+    initpage() {
       //初始设置为option1
       let graph = JSON.parse(JSON.stringify(savedgraph))
       graph.nodes.forEach(function (node) {
@@ -146,8 +160,8 @@ export default {
           }
         }
       };
-
       myChart.setOption(option1);
+
 
       //预存option2
       graph = JSON.parse(JSON.stringify(savedgraph))
@@ -258,7 +272,6 @@ export default {
         console.log(opt);
 
 
-
       });
     },
 
@@ -278,13 +291,13 @@ export default {
       }
     },
 
-    analysis(event){
-      var that=this
-      localFile=event.raw
+    analysis(event) {
+      var that = this
+      localFile = event.raw
       let reader = new FileReader()
       reader.readAsText(localFile);
-      reader.onload=()=>{
-        savedgraph=JSON.parse(reader.result)
+      reader.onload = () => {
+        savedgraph = JSON.parse(reader.result)
         console.log(savedgraph)
         that.initpage()
       }
