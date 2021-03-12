@@ -1,6 +1,8 @@
 <template>
   <div id="box">
-    <div id="myChart"></div>
+    <div id="myChart">
+      <div id='myChart-pic'></div>
+    </div>
     <div id="text-box">
       <select id="selector" @change="changeTo()">
         <option>关系图</option>
@@ -37,7 +39,6 @@ export default {
       // 初始化echarts实例
       myChart = this.$echarts.init(document.getElementById('myChart'))
       // 绘制图表
-
       myChart.showLoading();
       $.getJSON(ROOT_PATH + '/data/asset/data/les-miserables.json', function (graph) {
         myChart.hideLoading();
@@ -51,7 +52,11 @@ export default {
           };
         });
         option1 = {
-          tooltip: {},
+          tooltip: {
+            position:'right',
+            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+          },
+          //图例
           legend: [{
             data: graph.categories.map(function (a) {
               return a.name;
@@ -65,16 +70,17 @@ export default {
               //不采用任何布局
               layout: 'none',
               //关闭悬停图例高亮
-              legendHoverLink:false,
-              //当前视角的缩放比例
-              zoom:1,
+              legendHoverLink: false,
               //节点大小不随鼠标缩放而缩放
-              nodeScaleRatio:0,
+              nodeScaleRatio: 0,
               //开启鼠标缩放和漫游
               roam: true,
+              //边两端的标记
               edgeSymbol: ['none', 'arrow'],
-              edgeSymbolSize:5,
-              cursor:'pointer',
+              //边两端的标记大小
+              edgeSymbolSize: 5,
+              //悬停时鼠标样式
+              cursor: 'pointer',
 
               data: graph.nodes,
               links: graph.links,
@@ -84,12 +90,14 @@ export default {
                 position: 'right',
                 formatter: '{b}'
               },
+
               lineStyle: {
                 color: 'source',
                 curveness: 0.3
               },
+
               emphasis: {
-                scale:true,
+                scale: true,
                 focus: 'adjacency',
                 lineStyle: {
                   width: 10
@@ -103,37 +111,43 @@ export default {
         //预存option2
         graph = JSON.parse(JSON.stringify(savedgraph))
         graph.nodes.forEach(function (node) {
+          node.label = {
+            show: node.symbolSize > 30
+          };
           node.symbolSize = 5;
         });
         option2 = {
-          title: {
-            text: 'Les Miserables',
-            subtext: 'Default layout',
-            top: 'bottom',
-            left: 'right'
+          tooltip: {
+            position:'right',
+            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
           },
-          tooltip: {},
+          //图例
           legend: [{
-            // selectedMode: 'single',
             data: graph.categories.map(function (a) {
               return a.name;
             })
           }],
           series: [
             {
-              zoom:2,
+              //当前视角的缩放比例
+              zoom: 2,
+              //是否可拖动
               draggable: true,
-              name: 'Les Miserables',
               type: 'graph',
+              //类型为力引导图
               layout: 'force',
+
               data: graph.nodes,
               links: graph.links,
               categories: graph.categories,
+
+              //开启鼠标缩放和漫游
               roam: true,
               label: {
                 position: 'right'
               },
               force: {
+                //斥力
                 repulsion: 100
               }
             }
@@ -148,13 +162,11 @@ export default {
           };
         });
         option3 = {
-          title: {
-            text: 'Les Miserables',
-            subtext: 'Circular layout',
-            top: 'bottom',
-            left: 'right'
+          tooltip: {
+            position:'right',
+            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
           },
-          tooltip: {},
+          //图例
           legend: [{
             data: graph.categories.map(function (a) {
               return a.name;
@@ -164,16 +176,18 @@ export default {
           animationEasingUpdate: 'quinticInOut',
           series: [
             {
-              name: 'Les Miserables',
               type: 'graph',
               layout: 'circular',
               circular: {
                 rotateLabel: true
               },
+
               data: graph.nodes,
               links: graph.links,
               categories: graph.categories,
+
               roam: true,
+
               label: {
                 position: 'right',
                 formatter: '{b}'
@@ -195,7 +209,7 @@ export default {
     },
 
     changeTo() {
-      let index=document.getElementById("selector").selectedIndex+1;
+      let index = document.getElementById("selector").selectedIndex + 1;
       console.log(index)
       myChart.clear();
       switch (index) {
@@ -236,5 +250,11 @@ export default {
   border: 1px solid rgba(200, 200, 200, 0.75);
   border-radius: 10px;
   margin-left: 20px;
+}
+
+#myChart-pic {
+  width: 20%;
+  height: 20%;
+  background-image: url("../assets/echarts_background.jpeg");
 }
 </style>
