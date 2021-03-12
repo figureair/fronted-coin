@@ -2,10 +2,10 @@
   <div id="box">
     <div id="myChart"></div>
     <div id="text-box">
-      <select>
-      <option id="to1button" @click="to1">关系图</option>
-      <option id="to2button" @click="to2">力引导图</option>
-      <option id="to3button" @click="to3">环形关系图</option>
+      <select id="selector" @change="changeTo()">
+        <option>关系图</option>
+        <option>力引导图</option>
+        <option>环形关系图</option>
       </select>
     </div>
   </div>
@@ -14,6 +14,7 @@
 
 <script>
 import $ from 'jquery'
+
 let myChart;
 let savedgraph;
 const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples';
@@ -28,11 +29,11 @@ let option3;
 
 export default {
   name: "KG",
-  mounted(){
+  mounted() {
     this.drawLine();
   },
   methods: {
-    drawLine(){
+    drawLine() {
       // 初始化echarts实例
       myChart = this.$echarts.init(document.getElementById('myChart'))
       // 绘制图表
@@ -41,7 +42,7 @@ export default {
       $.getJSON(ROOT_PATH + '/data/asset/data/les-miserables.json', function (graph) {
         myChart.hideLoading();
         //保存原始数据
-        savedgraph=JSON.parse(JSON.stringify(graph))
+        savedgraph = JSON.parse(JSON.stringify(graph))
 
         //初始设置为option1
         graph.nodes.forEach(function (node) {
@@ -88,7 +89,7 @@ export default {
         myChart.setOption(option1);
 
         //预存option2
-        graph=JSON.parse(JSON.stringify(savedgraph))
+        graph = JSON.parse(JSON.stringify(savedgraph))
         graph.nodes.forEach(function (node) {
           node.symbolSize = 5;
         });
@@ -127,7 +128,7 @@ export default {
         };
 
         //预存option3
-        graph=JSON.parse(JSON.stringify(savedgraph))
+        graph = JSON.parse(JSON.stringify(savedgraph))
         graph.nodes.forEach(function (node) {
           node.label = {
             show: node.symbolSize > 30
@@ -177,44 +178,50 @@ export default {
             }
           ]
         };
-
       });
     },
-    to1(){
+
+    changeTo() {
+      let index=document.getElementById("selector").selectedIndex+1;
+      console.log(index)
       myChart.clear();
-      myChart.setOption(option1);
-    },
-    to2(){
-      myChart.clear();
-      myChart.setOption(option2);
-    },
-    to3(){
-      myChart.clear();
-      myChart.setOption(option3);
-    },
+      switch (index) {
+        case 1:
+          myChart.setOption(option1);
+          break;
+        case 2:
+          myChart.setOption(option2);
+          break;
+        case 3:
+          myChart.setOption(option3);
+          break;
+      }
+    }
 
   }
 }
 </script>
 
 <style scoped>
-#box{
+#box {
   display: flex;
-  width:100%;
+  width: 100%;
 
 }
-#myChart{
+
+#myChart {
   width: 70%;
   height: 500px;
-  border:1px solid rgba(200,200,200,0.75);
+  border: 1px solid rgba(200, 200, 200, 0.75);
   border-radius: 10px;
-  margin-left:30px;
+  margin-left: 30px;
 }
-#text-box{
+
+#text-box {
   width: 24%;
   height: 500px;
-  border:1px solid rgba(200,200,200,0.75);
+  border: 1px solid rgba(200, 200, 200, 0.75);
   border-radius: 10px;
-  margin-left:20px;
+  margin-left: 20px;
 }
 </style>
