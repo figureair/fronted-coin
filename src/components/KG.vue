@@ -10,7 +10,16 @@
           <el-option :value=2>力引导图</el-option>
           <el-option :value=3>环形关系图</el-option>
         </el-select></div>
-      <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载</el-button>
+      <el-button type="primary" plain icon="el-icon-download">下载</el-button>
+<!--      暂时不引入后端接口-->
+      <el-upload
+          action=""
+          :on-change="analysis"
+        >
+        <el-button type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>
+        <div slot="tip">只能导入json文件，且需符合格式</div>
+      </el-upload>
+
     </div>
   </div>
 </template>
@@ -21,7 +30,7 @@ import $ from 'jquery'
 
 let myChart;
 let savedgraph;
-const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples';
+const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/les-miserables.json';
 
 //目前存有三种模式，后续迭代将加入更多表现模式
 //1.关系图
@@ -31,78 +40,96 @@ let option2;
 //3.环形关系图
 let option3;
 
+let localFile;
+
 export default {
   name: "KG",
   data(){
     return{
-      value:''
+      value:'',
     }
   },
   mounted() {
-    this.drawLine();
+    this.initdata(ROOT_PATH)
   },
   methods: {
-    drawLine() {
+    initdata() {
       // 初始化echarts实例
+      var that=this
       myChart = this.$echarts.init(document.getElementById('myChart'))
-      // 绘制图表
       myChart.showLoading();
-      $.getJSON(ROOT_PATH + '/data/asset/data/les-miserables.json', function (graph) {
+      $.getJSON(ROOT_PATH, function (graph) {
         myChart.hideLoading();
         //保存原始数据
         savedgraph = JSON.parse(JSON.stringify(graph))
+        that.initpage()
+      });
+    },
 
-        //初始设置为option1
-        graph.nodes.forEach(function (node) {
-          node.label = {
-            show: node.symbolSize > 30
-          };
-        });
-        option1 = {
-          tooltip: {
-            position: 'right',
-            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
-          },
-          //图例
-          legend: [{
-            data: graph.categories.map(function (a) {
-              return a.name;
-            })
-          }],
-          animationDuration: 1500,
-          animationEasingUpdate: 'quadraticIn',
-          series: [
-            {
-              type: 'graph',
-              //不采用任何布局
-              layout: 'none',
-              //关闭悬停图例高亮
-              legendHoverLink: false,
-              //节点大小不随鼠标缩放而缩放
-              nodeScaleRatio: 0,
-              //开启鼠标缩放和漫游
-              roam: true,
-              //边两端的标记
-              edgeSymbol: ['none', 'arrow'],
-              //边两端的标记大小
-              edgeSymbolSize: 5,
-              //悬停时鼠标样式
-              cursor: 'pointer',
+    initpage(){
+      //初始设置为option1
+      let graph = JSON.parse(JSON.stringify(savedgraph))
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize > 30
+        };
+      });
+      option1 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        animationDuration: 1500,
+        animationEasingUpdate: 'quadraticIn',
+        series: [
+          {
+            type: 'graph',
+            //不采用任何布局
+            layout: 'none',
+            //关闭悬停图例高亮
+            legendHoverLink: false,
+            //节点大小不随鼠标缩放而缩放
+            nodeScaleRatio: 0,
+            //开启鼠标缩放和漫游
+            roam: true,
+            //边两端的标记
+            edgeSymbol: ['none', 'arrow'],
+            //边两端的标记大小
+            edgeSymbolSize: 5,
+            //悬停时鼠标样式
+            cursor: 'pointer',
 
-              data: graph.nodes,
-              links: graph.links,
-              categories: graph.categories,
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
 
-              label: {
-                position: 'right',
-                formatter: '{b}'
-              },
+            label: {
+              position: 'right',
+              formatter: '{b}'
+            },
 
+            lineStyle: {
+              color: 'source',
+              curveness: 0.3
+            },
+
+            emphasis: {
+              scale: true,
+              focus: 'adjacency',
               lineStyle: {
-                color: 'source',
-                curveness: 0.3
-              },
-
+                width: 10
+              }
+            }
+          }
+        ]
+      };
+      myChart.setOption(option1);
               emphasis: {
                 scale: true,
                 focus: 'adjacency',
@@ -132,105 +159,105 @@ export default {
         };
         myChart.setOption(option1);
 
-        //预存option2
-        graph = JSON.parse(JSON.stringify(savedgraph))
-        graph.nodes.forEach(function (node) {
-          node.label = {
-            show: node.symbolSize > 30
-          };
-          node.symbolSize = 5;
-        });
-        option2 = {
-          tooltip: {
-            position: 'right',
-            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
-          },
-          //图例
-          legend: [{
-            data: graph.categories.map(function (a) {
-              return a.name;
-            })
-          }],
-          series: [
-            {
-              //当前视角的缩放比例
-              zoom: 2,
-              //是否可拖动
-              draggable: true,
-              type: 'graph',
-              //类型为力引导图
-              layout: 'force',
-
-              data: graph.nodes,
-              links: graph.links,
-              categories: graph.categories,
-
-              //开启鼠标缩放和漫游
-              roam: true,
-              label: {
-                position: 'right'
-              },
-              force: {
-                //斥力
-                repulsion: 100
-              }
-            }
-          ]
+      //预存option2
+      graph = JSON.parse(JSON.stringify(savedgraph))
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize > 30
         };
+        node.symbolSize = 5;
+      });
+      option2 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        series: [
+          {
+            //当前视角的缩放比例
+            zoom: 2,
+            //是否可拖动
+            draggable: true,
+            type: 'graph',
+            //类型为力引导图
+            layout: 'force',
 
-        //预存option3
-        graph = JSON.parse(JSON.stringify(savedgraph))
-        graph.nodes.forEach(function (node) {
-          node.label = {
-            show: node.symbolSize > 30
-          };
-        });
-        option3 = {
-          tooltip: {
-            position: 'right',
-            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
-          },
-          //图例
-          legend: [{
-            data: graph.categories.map(function (a) {
-              return a.name;
-            })
-          }],
-          animationDurationUpdate: 1500,
-          animationEasingUpdate: 'quinticInOut',
-          series: [
-            {
-              type: 'graph',
-              layout: 'circular',
-              circular: {
-                rotateLabel: true
-              },
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
 
-              data: graph.nodes,
-              links: graph.links,
-              categories: graph.categories,
-
-              roam: true,
-
-              label: {
-                position: 'right',
-                formatter: '{b}'
-              },
-              lineStyle: {
-                color: 'source',
-                curveness: 0.3
-              },
-              emphasis: {
-                focus: 'adjacency',
-                lineStyle: {
-                  width: 10
-                }
-              }
+            //开启鼠标缩放和漫游
+            roam: true,
+            label: {
+              position: 'right'
+            },
+            force: {
+              //斥力
+              repulsion: 100
             }
-          ]
+          }
+        ]
+      };
+
+      //预存option3
+      graph = JSON.parse(JSON.stringify(savedgraph))
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize > 30
         };
       });
+      option3 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series: [
+          {
+            type: 'graph',
+            layout: 'circular',
+            circular: {
+              rotateLabel: true
+            },
+
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
+
+            roam: true,
+
+            label: {
+              position: 'right',
+              formatter: '{b}'
+            },
+            lineStyle: {
+              color: 'source',
+              curveness: 0.3
+            },
+            emphasis: {
+              focus: 'adjacency',
+              lineStyle: {
+                width: 10
+              }
+            }
+          }
+        ]
+      };
     },
+
 
     changeTo(value) {
       console.log(value)
@@ -247,6 +274,18 @@ export default {
           break;
       }
     },
+
+    analysis(event){
+      var that=this
+      localFile=event.raw
+      let reader = new FileReader()
+      reader.readAsText(localFile);
+      reader.onload=()=>{
+        savedgraph=JSON.parse(reader.result)
+        console.log(savedgraph)
+        that.initpage()
+      }
+    }
 
     downloadImg() {
       var img = new Image();
@@ -275,18 +314,20 @@ export default {
 #myChart {
   width: 70%;
   height: 80vh;
-  border: 1px solid rgba(200, 200, 200, 0.75);
+  border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
   margin-left: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 }
 
 #text-box {
   width: 24%;
   height: 80vh;
-  border: 1px solid rgba(200, 200, 200, 0.75);
+  border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
   margin-left: 20px;
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 }
 
 #selector-box {
