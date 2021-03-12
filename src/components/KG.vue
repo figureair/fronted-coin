@@ -53,22 +53,33 @@ export default {
         option1 = {
           tooltip: {},
           legend: [{
-            // selectedMode: 'single',
             data: graph.categories.map(function (a) {
               return a.name;
             })
           }],
           animationDuration: 1500,
-          animationEasingUpdate: 'quinticInOut',
+          animationEasingUpdate: 'quadraticIn',
           series: [
             {
-              name: 'Les Miserables',
               type: 'graph',
+              //不采用任何布局
               layout: 'none',
+              //关闭悬停图例高亮
+              legendHoverLink:false,
+              //当前视角的缩放比例
+              zoom:1,
+              //节点大小不随鼠标缩放而缩放
+              nodeScaleRatio:0,
+              //开启鼠标缩放和漫游
+              roam: true,
+              edgeSymbol: ['none', 'arrow'],
+              edgeSymbolSize:5,
+              cursor:'pointer',
+
               data: graph.nodes,
               links: graph.links,
               categories: graph.categories,
-              roam: true,
+
               label: {
                 position: 'right',
                 formatter: '{b}'
@@ -78,6 +89,7 @@ export default {
                 curveness: 0.3
               },
               emphasis: {
+                scale:true,
                 focus: 'adjacency',
                 lineStyle: {
                   width: 10
@@ -109,6 +121,7 @@ export default {
           }],
           series: [
             {
+              zoom:2,
               draggable: true,
               name: 'Les Miserables',
               type: 'graph',
