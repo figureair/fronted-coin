@@ -22,9 +22,19 @@
           :before-upload="beforeJSONUpload"
       >
         <el-button type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>
-        <div slot="tip">只能导入json文件，且需符合格式</div>
-      </el-upload>
 
+      </el-upload>
+      <el-button type="text" @click="dialogVisible = true">导入须知</el-button>
+      <el-dialog
+          title="导入须知"
+          :visible.sync="dialogVisible"
+          width="30%">
+        <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories三个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
+</span>
+        <span slot="footer" class="dialog-footer">
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -61,6 +71,7 @@ export default {
         label: '环形关系图'
       }],
       value: '',
+      dialogVisible: false
     }
   },
   mounted() {
@@ -324,32 +335,32 @@ export default {
             return false
           }
           //links是否都包含了source和target
-          for(let i = 0; i < tmpjson.links.length; i++){
-            let prop=tmpjson.links[i]
-            if(!('source' in prop)||!('target' in prop)){
+          for (let i = 0; i < tmpjson.links.length; i++) {
+            let prop = tmpjson.links[i]
+            if (!('source' in prop) || !('target' in prop)) {
               this.$message.error('内容格式错误!(links是否都包含了source/target属性)');
               return false
             }
           }
           //nodes是否都包含了name/symbolSize/category
-          for(let i = 0; i < tmpjson.nodes.length; i++){
-            let prop=tmpjson.nodes[i]
-            if(!('name' in prop)||!('symbolSize' in prop)||!('category' in prop)){
+          for (let i = 0; i < tmpjson.nodes.length; i++) {
+            let prop = tmpjson.nodes[i]
+            if (!('name' in prop) || !('symbolSize' in prop) || !('category' in prop)) {
               this.$message.error('内容格式错误!(nodes是否都包含了name/symbolSize/category属性)');
               return false
             }
           }
           //判断nodes是否有x,y值,否则随机
-          if(!('x' in tmpjson.nodes[0])||!('y' in tmpjson.nodes[0])){
+          if (!('x' in tmpjson.nodes[0]) || !('y' in tmpjson.nodes[0])) {
             this.$message.info('检查到nodes中未包含x/y值,正在随机设置')
-            for(let i = 0; i < tmpjson.nodes.length; i++){
-              let prop=tmpjson.nodes[i]
-              prop.x=100*Math.random()
-              prop.y=100*Math.random()
+            for (let i = 0; i < tmpjson.nodes.length; i++) {
+              let prop = tmpjson.nodes[i]
+              prop.x = 100 * Math.random()
+              prop.y = 100 * Math.random()
             }
           }
 
-          savedgraph=JSON.parse(JSON.stringify(tmpjson))
+          savedgraph = JSON.parse(JSON.stringify(tmpjson))
         }
       }
       return true
@@ -367,7 +378,7 @@ export default {
       a.download = this.$data.value || "knowledge-graph.png";
       a.href = img.src;
       a.dispatchEvent(e);
-    }
+    },
   }
 }
 </script>
@@ -376,7 +387,6 @@ export default {
 #box {
   display: flex;
   width: 100%;
-
 }
 
 #myChart {
