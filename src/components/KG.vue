@@ -403,8 +403,6 @@ export default {
         return {}.toString.call(v).split(' ')[1].slice(0, -1).toLowerCase();
       };
       var f = function (f, c, a, s) {
-        c.setAttribute("tools", "http://schemas.android.com/tools");
-        c.setAttribute("tools:ignore", "MissingTranslation");
 
         if (t(a) != "array" && t(a) != "object") {
           if (t(a) != "null") {
