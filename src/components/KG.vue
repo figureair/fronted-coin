@@ -1,6 +1,7 @@
 <template>
   <div id="box">
     <div id="myChart"></div>
+
     <div id="text-box">
       <div id="selector-box">
         <div>样式选择:</div>
@@ -36,6 +37,92 @@
           <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
         </span>
       </el-dialog>
+
+      <el-popover
+              ref="popover1"
+              placement="left"
+              trigger="click"
+      >
+        <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
+          <el-table-column width="100" property="source" label="source">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.source}}</div>
+              <el-input v-else v-model="scope.row.source"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="100" property="target" label="target">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.target}}</div>
+              <el-input v-else v-model="scope.row.target" ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="250" label="option">
+            <template slot-scope="scope">
+              <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
+              <el-button v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
+              <el-button v-if="editable" @click="editable=false">取消</el-button>
+              <el-button @click="deleteEdge(scope.row, 'edge')">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
+          <el-table-column width="100" property="id" label="id">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.id}}</div>
+              <el-input v-else v-model="scope.row.id"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="150" property="name" label="name">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.name}}</div>
+              <el-input v-else v-model="scope.row.name"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="100" property="category" label="category">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.category}}</div>
+              <el-input v-else v-model="scope.row.category"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="200" property="symbolSize" label="symbolSize">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.symbolSize}}</div>
+              <el-input v-else v-model="scope.row.symbolSize"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="150" property="value" label="value">
+            <template slot-scope="scope">
+              <div v-if="!editable">{{scope.row.value}}</div>
+              <el-input v-else v-model="scope.row.symbolSize"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column width="250" label="option">
+            <template slot-scope="scope">
+              <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
+              <el-button v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
+              <el-button v-if="editable" @click="editable=false">取消</el-button>
+              <el-button @click="deleteNode(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-popover>
+      <el-button type="primary" plain v-popover:popover1>查 看 数 据</el-button>
+
+      <el-button type="primary" plain @click="addNodeVisible =true">添加节点</el-button>
+      <el-form v-if="addNodeVisible" :inline="true">
+        <el-form-item></el-form-item>
+        <el-form-item></el-form-item>
+        <el-form-item></el-form-item>
+        <el-form-item></el-form-item>
+        <el-form-item></el-form-item>
+      </el-form>
+      <el-button type="primary" plain @click="addEdgeVisible = true">添加边</el-button>
+      <el-form v-if="addEdgeVisible" :inline="true">
+        <el-form-item></el-form-item>
+        <el-form-item></el-form-item>
+      </el-form>
+
+
     </div>
   </div>
 </template>
@@ -72,12 +159,20 @@ export default {
         label: '环形关系图'
       }],
       value: '',
-      dialogVisible: false
+      dialogVisible: false,
+      editable: false,
+      selectedType: '',
+      selectedItem: [],
+      input: {},
+      addNodeVisible: false,
+      addEdgeVisible: false,
     }
   },
+
   mounted() {
     this.initdata()
   },
+
   methods: {
     initdata() {
       // 初始化echarts实例
@@ -94,6 +189,29 @@ export default {
           savedgraph = JSON.parse(JSON.stringify(graph))
           that.initpage()
         });
+
+
+        myChart.on('click', 'series.graph', function (event) {
+          console.log(event);
+          that.selectedItem.length = 0;
+          let opt = myChart.getOption();
+          let id = event.dataIndex;
+          console.log(opt);
+          switch (event.dataType) {
+            case 'node':
+              that.selectedType = 'node';
+              that.selectedItem.push(opt.series[0].data[id]);
+              that.selectedItem[0].index = id;
+              break;
+            case 'edge':
+              that.selectedType = 'edge';
+              that.selectedItem.push(opt.series[0].links[id]);
+              that.selectedItem[0].index = id;
+              break;
+            default:
+              break;
+          }
+        })
       })
     },
 
@@ -280,19 +398,6 @@ export default {
           }
         ]
       };
-
-      console.log(option1.toString());
-
-      myChart.on('click', 'series.graph', function (e) {
-        console.log(e);
-        // var targetId = e.data.id;
-
-        let opt = myChart.getOption();
-
-        console.log(opt);
-
-
-      });
     },
 
     changeTo(value) {
@@ -443,7 +548,49 @@ export default {
       pom.draggable = true;
       pom.classList.add('dragout');
       pom.click();
-    }
+    },
+
+    handleEdit(row, mode) {
+      console.log(row, mode);
+      console.log(this.selectedItem);
+      this.editable = false;
+    },
+
+    startEdit(row, mode) {
+      var that = this;
+      that.input = {};
+      console.log(row, mode);
+      console.log(this.selectedItem);
+
+      // if (mode === 'node') {
+      //   that.input.id = row.id;
+      //   that.input.name = row.name;
+      //   that.input.category = row.category;
+      //   that.input.symbolSize = row.symbolSize;
+      //   that.input.value = row.value;
+      // }
+      // else if (mode === 'edge') {
+      //   that.input.source = row.source;
+      //   that.input.target = row.target;
+      // }
+      that.editable = true;
+    },
+
+    deleteNode(row) {
+      console.log(row);
+    },
+
+    deleteEdge(row) {
+      console.log(row);
+    },
+
+    addNode() {
+      console.log("sdad");
+    },
+
+    addEdge() {
+      console.log("addd");
+    },
   }
 }
 </script>
