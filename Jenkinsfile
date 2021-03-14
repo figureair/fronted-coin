@@ -28,7 +28,6 @@ pipeline{
         stage("package"){
             steps{
                 echo "packge code"
-
             }
         }
         stage("deploy"){
