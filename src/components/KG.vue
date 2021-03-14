@@ -330,7 +330,54 @@ export default {
     },
 
     downloadXml(){
+      var a = savedgraph;
+      var c = document.createElement("resources");
+      var t = function (v) {
+        return {}.toString.call(v).split(' ')[1].slice(0, -1).toLowerCase();
+      };
+      var f = function (f, c, a, s) {
+        c.setAttribute("tools", "http://schemas.android.com/tools");
+        c.setAttribute("tools:ignore", "MissingTranslation");
 
+        if (t(a) != "array" && t(a) != "object") {
+          if (t(a) != "null") {
+            c.appendChild(document.createTextNode(a));
+          }
+        } else {
+          for (var k in a) {
+            var v = a[k];
+            if (k == "ki" && t(a) == "object") {
+              c.setAttribute("__pi", v);
+            } else {
+              if (t(v) == "object") {
+                var cd = c.appendChild(document.createElementNS(null, s ? "bh" : "string"));
+                f(f, cd, v);
+              } else if (t(v) == "array") {
+                var ce = c.appendChild(document.createElementNS(null, s ? "ni" : "string"));
+                f(f, ce, v, true);
+              } else {
+                var va = document.createElementNS(null, s ? "ki" : "string");
+                if (t(v) != "null") {
+                  va.appendChild(document.createTextNode(v));
+                }
+                var cf = c.appendChild(va);
+                cf.setAttribute("name", k);
+              }
+            }
+          }
+        }
+      };
+      f(f, c, a, t(a) == "array");
+      var xml = '<?xml version="1.0" encoding="utf-8"?>' + c.outerHTML;
+      var filename = "knowledge-graph.xml";
+      var pom = document.createElement('a');
+      var bb = new Blob([xml], {type: 'text/plain'});
+      pom.setAttribute('href', window.URL.createObjectURL(bb));
+      pom.setAttribute('download', filename);
+      pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+      pom.draggable = true;
+      pom.classList.add('dragout');
+      pom.click();
     }
   }
 }
