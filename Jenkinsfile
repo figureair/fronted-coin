@@ -1,4 +1,4 @@
-#!/usr/local/bin
+#!/usr/bin/groovy
 
 pipeline{
     agent any
@@ -12,7 +12,6 @@ pipeline{
         stage("package"){
             steps{
                 echo "build start"
-                sh "npm install"
                 echo "build success"
             }
         }
