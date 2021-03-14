@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KG.vue 渲染正确组件 1`] = `
+<div id="box">
+  <div id="myChart"></div>
+  <div id="text-box">
+    <div id="selector-box">
+      <div>样式选择:</div>
+      <el-select-stub id="selector" value="" autocomplete="off" multiplelimit="0" valuekey="value" popperappendtobody="true">
+        <el-option-stub value="1" label="关系图"></el-option-stub>
+        <el-option-stub value="2" label="力引导图"></el-option-stub>
+        <el-option-stub value="3" label="环形关系图"></el-option-stub>
+      </el-select-stub>
+    </div>
+    <el-button-stub type="primary" icon="el-icon-download" nativetype="button" plain="true">下载Img</el-button-stub>
+    <el-button-stub type="primary" icon="el-icon-download" nativetype="button" plain="true">下载Json</el-button-stub>
+    <el-button-stub type="primary" icon="el-icon-download" nativetype="button" plain="true">下载Xml</el-button-stub>
+    <el-upload-stub action="" headers="[object Object]" name="file" showfilelist="true" type="select" beforeupload="function () { [native code] }" onremove="function srcvue_type_script_lang_js_noop() {}" onchange="function srcvue_type_script_lang_js_noop() {}" onsuccess="function srcvue_type_script_lang_js_noop() {}" onprogress="function () { [native code] }" onerror="function srcvue_type_script_lang_js_noop() {}" filelist="" autoupload="true" listtype="text" onexceed="function srcvue_type_script_lang_js_noop() {}">
+      <el-button-stub type="primary" icon="el-icon-upload" nativetype="button" plain="true">导入知识图谱</el-button-stub>
+    </el-upload-stub>
+    <el-button-stub type="text" icon="" nativetype="button">导入须知</el-button-stub>
+    <el-dialog-stub modal="true" modalfade="true" modalappendtobody="true" lockscroll="true" closeonpressescape="true" closeonclickmodal="true" title="导入须知" showclose="true" width="30%" customclass="" top="15vh"><span>目前只支持json文件。<br>json对象中必须包含nodes，links，categories三个属性。<br>每一个node须包含name，symbolSize，category属性。<br>每一个link须包含source，target属性。<br>每一个category须包含name属性。
+      </span> <span class="dialog-footer"><el-button-stub type="primary" icon="" nativetype="button">确 定</el-button-stub></span></el-dialog-stub>
+  </div>
+</div>
+`;

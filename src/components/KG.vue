@@ -1,11 +1,10 @@
 <template>
   <div id="box">
-    <div id="myChart">
-    </div>
+    <div id="myChart"></div>
     <div id="text-box">
       <div id="selector-box">
         <div>样式选择:</div>
-        <el-select id="selector" v-model="value" @change="changeTo" placeholder="关系图">
+        <el-select id="selector" v-model="value" @change="changeTo">
           <el-option
               v-for="item in options"
               :key="item.value"
@@ -20,12 +19,23 @@
       <!--      暂时不引入后端接口-->
       <el-upload
           action=""
-          :on-change="analysis"
+          :on-progress="initpage"
+          :before-upload="beforeJSONUpload"
       >
         <el-button type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>
-        <div slot="tip">只能导入json文件，且需符合格式</div>
-      </el-upload>
 
+      </el-upload>
+      <el-button type="text" @click="dialogVisible = true">导入须知</el-button>
+      <el-dialog
+          title="导入须知"
+          :visible.sync="dialogVisible"
+          width="30%">
+        <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories三个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
+        </span>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -46,43 +56,51 @@ let option2;
 //3.环形关系图
 let option3;
 
-let localFile;
 
 export default {
   name: "KG",
   data() {
     return {
       options: [{
-        value: '1',
+        value: 1,
         label: '关系图'
       }, {
-        value: '2',
+        value: 2,
         label: '力引导图'
       }, {
-        value: '3',
+        value: 3,
         label: '环形关系图'
       }],
       value: '',
+      dialogVisible: false
     }
   },
   mounted() {
-    this.initdata(ROOT_PATH)
+    this.initdata()
   },
   methods: {
     initdata() {
       // 初始化echarts实例
-      var that = this
-      myChart = this.$echarts.init(document.getElementById('myChart'))
-      myChart.showLoading();
-      $.getJSON(ROOT_PATH, function (graph) {
-        myChart.hideLoading();
-        //保存原始数据
-        savedgraph = JSON.parse(JSON.stringify(graph))
-        that.initpage()
-      });
+      let that = this
+      $(document).ready(function() {
+
+        let echarts = require('echarts');
+
+        myChart = echarts.init(document.getElementById('myChart'))
+        myChart.showLoading();
+        $.getJSON(ROOT_PATH, function (graph) {
+          myChart.hideLoading();
+          //保存原始数据
+          savedgraph = JSON.parse(JSON.stringify(graph))
+          that.initpage()
+        });
+      })
     },
 
     initpage() {
+
+      $("#selector").val('关系图');
+
       //初始设置为option1
       let graph = JSON.parse(JSON.stringify(savedgraph))
       graph.nodes.forEach(function (node) {
@@ -269,7 +287,7 @@ export default {
         console.log(e);
         // var targetId = e.data.id;
 
-        var opt = myChart.getOption();
+        let opt = myChart.getOption();
 
         console.log(opt);
 
@@ -293,27 +311,76 @@ export default {
       }
     },
 
-    analysis(event) {
-      var that = this
-      localFile = event.raw
-      let reader = new FileReader()
-      reader.readAsText(localFile);
-      reader.onload = () => {
-        savedgraph = JSON.parse(reader.result)
-        console.log(savedgraph)
-        that.initpage()
+    beforeJSONUpload(file) {
+
+      //判断是否为json文件
+      const isJSON = file.type === 'application/json';
+      if (!isJSON) {
+        this.$message.error('上传文件只能是 JSON 格式!');
+        return false
+      } else {
+        //读取json文件并存入tmpjson
+        let reader = new FileReader()
+        let tmpjson
+        reader.readAsText(file);
+        reader.onload = () => {
+          tmpjson = JSON.parse(reader.result)
+          console.log(tmpjson)
+
+          //判断是否为符合格式的json文件
+          if (!('nodes' in tmpjson)) {
+            this.$message.error('内容格式错误!(无nodes属性)');
+            return false
+          }
+          if (!('links' in tmpjson)) {
+            this.$message.error('内容格式错误!(无links属性)');
+            return false
+          }
+          if (!("categories" in tmpjson)) {
+            this.$message.error('内容格式错误!(无categories属性)');
+            return false
+          }
+          //links是否都包含了source和target
+          for (let i = 0; i < tmpjson.links.length; i++) {
+            let prop = tmpjson.links[i]
+            if (!('source' in prop) || !('target' in prop)) {
+              this.$message.error('内容格式错误!(links是否都包含了source/target属性)');
+              return false
+            }
+          }
+          //nodes是否都包含了name/symbolSize/category
+          for (let i = 0; i < tmpjson.nodes.length; i++) {
+            let prop = tmpjson.nodes[i]
+            if (!('name' in prop) || !('symbolSize' in prop) || !('category' in prop)) {
+              this.$message.error('内容格式错误!(nodes是否都包含了name/symbolSize/category属性)');
+              return false
+            }
+          }
+          //判断nodes是否有x,y值,否则随机
+          if (!('x' in tmpjson.nodes[0]) || !('y' in tmpjson.nodes[0])) {
+            this.$message.info('检查到nodes中未包含x/y值,正在随机设置')
+            for (let i = 0; i < tmpjson.nodes.length; i++) {
+              let prop = tmpjson.nodes[i]
+              prop.x = 100 * Math.random()
+              prop.y = 100 * Math.random()
+            }
+          }
+
+          savedgraph = JSON.parse(JSON.stringify(tmpjson))
+        }
       }
+      return true
     },
 
     downloadImg() {
-      var img = new Image();
+      let img = new Image();
       img.src = myChart.getDataURL({
         type: 'png',
         pixelRatio: 2,
         excludeComponents: ['toolbox']
       })
-      var a = document.createElement('a');
-      var e = new MouseEvent('click');
+      let a = document.createElement('a');
+      let e = new MouseEvent('click');
       a.download = this.$data.value || "knowledge-graph.png";
       a.href = img.src;
       a.dispatchEvent(e);
@@ -340,7 +407,6 @@ export default {
 #box {
   display: flex;
   width: 100%;
-
 }
 
 #myChart {
