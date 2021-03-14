@@ -11,7 +11,7 @@ pipeline{
         }
         stage("package"){
             steps{
-                echo "build start..."
+                echo "build start"
                 echo "build success"
             }
         }
