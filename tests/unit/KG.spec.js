@@ -39,6 +39,12 @@ describe('KG.vue', () => {
     it('点击下载Xml，触发downloadXml',async()=>{
         const wrapper = mount(KG,{localVue})
         const spyFn=jest.spyOn(wrapper.vm,'downloadXml')
+        if (typeof window.URL.createObjectURL === 'undefined') {
+            window.URL.createObjectURL = () => {
+                // Do nothing
+                // Mock this function for mapbox-gl to work
+            };
+        }
         await wrapper.vm.$forceUpdate();
         wrapper.find('#downxml').trigger('click')
         expect(spyFn).toHaveBeenCalled()
