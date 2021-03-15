@@ -11,6 +11,7 @@ pipeline{
         stage("package"){
             steps{
                 echo "build start"
+                sh "npm install"
                 sh "npm run build"
                 echo "build success"
             }
