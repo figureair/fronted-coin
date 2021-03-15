@@ -108,20 +108,36 @@
       </el-popover>
       <el-button type="primary" plain v-popover:popover1>查 看 数 据</el-button>
 
-      <el-button type="primary" plain @click="addNodeVisible =true">添加节点</el-button>
+      <el-button type="primary" plain @click="addNodeVisible=true">添加节点</el-button>
       <el-form v-if="addNodeVisible" :inline="true">
-        <el-form-item></el-form-item>
-        <el-form-item></el-form-item>
-        <el-form-item></el-form-item>
-        <el-form-item></el-form-item>
-        <el-form-item></el-form-item>
+        <el-form-item label="id">
+          <el-input v-model="addNodeForm.id" placeholder="id"></el-input>
+        </el-form-item>
+        <el-form-item label="name">
+          <el-input v-model="addNodeForm.name" placeholder="name"></el-input>
+        </el-form-item>
+        <el-form-item label="symbolSize" required="true">
+          <el-input v-model="addNodeForm.symbolSize" placeholder="symbolSize"></el-input>
+        </el-form-item>
+        <el-form-item label="value" required="true">
+          <el-input v-model="addNodeForm.value" placeholder="value"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addNode">添加</el-button>
+        </el-form-item>
       </el-form>
-      <el-button type="primary" plain @click="addEdgeVisible = true">添加边</el-button>
-      <el-form v-if="addEdgeVisible" :inline="true">
-        <el-form-item></el-form-item>
-        <el-form-item></el-form-item>
+      <el-button type="primary" plain @click="addEdgeVisible=true">添加边</el-button>
+      <el-form v-if="addEdgeVisible" :inline="true" :model="addEdgeForm">
+        <el-form-item label="source" required="true">
+          <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>
+        </el-form-item>
+        <el-form-item label="target" required="true">
+          <el-input v-model="addEdgeForm.target" placeholder="target"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="addEdge">添加</el-button>
+        </el-form-item>
       </el-form>
-
 
     </div>
   </div>
@@ -166,6 +182,10 @@ export default {
       input: {},
       addNodeVisible: false,
       addEdgeVisible: false,
+
+      addEdgeForm: {},
+
+      addNodeForm: {}
     }
   },
 
@@ -577,11 +597,19 @@ export default {
     },
 
     deleteNode(row) {
-      console.log(row);
+      console.log(savedgraph);
+      savedgraph.nodes.splice(row.index, 1);
+      // for (let i = 0; i < savedgraph.links.length; i++) {
+      //   if (savedgraph.links[i].source === )
+      // }
+      this.initpage();
+
     },
 
     deleteEdge(row) {
       console.log(row);
+      savedgraph.links.splice(row.index, 1);
+      this.initpage();
     },
 
     addNode() {
@@ -591,6 +619,7 @@ export default {
     addEdge() {
       console.log("addd");
     },
+
   }
 }
 </script>
