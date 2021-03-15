@@ -1,4 +1,3 @@
-#!/bin/bash -ilex
 
 pipeline{
     agent any
