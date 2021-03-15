@@ -175,18 +175,17 @@
 
 
 <script>
-  import $ from 'jquery'
+import $ from 'jquery'
 
-  let myChart;
-  const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/les-miserables.json';
+const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/les-miserables.json';
 
-  //目前存有三种模式，后续迭代将加入更多表现模式
-  //1.关系图
-  let option1;
-  //2.力引导图
-  let option2;
-  //3.环形关系图
-  let option3;
+//目前存有三种模式，后续迭代将加入更多表现模式
+//1.关系图
+let option1;
+//2.力引导图
+let option2;
+//3.环形关系图
+let option3;
 
 
   export default {
@@ -286,6 +285,8 @@
         input: {},
         addNodeVisible: false,
         addEdgeVisible: false,
+        savedgraph:'',
+        myChart:'',
 
         addEdgeForm: {
           source: '',
@@ -325,57 +326,58 @@
       }
     },
 
-    mounted() {
-      this.initdata()
+
+
+  mounted() {
+    this.initdata()
+  },
+
+  methods: {
+    initdata() {
+      // 初始化echarts实例
+      let that = this
+      $(document).ready(function () {
+
+        let echarts = require('echarts');
+
+        that.myChart = echarts.init(document.getElementById('myChart'))
+        that.myChart.showLoading();
+        $.getJSON(ROOT_PATH, function (graph) {
+          that.myChart.hideLoading();
+          //保存原始数据
+          that.savedgraph = JSON.parse(JSON.stringify(graph))
+          that.initpage()
+        });
+
+
+        that.myChart.on('click', 'series.graph', function (event) {
+          console.log(event);
+          that.selectedItem.length = 0;
+          let opt = that.myChart.getOption();
+          let id = event.dataIndex;
+          console.log(opt);
+          switch (event.dataType) {
+            case 'node':
+              that.selectedType = 'node';
+              that.selectedItem.push(opt.series[0].data[id]);
+              that.selectedItem[0].index = id;
+              break;
+            case 'edge':
+              that.selectedType = 'edge';
+              that.selectedItem.push(opt.series[0].links[id]);
+              that.selectedItem[0].index = id;
+              break;
+            default:
+              break;
+          }
+        })
+      })
     },
 
-    methods: {
-      initdata() {
-        // 初始化echarts实例
-        let that = this
-        $(document).ready(function () {
-
-          let echarts = require('echarts');
-
-          myChart = echarts.init(document.getElementById('myChart'))
-          myChart.showLoading();
-          $.getJSON(ROOT_PATH, function (graph) {
-            myChart.hideLoading();
-            //保存原始数据
-            that.savedgraph = JSON.parse(JSON.stringify(graph))
-            that.initpage()
-          });
-
-
-          myChart.on('click', 'series.graph', function (event) {
-            console.log(event);
-            that.selectedItem.length = 0;
-            let opt = myChart.getOption();
-            let id = event.dataIndex;
-            console.log(opt);
-            switch (event.dataType) {
-              case 'node':
-                that.selectedType = 'node';
-                that.selectedItem.push(opt.series[0].data[id]);
-                that.selectedItem[0].index = id;
-                break;
-              case 'edge':
-                that.selectedType = 'edge';
-                that.selectedItem.push(opt.series[0].links[id]);
-                that.selectedItem[0].index = id;
-                break;
-              default:
-                break;
-            }
-          })
-        })
-      },
-
-      initpage() {
-
+    initpage() {
         $("#selector").val('关系图');
 
-        let that=this
+        let that = this
         //初始设置为option1
         let graph = JSON.parse(JSON.stringify(that.savedgraph))
         graph.nodes.forEach(function (node) {
@@ -462,7 +464,7 @@
             }
           }
         };
-        myChart.setOption(option1);
+        that.myChart.setOption(option1);
 
 
         //预存option2
@@ -571,167 +573,168 @@
             }
           ]
         };
-      },
+    },
 
-      changeTo(value) {
-        $(document).ready(function () {
-          myChart.clear();
-          switch (value) {
-            case 1:
-              myChart.setOption(option1);
-              break
-            case 2:
-              myChart.setOption(option2);
-              break
-            case 3:
-              myChart.setOption(option3);
-              break
-          }
-        })
-      },
+    changeTo(value) {
+      let that=this
+      $(document).ready(function () {
+        that.myChart.clear();
+        switch (value) {
+          case 1:
+            that.myChart.setOption(option1);
+            break
+          case 2:
+            that.myChart.setOption(option2);
+            break
+          case 3:
+            that.myChart.setOption(option3);
+            break
+        }
+      })
+    },
 
-      beforeJSONUpload(file) {
-        //判断是否为json文件
-        const isJSON = file.type === 'application/json';
-        if (!isJSON) {
-          this.$message.error('上传文件只能是 JSON 格式!');
-          return false
-        } else {
-          //读取json文件并存入tmpjson
-          let reader = new FileReader()
-          let tmpjson
-          reader.readAsText(file);
-          reader.onload = () => {
-            tmpjson = JSON.parse(reader.result)
-            console.log(tmpjson)
-            this.checkjson(tmpjson)
-          }
+    beforeJSONUpload(file) {
+      //判断是否为json文件
+      const isJSON = file.type === 'application/json';
+      if (!isJSON) {
+        this.$message.error('上传文件只能是 JSON 格式!');
+        return false
+      } else {
+        //读取json文件并存入tmpjson
+        let reader = new FileReader()
+        let tmpjson
+        reader.readAsText(file);
+        reader.onload = () => {
+          tmpjson = JSON.parse(reader.result)
+          console.log(tmpjson)
+          this.checkjson(tmpjson)
         }
-        return true
-      },
+      }
+      return true
+    },
 
-      checkjson(tmpjson){
-        //判断是否为符合格式的json对象
-        if (!('nodes' in tmpjson)) {
-          this.$message.error('内容格式错误!(无nodes属性)');
-          return false
-        }
-        if (!('links' in tmpjson)) {
-          this.$message.error('内容格式错误!(无links属性)');
-          return false
-        }
-        if (!("categories" in tmpjson)) {
-          this.$message.error('内容格式错误!(无categories属性)');
-          return false
-        }
+    checkjson(tmpjson){
+      //判断是否为符合格式的json对象
+      if (!('nodes' in tmpjson)) {
+        this.$message.error('内容格式错误!(无nodes属性)');
+        return false
+      }
+      if (!('links' in tmpjson)) {
+        this.$message.error('内容格式错误!(无links属性)');
+        return false
+      }
+      if (!("categories" in tmpjson)) {
+        this.$message.error('内容格式错误!(无categories属性)');
+        return false
+      }
 
-        if(tmpjson.links.length===0||tmpjson.nodes.length===0||tmpjson.categories.length===0){
+      if(tmpjson.links.length===0||tmpjson.nodes.length===0||tmpjson.categories.length===0){
+        return false
+      }
+      //links是否都包含了source和target
+      for (let i = 0; i < tmpjson.links.length; i++) {
+        let prop = tmpjson.links[i]
+        if (!('source' in prop) || !('target' in prop)) {
+          this.$message.error('内容格式错误!(links是否都包含了source/target属性)');
           return false
         }
-        //links是否都包含了source和target
-        for (let i = 0; i < tmpjson.links.length; i++) {
-          let prop = tmpjson.links[i]
-          if (!('source' in prop) || !('target' in prop)) {
-            this.$message.error('内容格式错误!(links是否都包含了source/target属性)');
-            return false
-          }
+      }
+      //nodes是否都包含了name/symbolSize/category
+      for (let i = 0; i < tmpjson.nodes.length; i++) {
+        let prop = tmpjson.nodes[i]
+        if (!('name' in prop) || !('symbolSize' in prop) || !('category' in prop)) {
+          this.$message.error('内容格式错误!(nodes是否都包含了name/symbolSize/category属性)');
+          return false
         }
-        //nodes是否都包含了name/symbolSize/category
+      }
+      for (let i = 0; i < tmpjson.categories.length; i++) {
+        let prop = tmpjson.categories[i]
+        if (!('name' in prop)) {
+          this.$message.error('内容格式错误!(categories是否都包含了name属性)');
+          return false
+        }
+      }
+      //判断nodes是否有x,y值,否则随机
+      if (!('x' in tmpjson.nodes[0]) || !('y' in tmpjson.nodes[0])) {
+        this.$message.info('检查到nodes中未包含x/y值,正在随机设置')
         for (let i = 0; i < tmpjson.nodes.length; i++) {
           let prop = tmpjson.nodes[i]
-          if (!('name' in prop) || !('symbolSize' in prop) || !('category' in prop)) {
-            this.$message.error('内容格式错误!(nodes是否都包含了name/symbolSize/category属性)');
-            return false
-          }
+          prop.x = 100 * Math.random()
+          prop.y = 100 * Math.random()
         }
-        for (let i = 0; i < tmpjson.categories.length; i++) {
-          let prop = tmpjson.categories[i]
-          if (!('name' in prop)) {
-            this.$message.error('内容格式错误!(categories是否都包含了name属性)');
-            return false
-          }
-        }
-        //判断nodes是否有x,y值,否则随机
-        if (!('x' in tmpjson.nodes[0]) || !('y' in tmpjson.nodes[0])) {
-          this.$message.info('检查到nodes中未包含x/y值,正在随机设置')
-          for (let i = 0; i < tmpjson.nodes.length; i++) {
-            let prop = tmpjson.nodes[i]
-            prop.x = 100 * Math.random()
-            prop.y = 100 * Math.random()
-          }
-        }
+      }
 
-        this.savedgraph = JSON.parse(JSON.stringify(tmpjson))
-        return true
-      },
+      this.savedgraph = JSON.parse(JSON.stringify(tmpjson))
+      return true
+    },
 
-      downloadImg() {
-        $(document).ready(function () {
-          let img = new Image();
-          img.src = myChart.getDataURL({
-            type: 'png',
-            pixelRatio: 2,
-            excludeComponents: ['toolbox']
-          })
-          let a = document.createElement('a');
-          let e = new MouseEvent('click');
-          a.download = "knowledge-graph.png";
-          a.href = img.src;
-          a.dispatchEvent(e);
+    downloadImg() {
+
+        let img = new Image();
+        img.src = this.myChart.getDataURL({
+          type: 'png',
+          pixelRatio: 2,
+          excludeComponents: ['toolbox']
         })
-      },
+        let a = document.createElement('a');
+        let e = new MouseEvent('click');
+        a.download = "knowledge-graph.png";
+        a.href = img.src;
+        a.dispatchEvent(e);
 
-      downloadJson() {
-        let that=this
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(that.savedgraph));
-        let downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "knowledge-graph" + ".json");
-        document.body.appendChild(downloadAnchorNode); // required for firefox
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-      },
+    },
 
-      downloadXml(){
-        let that=this
-        let js2xml = require('json2xml');
-        let xml = '<?xml version="1.0" encoding="utf-8"?>' + js2xml(that.savedgraph);
-        let filename = "knowledge-graph.xml";
-        let pom = document.createElement('a');
-        let bb = new Blob([xml], {type: 'text/plain'});
-        pom.setAttribute('href', window.URL.createObjectURL(bb));
-        pom.setAttribute('download', filename);
-        pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
-        pom.draggable = true;
-        pom.classList.add('dragout');
-        pom.click();
-      },
+    downloadJson() {
+      let that=this
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(that.savedgraph));
+      let downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "knowledge-graph" + ".json");
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    },
 
-      handleEdit(row, mode) {
-        console.log(row, mode);
-        console.log(this.selectedItem);
-        this.editable = false;
-      },
+    downloadXml(){
+      let that=this
+      let js2xml = require('json2xml');
+      let xml = '<?xml version="1.0" encoding="utf-8"?>' + js2xml(that.savedgraph);
+      let filename = "knowledge-graph.xml";
+      let pom = document.createElement('a');
+      let bb = new Blob([xml], {type: 'text/plain'});
+      pom.setAttribute('href', window.URL.createObjectURL(bb));
+      pom.setAttribute('download', filename);
+      pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+      pom.draggable = true;
+      pom.classList.add('dragout');
+      pom.click();
+    },
 
-      startEdit(row, mode) {
-        let that = this;
-        that.input = {};
-        console.log(row, mode);
-        console.log(this.selectedItem);
+    handleEdit(row, mode) {
+      console.log(row, mode);
+      console.log(this.selectedItem);
+      this.editable = false;
+    },
 
-        // if (mode === 'node') {
-        //   that.input.id = row.id;
-        //   that.input.name = row.name;
-        //   that.input.category = row.category;
-        //   that.input.symbolSize = row.symbolSize;
-        //   that.input.value = row.value;
-        // }
-        // else if (mode === 'edge') {
-        //   that.input.source = row.source;
-        //   that.input.target = row.target;
-        // }
-        that.editable = true;
-      },
+    startEdit(row, mode) {
+      let that = this;
+      that.input = {};
+      console.log(row, mode);
+      console.log(this.selectedItem);
+
+      // if (mode === 'node') {
+      //   that.input.id = row.id;
+      //   that.input.name = row.name;
+      //   that.input.category = row.category;
+      //   that.input.symbolSize = row.symbolSize;
+      //   that.input.value = row.value;
+      // }
+      // else if (mode === 'edge') {
+      //   that.input.source = row.source;
+      //   that.input.target = row.target;
+      // }
+      that.editable = true;
+    },
 
       deleteNode(row) {
         this.savedgraph.nodes.splice(row.index, 1);

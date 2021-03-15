@@ -1,9 +1,11 @@
 import {mount, createLocalVue, shallowMount} from '@vue/test-utils'
 import KG from '@/components/KG.vue'
 import ElementUI from 'element-ui';
+import * as echarts from 'echarts';
 
 const localVue = createLocalVue()
 localVue.use(ElementUI)
+localVue.use(echarts)
 
 describe('KG.vue', () => {
 
@@ -24,6 +26,9 @@ describe('KG.vue', () => {
         const wrapper = mount(KG,{localVue})
         const spyFn=jest.spyOn(wrapper.vm,'downloadImg')
         await wrapper.vm.$forceUpdate();
+        wrapper.setData({
+            myChart:echarts.init(document.createElement('div'))
+        })
         wrapper.find('#downimg').trigger('click')
         expect(spyFn).toHaveBeenCalled()
     })
@@ -38,8 +43,15 @@ describe('KG.vue', () => {
 
     it('点击下载Xml，触发downloadXml',async()=>{
         const wrapper = mount(KG,{localVue})
-        wrapper.vm.savedgraph=JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        wrapper.setData({
+            savedgraph:JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        })
         const spyFn=jest.spyOn(wrapper.vm,'downloadXml')
+        if (typeof window.URL.createObjectURL === 'undefined') {
+            window.URL.createObjectURL = () => {
+
+            };
+        }
         await wrapper.vm.$forceUpdate();
         wrapper.find('#downxml').trigger('click')
         expect(spyFn).toHaveBeenCalled()
@@ -76,11 +88,15 @@ describe('KG.vue', () => {
         expect(await wrapper.vm.changeTo(2)).toEqual(2);
     })
 
-    // it('配置渲染，测试触发',async ()=>{
-    //     const wrapper = mount(KG,{localVue})
-    //     wrapper.vm.savedgraph=JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
-    //     expect(wrapper.vm.initpage()).toHaveBeenCalled()
-    // })
+    it('配置渲染，测试触发',async ()=>{
+        const wrapper = mount(KG,{localVue})
+        wrapper.setData({
+            savedgraph:JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        })
+        const spyFn = jest.spyOn(wrapper.vm, "initpage");
+        wrapper.vm.initpage()
+        expect(spyFn).toHaveBeenCalled()
+    })
 
     it("删除节点",()=>{
 
