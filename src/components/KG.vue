@@ -548,35 +548,38 @@ export default {
       };
       let f = function (f, c, a, s) {
 
-        if (t(a) != "array" && t(a) != "object") {
-          if (t(a) != "null") {
+        if (t(a) !== "array" && t(a) !== "object") {
+          if (t(a) !== "null") {
             c.appendChild(document.createTextNode(a));
           }
         } else {
           for (let k in a) {
-            let v = a[k];
-            if (k == "ki" && t(a) == "object") {
-              c.setAttribute("__pi", v);
-            } else {
-              if (t(v) == "object") {
-                let cd = c.appendChild(document.createElementNS(null, s ? "bh" : "string"));
-                f(f, cd, v);
-              } else if (t(v) == "array") {
-                let ce = c.appendChild(document.createElementNS(null, s ? "ni" : "string"));
-                f(f, ce, v, true);
+            // eslint-disable-next-line no-prototype-builtins
+            if(a.hasOwnProperty(k)){
+              let v = a[k];
+              if (k === "ki" && t(a) === "object") {
+                c.setAttribute("__pi", v);
               } else {
-                let va = document.createElementNS(null, s ? "ki" : "string");
-                if (t(v) != "null") {
-                  va.appendChild(document.createTextNode(v));
+                if (t(v) === "object") {
+                  let cd = c.appendChild(document.createElementNS(null, s ? "bh" : "string"));
+                  f(f, cd, v);
+                } else if (t(v) === "array") {
+                  let ce = c.appendChild(document.createElementNS(null, s ? "ni" : "string"));
+                  f(f, ce, v, true);
+                } else {
+                  let va = document.createElementNS(null, s ? "ki" : "string");
+                  if (t(v) !== "null") {
+                    va.appendChild(document.createTextNode(v));
+                  }
+                  let cf = c.appendChild(va);
+                  cf.setAttribute("name", k);
                 }
-                let cf = c.appendChild(va);
-                cf.setAttribute("name", k);
               }
             }
           }
         }
       };
-      f(f, c, a, t(a) == "array");
+      f(f, c, a, t(a) === "array");
       let xml = '<?xml version="1.0" encoding="utf-8"?>' + c.outerHTML;
       let filename = "knowledge-graph.xml";
       let pom = document.createElement('a');
