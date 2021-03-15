@@ -12,14 +12,17 @@ pipeline{
             steps{
                 echo "build start"
                 sh "npm install"
+                sh "rm -rf ./dist/*"
                 sh "npm run build"
+                sh "tar -zcvf dist.tar.gz *"
                 echo "build success"
             }
         }
         stage("deploy"){
             steps{
-                echo "deploy packge to node1"
+                echo "deploy packge to fronted"
+                sh "rm -rf /usr/local/fronted/*"
+                echo "deploy success"
             }
         }
     }
-}
