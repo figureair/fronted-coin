@@ -1,4 +1,3 @@
-#!/usr/bin/groovy
 #!/bin/bash -ilex
 
 pipeline{
