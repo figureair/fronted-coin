@@ -1,0 +1,41 @@
+{
+  "links": [
+    {
+      "source": "a",
+      "target": "b",
+      "value": 3
+    },
+    {
+      "source": "c",
+      "target": "b",
+      "value": 3
+    },
+    {
+      "source": "a",
+      "target": "c",
+      "value": 3
+    }
+  ],
+  "nodes": [
+    {
+      "category": 0,
+      "name": "a",
+      "symbolSize": 5
+    },
+    {
+      "category": 0,
+      "name": "b",
+      "symbolSize": 5
+    },
+    {
+      "category": 0,
+      "name": "c",
+      "symbolSize": 5
+    }
+  ],
+  "categories": [
+    {
+      "name": "smmmmme"
+    }
+  ]
+}
