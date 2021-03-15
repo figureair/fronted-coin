@@ -14,19 +14,19 @@
           </el-option>
         </el-select>
       </div>
-      <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载Img</el-button>
-      <el-button type="primary" plain icon="el-icon-download" @click="downloadJson">下载Json</el-button>
-      <el-button type="primary" plain icon="el-icon-download" @click="downloadXml">下载Xml</el-button>
+      <el-button type="primary" plain icon="el-icon-download" @click="downloadImg" id="downimg">下载Img</el-button>
+      <el-button type="primary" plain icon="el-icon-download" @click="downloadJson" id="downjson">下载Json</el-button>
+      <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
       <!--      暂时不引入后端接口-->
       <el-upload
           action=""
           :on-progress="initpage"
           :before-upload="beforeJSONUpload"
       >
-        <el-button type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>
+        <el-button id="upload_button" type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>
 
       </el-upload>
-      <el-button type="text" @click="dialogVisible = true">导入须知</el-button>
+      <el-button type="text" id="tip" @click="dialogVisible = true">导入须知</el-button>
       <el-dialog
           title="导入须知"
           :visible.sync="dialogVisible"
@@ -34,7 +34,7 @@
         <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories三个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
         </span>
         <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+          <el-button id="tipclose" type="primary" @click="dialogVisible = false">确 定</el-button>
         </span>
       </el-dialog>
 
@@ -164,6 +164,7 @@ export default {
       selectedType: '',
       selectedItem: [],
       input: {},
+      nowOption:1,
       addNodeVisible: false,
       addEdgeVisible: false,
     }
@@ -223,8 +224,13 @@ export default {
       let graph = JSON.parse(JSON.stringify(savedgraph))
       graph.nodes.forEach(function (node) {
         node.label = {
-          show: node.symbolSize > 30
+          show: node.symbolSize >= 30
         };
+      });
+      graph.links.forEach(function (link) {
+        if(link.name==="dot"){
+          link.lineStyle={type:'dotted'}
+        }
       });
       option1 = {
         tooltip: {
@@ -261,6 +267,7 @@ export default {
             links: graph.links,
             categories: graph.categories,
 
+
             label: {
               position: 'right',
               formatter: '{b}'
@@ -268,7 +275,8 @@ export default {
 
             lineStyle: {
               color: 'source',
-              curveness: 0.3
+              curveness: 1,
+              width:2,
             },
 
             emphasis: {
@@ -305,9 +313,13 @@ export default {
       graph = JSON.parse(JSON.stringify(savedgraph))
       graph.nodes.forEach(function (node) {
         node.label = {
-          show: node.symbolSize > 30
+          show: node.symbolSize >= 30
         };
-        node.symbolSize = 5;
+      });
+      graph.links.forEach(function (link) {
+        if(link.name==="dot"){
+          link.lineStyle={type:'dotted',width:'2'}
+        }
       });
       option2 = {
         tooltip: {
@@ -351,8 +363,13 @@ export default {
       graph = JSON.parse(JSON.stringify(savedgraph))
       graph.nodes.forEach(function (node) {
         node.label = {
-          show: node.symbolSize > 30
+          show: node.symbolSize >= 30
         };
+      });
+      graph.links.forEach(function (link) {
+        if(link.name==="dot"){
+          link.lineStyle={type:'dotted',width:'2'}
+        }
       });
       option3 = {
         tooltip: {
@@ -398,22 +415,41 @@ export default {
           }
         ]
       };
+
+      console.log(option1.toString());
+
+      myChart.on('click', 'series.graph', function (e) {
+        console.log(e);
+        // let targetId = e.data.id;
+
+        let opt = myChart.getOption();
+
+        console.log(opt);
+
+
+      });
     },
 
     changeTo(value) {
-      console.log(value)
-      myChart.clear();
-      switch (value) {
-        case 1:
-          myChart.setOption(option1);
-          break;
-        case 2:
-          myChart.setOption(option2);
-          break;
-        case 3:
-          myChart.setOption(option3);
-          break;
-      }
+      var that=this
+      $(document).ready(function() {
+        console.log(value)
+        myChart.clear();
+        switch (value) {
+          case 1:
+            myChart.setOption(option1);
+            that.nowOption=1;
+            break;
+          case 2:
+            myChart.setOption(option2);
+            that.nowOption=2;
+            break;
+          case 3:
+            myChart.setOption(option3);
+            that.nowOption=3;
+            break;
+        }
+      })
     },
 
     beforeJSONUpload(file) {
@@ -478,22 +514,24 @@ export default {
     },
 
     downloadImg() {
-      let img = new Image();
-      img.src = myChart.getDataURL({
-        type: 'png',
-        pixelRatio: 2,
-        excludeComponents: ['toolbox']
+      $(document).ready(function() {
+        let img = new Image();
+        img.src = myChart.getDataURL({
+          type: 'png',
+          pixelRatio: 2,
+          excludeComponents: ['toolbox']
+        })
+        let a = document.createElement('a');
+        let e = new MouseEvent('click');
+        a.download =  "knowledge-graph.png";
+        a.href = img.src;
+        a.dispatchEvent(e);
       })
-      let a = document.createElement('a');
-      let e = new MouseEvent('click');
-      a.download = this.$data.value || "knowledge-graph.png";
-      a.href = img.src;
-      a.dispatchEvent(e);
     },
 
     downloadJson(){
-      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedgraph));
-      var downloadAnchorNode = document.createElement('a');
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedgraph));
+      let downloadAnchorNode = document.createElement('a');
       downloadAnchorNode.setAttribute("href", dataStr);
       downloadAnchorNode.setAttribute("download", "knowledge-graph" + ".json");
       document.body.appendChild(downloadAnchorNode); // required for firefox
@@ -502,35 +540,36 @@ export default {
     },
 
     downloadXml(){
-      var a = savedgraph;
-      var c = document.createElement("resources");
-      var t = function (v) {
+      console.log(savedgraph)
+      let a = savedgraph;
+      let c = document.createElement("resources");
+      let t = function (v) {
         return {}.toString.call(v).split(' ')[1].slice(0, -1).toLowerCase();
       };
-      var f = function (f, c, a, s) {
+      let f = function (f, c, a, s) {
 
         if (t(a) != "array" && t(a) != "object") {
           if (t(a) != "null") {
             c.appendChild(document.createTextNode(a));
           }
         } else {
-          for (var k in a) {
-            var v = a[k];
+          for (let k in a) {
+            let v = a[k];
             if (k == "ki" && t(a) == "object") {
               c.setAttribute("__pi", v);
             } else {
               if (t(v) == "object") {
-                var cd = c.appendChild(document.createElementNS(null, s ? "bh" : "string"));
+                let cd = c.appendChild(document.createElementNS(null, s ? "bh" : "string"));
                 f(f, cd, v);
               } else if (t(v) == "array") {
-                var ce = c.appendChild(document.createElementNS(null, s ? "ni" : "string"));
+                let ce = c.appendChild(document.createElementNS(null, s ? "ni" : "string"));
                 f(f, ce, v, true);
               } else {
-                var va = document.createElementNS(null, s ? "ki" : "string");
+                let va = document.createElementNS(null, s ? "ki" : "string");
                 if (t(v) != "null") {
                   va.appendChild(document.createTextNode(v));
                 }
-                var cf = c.appendChild(va);
+                let cf = c.appendChild(va);
                 cf.setAttribute("name", k);
               }
             }
@@ -538,10 +577,10 @@ export default {
         }
       };
       f(f, c, a, t(a) == "array");
-      var xml = '<?xml version="1.0" encoding="utf-8"?>' + c.outerHTML;
-      var filename = "knowledge-graph.xml";
-      var pom = document.createElement('a');
-      var bb = new Blob([xml], {type: 'text/plain'});
+      let xml = '<?xml version="1.0" encoding="utf-8"?>' + c.outerHTML;
+      let filename = "knowledge-graph.xml";
+      let pom = document.createElement('a');
+      let bb = new Blob([xml], {type: 'text/plain'});
       pom.setAttribute('href', window.URL.createObjectURL(bb));
       pom.setAttribute('download', filename);
       pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
@@ -557,7 +596,7 @@ export default {
     },
 
     startEdit(row, mode) {
-      var that = this;
+      let that = this;
       that.input = {};
       console.log(row, mode);
       console.log(this.selectedItem);
