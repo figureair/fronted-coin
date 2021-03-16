@@ -21,7 +21,7 @@ pipeline{
         stage("deploy"){
             steps{
                 echo "deploy packge to fronted"
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'kg666', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'nohup sh /usr/local/fronted/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'usr/local/fronted/', remoteDirectorySDF: false, removePrefix: './', sourceFiles: './dist.tar.gz', usePty: true)], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'kg666', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'sh /usr/local/fronted/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'usr/local/fronted/', remoteDirectorySDF: false, removePrefix: './', sourceFiles: './dist.tar.gz', usePty: true)], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
                 echo "deploy success"
             }
         }
