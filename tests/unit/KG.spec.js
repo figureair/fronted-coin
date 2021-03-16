@@ -136,6 +136,9 @@ describe('KG.vue', () => {
     it('配置渲染，测试触发', async () => {
         const wrapper = mount(KG, {localVue})
         wrapper.setData({
+            changeOption:jest.fn(function() {
+                return true;
+            }),
             myChart: echarts.init(tmpdom),
             savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
         })
@@ -155,12 +158,41 @@ describe('KG.vue', () => {
         wrapper.destroy()
     })
 
-    it("删除节点", () => {
+    it("changeOption测试", () => {
+        const wrapper = mount(KG, {localVue})
+        wrapper.setData({
+            myChart: echarts.init(tmpdom)
+        })
+        expect(wrapper.vm.changeOption({})).toBe(true)
+        echarts.dispose(tmpdom)
+        wrapper.destroy()
+    })
 
+    it("删除节点", () => {
+        const wrapper = mount(KG, {localVue})
+        wrapper.setData({
+            initpage:jest.fn(function() {
+                return true;
+            }),
+            savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        })
+        const spyFn = jest.spyOn(wrapper.vm, "deleteNode");
+        wrapper.vm.deleteNode({index:1})
+        expect(spyFn).toHaveBeenCalled()
+        wrapper.destroy()
     })
 
     it("增加节点", () => {
-
+        // const wrapper = mount(KG, {localVue})
+        //
+        // const spyFn = jest.spyOn(wrapper.vm, "addNode");
+        // wrapper.vm.$refs['addNodeForm'].validate=function (){
+        //     return true
+        // }
+        // wrapper.vm.addNode()
+        // expect(spyFn).toHaveBeenCalled()
+        // // echarts.dispose(tmpdom)
+        // wrapper.destroy()
     })
 
     it("修改节点", () => {
@@ -172,10 +204,49 @@ describe('KG.vue', () => {
     })
 
     it("删除边", () => {
+        const wrapper = mount(KG, {localVue})
+        wrapper.setData({
+            initpage:jest.fn(function() {
+                return true;
+            }),
+            savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        })
+        const spyFn = jest.spyOn(wrapper.vm, "deleteEdge");
+        wrapper.vm.deleteEdge({index:1})
+        expect(spyFn).toHaveBeenCalled()
+        wrapper.destroy()
 
     })
 
     it("修改边", () => {
 
+    })
+
+    it("isValid测试", () => {
+
+    })
+
+    it("校验方法测试", () => {
+        const wrapper = mount(KG, {localVue})
+        const mockFn=jest.fn(function() {
+            return true;
+        })
+        wrapper.setData({
+            savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        })
+        wrapper.vm.checkName('','当事人',mockFn)
+        wrapper.vm.checkName('','',mockFn)
+        wrapper.vm.checkSymbolSize('','',mockFn)
+        wrapper.vm.checkSymbolSize('',-1,mockFn)
+        wrapper.vm.checkSymbolSize('',1,mockFn)
+        wrapper.vm.checkSymbolSize('',NaN,mockFn)
+        wrapper.vm.checkTarget('','',mockFn)
+        wrapper.vm.checkSource('','',mockFn)
+        wrapper.vm.checkCategory('','',mockFn)
+        wrapper.vm.checkCategory('',NaN,mockFn)
+        wrapper.vm.checkCategory('',-1,mockFn)
+        wrapper.vm.checkCategory('',10,mockFn)
+        wrapper.vm.checkCategory('',0,mockFn)
+        wrapper.destroy()
     })
 })
