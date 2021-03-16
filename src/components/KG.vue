@@ -4,13 +4,13 @@
 
     <div id="text-box">
       <div id="selector-box" class="box-item">
-        <div id="selector-title" >样式选择:</div>
+        <div id="selector-title">样式选择:</div>
         <el-select id="selector" v-model="value" @change="changeTo">
           <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
           </el-option>
         </el-select>
       </div>
@@ -26,18 +26,18 @@
       <!--      暂时不引入后端接口-->
       <div class="box-item ">
         <el-upload
-                action=""
-                :on-progress="initpage"
-                :before-upload="beforeJSONUpload"
+            action=""
+            :on-progress="initpage"
+            :before-upload="beforeJSONUpload"
         >
           <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
 
         </el-upload>
         <el-button type="text" id="tip" @click="dialogVisible=true">导入须知</el-button>
         <el-dialog
-                title="导入须知"
-                :visible.sync="dialogVisible"
-                width="30%">
+            title="导入须知"
+            :visible.sync="dialogVisible"
+            width="30%">
           <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories三个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
           </span>
           <span slot="footer" class="dialog-footer">
@@ -46,9 +46,9 @@
         </el-dialog>
       </div>
       <el-popover
-              ref="popover1"
-              placement="left"
-              trigger="click"
+          ref="popover1"
+          placement="left"
+          trigger="click"
       >
         <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
           <el-table-column width="100" property="source" label="source">
@@ -119,11 +119,11 @@
 
       <div class="box-item">
         <el-popover
-                width="400px"
-                class="form"
-                ref="popover2"
-                placement="left"
-                trigger="click">
+            width="400px"
+            class="form"
+            ref="popover2"
+            placement="left"
+            trigger="click">
           <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">
             <el-form-item label="id" prop="id">
               <el-input v-model="addNodeForm.id" placeholder="id"></el-input>
@@ -150,11 +150,11 @@
 
 
         <el-popover
-                width="400px"
-                class="form"
-                ref="popover3"
-                placement="left"
-                trigger="click">
+            width="400px"
+            class="form"
+            ref="popover3"
+            placement="left"
+            trigger="click">
           <el-form v-if="addEdgeVisible" :inline="true" status-icon :model="addEdgeForm" ref="addEdgeForm">
             <el-form-item label="source" prop="source" :required="true">
               <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>
@@ -186,11 +186,11 @@ export default {
     return {
       //目前存有三种模式，后续迭代将加入更多表现模式
 //1.关系图
-      option1:'',
+      option1: '',
 //2.力引导图
-      option2:'',
+      option2: '',
 //3.环形关系图
-      option3:'',
+      option3: '',
       options: [{
         value: 1,
         label: '关系图'
@@ -209,8 +209,8 @@ export default {
       input: {},
       addNodeVisible: false,
       addEdgeVisible: false,
-      savedgraph:'',
-      myChart:'',
+      savedgraph: '',
+      myChart: '',
     }
   },
 
@@ -262,221 +262,220 @@ export default {
     },
 
     initpage() {
-        $("#selector").val('关系图');
+      $("#selector").val('关系图');
 
-        let that = this
-        //初始设置为option1
-        let graph = JSON.parse(JSON.stringify(that.savedgraph))
-        graph.nodes.forEach(function (node) {
-          node.label = {
-            show: node.symbolSize >= 30
-          };
-        });
-        graph.links.forEach(function (link) {
-          if (link.name === "dot") {
-            link.lineStyle = {type: 'dotted'}
-          }
-        });
-        that.option1 = {
-          tooltip: {
-            position: 'right',
-            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
-          },
-          //图例
-          legend: [{
-            data: graph.categories.map(function (a) {
-              return a.name;
-            })
-          }],
-          animationDuration: 1500,
-          animationEasingUpdate: 'quadraticIn',
-          series: [
-            {
-              type: 'graph',
-              //不采用任何布局
-              layout: 'none',
-              //关闭悬停图例高亮
-              legendHoverLink: false,
-              //节点大小不随鼠标缩放而缩放
-              nodeScaleRatio: 0,
-              //开启鼠标缩放和漫游
-              roam: true,
-              //边两端的标记
-              edgeSymbol: ['none', 'arrow'],
-              //边两端的标记大小
-              edgeSymbolSize: 5,
-              //悬停时鼠标样式
-              cursor: 'pointer',
+      let that = this
+      //初始设置为option1
+      let graph = JSON.parse(JSON.stringify(that.savedgraph))
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize >= 30
+        };
+      });
+      graph.links.forEach(function (link) {
+        if (link.name === "dot") {
+          link.lineStyle = {type: 'dotted'}
+        }
+      });
+      that.option1 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        animationDuration: 1500,
+        animationEasingUpdate: 'quadraticIn',
+        series: [
+          {
+            type: 'graph',
+            //不采用任何布局
+            layout: 'none',
+            //关闭悬停图例高亮
+            legendHoverLink: false,
+            //节点大小不随鼠标缩放而缩放
+            nodeScaleRatio: 0,
+            //开启鼠标缩放和漫游
+            roam: true,
+            //边两端的标记
+            edgeSymbol: ['none', 'arrow'],
+            //边两端的标记大小
+            edgeSymbolSize: 5,
+            //悬停时鼠标样式
+            cursor: 'pointer',
 
-              data: graph.nodes,
-              links: graph.links,
-              categories: graph.categories,
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
 
 
-              label: {
-                position: 'right',
-                formatter: '{b}'
-              },
+            label: {
+              position: 'right',
+              formatter: '{b}'
+            },
 
+            lineStyle: {
+              color: 'source',
+              curveness: 1,
+              width: 2,
+            },
+
+            emphasis: {
+              scale: true,
+              focus: 'adjacency',
               lineStyle: {
-                color: 'source',
-                curveness: 1,
-                width: 2,
-              },
-
-              emphasis: {
-                scale: true,
-                focus: 'adjacency',
-                lineStyle: {
-                  width: 10
-                }
-              }
-            }
-          ],
-
-          toolbox: {
-            id: 'pie-chart',
-            itemSize: 15,
-            itemGap: 10,
-            right: 10,
-
-            feature: {
-              dataView: {
-                show: true,
-              },
-
-              restore: {
-                show: true,
+                width: 10
               }
             }
           }
+        ],
+
+        toolbox: {
+          id: 'pie-chart',
+          itemSize: 15,
+          itemGap: 10,
+          right: 10,
+
+          feature: {
+            dataView: {
+              show: true,
+            },
+
+            restore: {
+              show: true,
+            }
+          }
+        }
+      };
+
+
+      //预存option2
+      graph = JSON.parse(JSON.stringify(that.savedgraph))
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize >= 30
         };
+      });
+      graph.links.forEach(function (link) {
+        if (link.name === "dot") {
+          link.lineStyle = {type: 'dotted', width: '2'}
+        }
+      });
+      that.option2 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        series: [
+          {
+            //当前视角的缩放比例
+            zoom: 2,
+            //是否可拖动
+            draggable: true,
+            type: 'graph',
+            //类型为力引导图
+            layout: 'force',
 
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
 
-
-        //预存option2
-        graph = JSON.parse(JSON.stringify(that.savedgraph))
-        graph.nodes.forEach(function (node) {
-          node.label = {
-            show: node.symbolSize >= 30
-          };
-        });
-        graph.links.forEach(function (link) {
-          if (link.name === "dot") {
-            link.lineStyle = {type: 'dotted', width: '2'}
-          }
-        });
-        that.option2 = {
-          tooltip: {
-            position: 'right',
-            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
-          },
-          //图例
-          legend: [{
-            data: graph.categories.map(function (a) {
-              return a.name;
-            })
-          }],
-          series: [
-            {
-              //当前视角的缩放比例
-              zoom: 2,
-              //是否可拖动
-              draggable: true,
-              type: 'graph',
-              //类型为力引导图
-              layout: 'force',
-
-              data: graph.nodes,
-              links: graph.links,
-              categories: graph.categories,
-
-              //开启鼠标缩放和漫游
-              roam: true,
-              label: {
-                position: 'right'
-              },
-              force: {
-                //斥力
-                repulsion: 100
-              }
+            //开启鼠标缩放和漫游
+            roam: true,
+            label: {
+              position: 'right'
+            },
+            force: {
+              //斥力
+              repulsion: 100
             }
-          ]
-        };
-
-        //预存option3
-        graph = JSON.parse(JSON.stringify(that.savedgraph))
-        graph.nodes.forEach(function (node) {
-          node.label = {
-            show: node.symbolSize >= 30
-          };
-        });
-        graph.links.forEach(function (link) {
-          if (link.name === "dot") {
-            link.lineStyle = {type: 'dotted', width: '2'}
           }
-        });
-        that.option3 = {
-          tooltip: {
-            position: 'right',
-            extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
-          },
-          //图例
-          legend: [{
-            data: graph.categories.map(function (a) {
-              return a.name;
-            })
-          }],
-          animationDurationUpdate: 1500,
-          animationEasingUpdate: 'quinticInOut',
-          series: [
-            {
-              type: 'graph',
-              layout: 'circular',
-              circular: {
-                rotateLabel: true
-              },
+        ]
+      };
 
-              data: graph.nodes,
-              links: graph.links,
-              categories: graph.categories,
+      //预存option3
+      graph = JSON.parse(JSON.stringify(that.savedgraph))
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize >= 30
+        };
+      });
+      graph.links.forEach(function (link) {
+        if (link.name === "dot") {
+          link.lineStyle = {type: 'dotted', width: '2'}
+        }
+      });
+      that.option3 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series: [
+          {
+            type: 'graph',
+            layout: 'circular',
+            circular: {
+              rotateLabel: true
+            },
 
-              roam: true,
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
 
-              label: {
-                position: 'right',
-                formatter: '{b}'
-              },
+            roam: true,
+
+            label: {
+              position: 'right',
+              formatter: '{b}'
+            },
+            lineStyle: {
+              color: 'source',
+              curveness: 0.3
+            },
+            emphasis: {
+              focus: 'adjacency',
               lineStyle: {
-                color: 'source',
-                curveness: 0.3
-              },
-              emphasis: {
-                focus: 'adjacency',
-                lineStyle: {
-                  width: 10
-                }
+                width: 10
               }
             }
-          ]
-        };
+          }
+        ]
+      };
     },
 
     changeTo(value) {
-      let that=this
+      let that = this
 
-        that.myChart.clear();
-        switch (value) {
-          case 1:
-            that.myChart.setOption(that.option1);
-            return 1
-          case 2:
-            that.myChart.setOption(that.option2);
-            return 2
-          case 3:
-            that.myChart.setOption(that.option3);
-            return 3
-        }
+      that.myChart.clear();
+      switch (value) {
+        case 1:
+          that.myChart.setOption(that.option1);
+          return 1
+        case 2:
+          that.myChart.setOption(that.option2);
+          return 2
+        case 3:
+          that.myChart.setOption(that.option3);
+          return 3
+      }
 
     },
 
@@ -500,7 +499,7 @@ export default {
       return true
     },
 
-    checkjson(tmpjson){
+    checkjson(tmpjson) {
       //判断是否为符合格式的json对象
       if (!('nodes' in tmpjson)) {
         this.$message.error('内容格式错误!(无nodes属性)');
@@ -515,7 +514,7 @@ export default {
         return false
       }
 
-      if(tmpjson.links.length===0||tmpjson.nodes.length===0||tmpjson.categories.length===0){
+      if (tmpjson.links.length === 0 || tmpjson.nodes.length === 0 || tmpjson.categories.length === 0) {
         return false
       }
       //links是否都包含了source和target
@@ -556,21 +555,21 @@ export default {
     },
 
     downloadImg() {
-        let img = new Image();
-        img.src = this.myChart.getDataURL({
-          type: 'png',
-          pixelRatio: 2,
-          excludeComponents: ['toolbox']
-        })
-        let a = document.createElement('a');
-        let e = new MouseEvent('click');
-        a.download = "knowledge-graph.png";
-        a.href = img.src;
-        a.dispatchEvent(e);
+      let img = new Image();
+      img.src = this.myChart.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        excludeComponents: ['toolbox']
+      })
+      let a = document.createElement('a');
+      let e = new MouseEvent('click');
+      a.download = "knowledge-graph.png";
+      a.href = img.src;
+      a.dispatchEvent(e);
     },
 
     downloadJson() {
-      let that=this
+      let that = this
       let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(that.savedgraph));
       let downloadAnchorNode = document.createElement('a');
       downloadAnchorNode.setAttribute("href", dataStr);
@@ -580,8 +579,8 @@ export default {
       downloadAnchorNode.remove();
     },
 
-    downloadXml(){
-      let that=this
+    downloadXml() {
+      let that = this
       let js2xml = require('json2xml');
       let xml = '<?xml version="1.0" encoding="utf-8"?>' + js2xml(that.savedgraph);
       let filename = "knowledge-graph.xml";
@@ -621,125 +620,123 @@ export default {
       that.editable = true;
     },
 
-      deleteNode(row) {
-        this.savedgraph.nodes.splice(row.index, 1);
-        this.initpage();
-      },
+    deleteNode(row) {
+      this.savedgraph.nodes.splice(row.index, 1);
+      this.initpage();
+    },
 
-      deleteEdge(row) {
-        this.savedgraph.links.splice(row.index, 1);
-        this.initpage();
-      },
+    deleteEdge(row) {
+      this.savedgraph.links.splice(row.index, 1);
+      this.initpage();
+    },
 
-      addNode() {
-        let that = this;
-        this.$refs['addNodeForm'].validate((valid) => {
-          that.isValid(valid, 'node')
-        })
-      },
+    addNode() {
+      let that = this;
+      this.$refs['addNodeForm'].validate((valid) => {
+        that.isValid(valid, 'node')
+      })
+    },
 
-      isValid(valid, mode) {
-        let that = this;
-        if (valid) {
-          if (mode === 'node') {
-            const tmp = {
-              category: that.addNodeForm.category,
-              name: that.addNodeForm.name,
-              symbolSize: that.addNodeForm.symbolSize,
-              id: that.addNodeForm.id,
-              value: that.addNodeForm.value
-            };
-            that.savedgraph.nodes.push(tmp);
-            console.log(that.savedgraph.nodes);
-            that.initpage();
-            that.$refs['addNodeForm'].resetFields();
-          }
-          else if (mode === 'edge') {
-            const tmp = {
-              source: that.addEdgeForm.source,
-              target: that.addEdgeForm.target
-            }
-            that.savedgraph.links.push(tmp);
-            that.initpage();
-            that.$refs['addEdgeForm'].resetFields();
-          }
-          console.log("SUCCESS!!!!!!!!")
-        }
-      },
-
-      addEdge() {
-        let that=this;
-        console.log(this.$refs['addEdgeForm'])
-        console.log(this.addEdgeForm)
-        this.$refs['addEdgeForm'].validate((valid) => {
-          that.isValid(valid, 'edge')
-        })
-      },
-
-      cancel(mode) {
+    isValid(valid, mode) {
+      let that = this;
+      if (valid) {
         if (mode === 'node') {
-          this.$refs['addNodeForm'].resetFields();
-          this.addNodeVisible = false;
+          const tmp = {
+            category: that.addNodeForm.category,
+            name: that.addNodeForm.name,
+            symbolSize: that.addNodeForm.symbolSize,
+            id: that.addNodeForm.id,
+            value: that.addNodeForm.value
+          };
+          that.savedgraph.nodes.push(tmp);
+          console.log(that.savedgraph.nodes);
+          that.initpage();
+          that.$refs['addNodeForm'].resetFields();
+        } else if (mode === 'edge') {
+          const tmp = {
+            source: that.addEdgeForm.source,
+            target: that.addEdgeForm.target
+          }
+          that.savedgraph.links.push(tmp);
+          that.initpage();
+          that.$refs['addEdgeForm'].resetFields();
         }
-        else if (mode === 'edge') {
-          this.$refs['addEdgeForm'].resetFields();
-          this.addEdgeVisible = false;
-        }
+        console.log("SUCCESS!!!!!!!!")
       }
+    },
 
+    addEdge() {
+      let that = this;
+      console.log(this.$refs['addEdgeForm'])
+      console.log(this.addEdgeForm)
+      this.$refs['addEdgeForm'].validate((valid) => {
+        that.isValid(valid, 'edge')
+      })
+    },
+
+    cancel(mode) {
+      if (mode === 'node') {
+        this.$refs['addNodeForm'].resetFields();
+        this.addNodeVisible = false;
+      } else if (mode === 'edge') {
+        this.$refs['addEdgeForm'].resetFields();
+        this.addEdgeVisible = false;
+      }
     }
+
   }
+}
 </script>
 
 <style scoped>
-  #box {
-    display: flex;
-    width: 100%;
-  }
+#box {
+  display: flex;
+  width: 100%;
+}
 
-  #myChart {
-    width: 70%;
-    height: 80vh;
-    border: 1px solid rgba(140, 138, 138, 0.25);
-    border-radius: 10px;
-    margin-left: 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
+#myChart {
+  width: 70%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
 
-  #text-box {
-    width: 24%;
-    height: 80vh;
-    border: 1px solid rgba(140, 138, 138, 0.25);
-    border-radius: 10px;
-    margin-left: 20px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
+#text-box {
+  width: 24%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
 
-  .box-item {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-evenly;
-    text-align: center;
-    margin: 10px 0;
-  }
+.box-item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+  text-align: center;
+  margin: 10px 0;
+}
 
-  #selector-box {
-    justify-content: center;
-  }
+#selector-box {
+  justify-content: center;
+}
 
-  #selector-title {
-    text-align: center;
-    line-height: 40px;
-    margin-right: 10px;
-    overflow: visible;
-  }
+#selector-title {
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  overflow: visible;
+}
 
-  .form {
-    max-width:400px;
-    max-height:280px;
-    border:1px;
-  }
+.form {
+  max-width: 400px;
+  max-height: 280px;
+  border: 1px;
+}
 
 </style>
