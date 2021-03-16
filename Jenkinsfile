@@ -14,8 +14,7 @@ pipeline{
                 sh "npm install"
                 sh "rm -rf ./dist/*"
                 sh "npm run build"
-                sh "cd dist"
-                sh "tar -zcvf dist.tar.gz *"
+                sh "tar -zcvf dist.tar.gz ./dist"
                 echo "build success"
             }
         }
@@ -23,6 +22,8 @@ pipeline{
             steps{
                 echo "deploy packge to fronted"
                 sh "rm -rf /usr/local/fronted/*"
+                sh "cp -rf ./dist.tar.gz /usr/local/fronted"
+//                sshPublisher(publishers: [sshPublisherDesc(configName: 'kg666', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'nohup sh /usr/local/backend/start.sh', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'usr/local/backend/', remoteDirectorySDF: false, removePrefix: 'target', sourceFiles: 'target/Backend-COIN-1.0-SNAPSHOT.jar', usePty: true)], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
                 echo "deploy success"
             }
         }
