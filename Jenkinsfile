@@ -14,7 +14,7 @@ pipeline{
                 sh "npm install"
                 sh "rm -rf ./dist/*"
                 sh "npm run build"
-                sh "tar -zcvf dist.tar.gz /dist"
+                sh "tar -zcvf dist.tar.gz ./dist"
                 echo "build success"
             }
         }
