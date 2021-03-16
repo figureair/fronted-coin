@@ -14,7 +14,7 @@ pipeline{
                 sh "npm install"
                 sh "rm -rf ./dist/*"
                 sh "npm run build"
-                sh "npm serve"
+                sh "npm i -g serve"
                 sh "cd dist"
                 sh "serve -l 6666"
 //                sh "tar -zcvf dist.tar.gz ./dist"
