@@ -125,9 +125,6 @@
             placement="left"
             trigger="click">
           <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">
-            <el-form-item label="id" prop="id">
-              <el-input v-model="addNodeForm.id" placeholder="id"></el-input>
-            </el-form-item>
             <el-form-item label="name" prop="name" :required="true">
               <el-input v-model="addNodeForm.name" placeholder="name"></el-input>
             </el-form-item>
@@ -276,7 +273,7 @@ export default {
     },
 
     checkSource(rule, value, callback){
-      console.log(value)
+      // console.log(value)
       if (value === '') {
         return callback(new Error('起点不能为空'))
       }
@@ -294,7 +291,7 @@ export default {
         return callback(new Error('图形大小不能为空'));
       }
         if (isNaN(value)) {
-          console.log(value)
+          // console.log(value)
           callback(new Error('请输入数字'));
         }
         else if (value < 0) {
@@ -340,23 +337,26 @@ export default {
         that.myChart.on('click', 'series.graph', function (event) {
           console.log(event);
           that.selectedItem.length = 0;
-          let opt = that.myChart.getOption();
-          let id = event.dataIndex;
-          console.log(opt);
+          let id = event.data.index;
+
+          // console.log(opt);
           switch (event.dataType) {
             case 'node':
               that.selectedType = 'node';
-              that.selectedItem.push(opt.series[0].data[id]);
+              that.selectedItem.push(that.savedgraph.nodes[id]);
               that.selectedItem[0].index = id;
+              console.log(that.savedgraph)
               break;
             case 'edge':
               that.selectedType = 'edge';
-              that.selectedItem.push(opt.series[0].links[id]);
+              that.selectedItem.push(that.savedgraph.links[id]);
               that.selectedItem[0].index = id;
+              console.log(that.savedgraph)
               break;
             default:
               break;
           }
+          console.log(that.selectedItem)
         })
       })
     },
@@ -367,15 +367,19 @@ export default {
       let that = this
       //初始设置为option1
       let graph = JSON.parse(JSON.stringify(that.savedgraph))
+      let index = 0;
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
         };
+        node.index = index++;
       });
+      index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted'}
         }
+        link.index = index++;
       });
       that.option1 = {
         tooltip: {
@@ -455,15 +459,19 @@ export default {
 
       //预存option2
       graph = JSON.parse(JSON.stringify(that.savedgraph))
+      index = 0;
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
         };
+        node.index = index++;
       });
+      index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted', width: '2'}
         }
+        link.index = index++;
       });
       that.option2 = {
         tooltip: {
@@ -505,15 +513,19 @@ export default {
 
       //预存option3
       graph = JSON.parse(JSON.stringify(that.savedgraph))
+      index = 0;
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
         };
+        node.index = index++;
       });
+      index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted', width: '2'}
         }
+        link.index = index++;
       });
       that.option3 = {
         tooltip: {
@@ -729,13 +741,23 @@ export default {
     },
 
     deleteNode(row) {
+      console.log(row)
       this.savedgraph.nodes.splice(row.index, 1);
+      console.log(this.savedgraph.nodes)
       this.initpage();
+      this.editable = false;
+      this.selectedType = '';
+      this.selectedItem = [];
     },
 
     deleteEdge(row) {
+      console.log(row);
       this.savedgraph.links.splice(row.index, 1);
+      console.log(this.savedgraph.links)
       this.initpage();
+      this.editable = false;
+      this.selectedType = '';
+      this.selectedItem = [];
     },
 
     addNode() {
@@ -750,14 +772,13 @@ export default {
       if (valid) {
         if (mode === 'node') {
           const tmp = {
-            category: that.addNodeForm.category,
+            category: parseInt(that.addNodeForm.category),
             name: that.addNodeForm.name,
             symbolSize: that.addNodeForm.symbolSize,
-            id: that.addNodeForm.id,
+            id: (that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id - 1).toString(),
             value: that.addNodeForm.value
           };
           that.savedgraph.nodes.push(tmp);
-          console.log(that.savedgraph.nodes);
           that.initpage();
           that.$refs['addNodeForm'].resetFields();
         } else if (mode === 'edge') {
@@ -775,8 +796,6 @@ export default {
 
     addEdge() {
       let that = this;
-      console.log(this.$refs['addEdgeForm'])
-      console.log(this.addEdgeForm)
       this.$refs['addEdgeForm'].validate((valid) => {
         that.isValid(valid, 'edge')
       })
