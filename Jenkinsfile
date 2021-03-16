@@ -13,7 +13,6 @@ pipeline{
                 echo "build start"
                 sh "npm install"
                 sh "npm run build"
-                sh "rm -rf ./dist/*"
                 sh "tar -zcvf dist.tar.gz ./dist"
                 sh "mv dist.tar.gz ./dist"
                 echo "build success"
