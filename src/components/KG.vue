@@ -179,154 +179,40 @@ import $ from 'jquery'
 
 const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/les-miserables.json';
 
-//目前存有三种模式，后续迭代将加入更多表现模式
+
+export default {
+  name: "KG",
+  data() {
+    return {
+      //目前存有三种模式，后续迭代将加入更多表现模式
 //1.关系图
-let option1;
+      option1:'',
 //2.力引导图
-let option2;
+      option2:'',
 //3.环形关系图
-let option3;
-
-
-  export default {
-    name: "KG",
-    data() {
-      let that = this;
-      const checkName = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('节点名称不能为空'));
-        }
-        setTimeout(() => {
-          if (that.savedgraph.nodes.find(function(element) {
-            return element.name === value;
-          })) {
-            callback(new Error('存在相同名称的节点'))
-          }
-          else {
-            callback();
-          }
-        }, 1000);
-      };
-
-      const checkSymbolSize = (rule, value, callback) => {
-        if (value === '') {
-          return callback(new Error('图形大小不能为空'));
-        }
-        setTimeout(() => {
-          if (isNaN(value)) {
-            console.log(value)
-            callback(new Error('请输入数字'));
-          }
-          else if (value < 0) {
-            callback(new Error('图形大小不能为负'))
-          } else {
-            callback()
-          }
-        }, 1000)
-      };
-
-      const checkCategory = (rule, value, callback) => {
-        let that = this;
-        if (value === '') {
-          return callback(new Error('类型不能为空'));
-        }
-        setTimeout(() => {
-          if (isNaN(value)) {
-            callback(new Error('请输入数字'))
-          }
-          else if (value < 0) {
-            callback(new Error('类型不能为负数'))
-          }
-          else if (value >= that.savedgraph.categories.length) {
-            callback(new Error('输入类型不在已有类型中'))
-          }
-          else {
-            callback()
-          }
-        })
-      };
-
-      const checkSource = (rule, value, callback) => {
-        console.log(value)
-        if (value === '') {
-          return callback(new Error('起点不能为空'))
-        }
-        setTimeout(() => {
-          callback()
-        }, 1000)
-      };
-
-      const checkTarget = (rule, value, callback) => {
-        console.log(value)
-        if (value === '') {
-          return callback(new Error('终点不能为空'))
-        }
-        setTimeout(() => {
-          callback()
-        }, 1000)
-      };
-
-      return {
-        options: [{
-          value: 1,
-          label: '关系图'
-        }, {
-          value: 2,
-          label: '力引导图'
-        }, {
-          value: 3,
-          label: '环形关系图'
-        }],
-        value: '',
-        dialogVisible: false,
-        editable: false,
-        selectedType: '',
-        selectedItem: [],
-        input: {},
-        addNodeVisible: false,
-        addEdgeVisible: false,
-        savedgraph:'',
-        myChart:'',
-
-        addEdgeForm: {
-          source: '',
-          target: ''
-        },
-
-        addNodeForm: {
-          name: '',
-          symbolSize: '',
-          category: ''
-        },
-
-
-        rulesN: {
-          name: [
-            { validator: checkName, trigger: 'blur' }
-          ],
-
-          symbolSize: [
-            { validator: checkSymbolSize, trigger: 'blur' }
-          ],
-
-          category: [
-            { validator: checkCategory, trigger: 'blur' }
-          ]
-        },
-
-        rulesE: {
-          source: [
-            { validator: checkSource, trigger: 'blur' }
-          ],
-
-          target: [
-            { validator: checkTarget, trigger: 'blur' }
-          ]
-        },
-      }
-    },
-
-
+      option3:'',
+      options: [{
+        value: 1,
+        label: '关系图'
+      }, {
+        value: 2,
+        label: '力引导图'
+      }, {
+        value: 3,
+        label: '环形关系图'
+      }],
+      value: '',
+      dialogVisible: false,
+      editable: false,
+      selectedType: '',
+      selectedItem: [],
+      input: {},
+      addNodeVisible: false,
+      addEdgeVisible: false,
+      savedgraph:'',
+      myChart:'',
+    }
+  },
 
   mounted() {
     this.initdata()
@@ -347,6 +233,7 @@ let option3;
           //保存原始数据
           that.savedgraph = JSON.parse(JSON.stringify(graph))
           that.initpage()
+          that.myChart.setOption(that.option1);
         });
 
 
@@ -390,7 +277,7 @@ let option3;
             link.lineStyle = {type: 'dotted'}
           }
         });
-        option1 = {
+        that.option1 = {
           tooltip: {
             position: 'right',
             extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
@@ -464,7 +351,7 @@ let option3;
             }
           }
         };
-        that.myChart.setOption(option1);
+
 
 
         //预存option2
@@ -479,7 +366,7 @@ let option3;
             link.lineStyle = {type: 'dotted', width: '2'}
           }
         });
-        option2 = {
+        that.option2 = {
           tooltip: {
             position: 'right',
             extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
@@ -529,7 +416,7 @@ let option3;
             link.lineStyle = {type: 'dotted', width: '2'}
           }
         });
-        option3 = {
+        that.option3 = {
           tooltip: {
             position: 'right',
             extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
@@ -577,20 +464,20 @@ let option3;
 
     changeTo(value) {
       let that=this
-      $(document).ready(function () {
+
         that.myChart.clear();
         switch (value) {
           case 1:
-            that.myChart.setOption(option1);
-            break
+            that.myChart.setOption(that.option1);
+            return 1
           case 2:
-            that.myChart.setOption(option2);
-            break
+            that.myChart.setOption(that.option2);
+            return 2
           case 3:
-            that.myChart.setOption(option3);
-            break
+            that.myChart.setOption(that.option3);
+            return 3
         }
-      })
+
     },
 
     beforeJSONUpload(file) {
@@ -669,7 +556,6 @@ let option3;
     },
 
     downloadImg() {
-
         let img = new Image();
         img.src = this.myChart.getDataURL({
           type: 'png',
@@ -681,7 +567,6 @@ let option3;
         a.download = "knowledge-graph.png";
         a.href = img.src;
         a.dispatchEvent(e);
-
     },
 
     downloadJson() {
