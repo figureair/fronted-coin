@@ -183,6 +183,80 @@ const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/e
 export default {
   name: "KG",
   data() {
+    let that = this;
+    const checkName = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('节点名称不能为空'));
+      }
+      setTimeout(() => {
+        if (that.savedgraph.nodes.find(function(element) {
+          return element.name === value;
+        })) {
+          callback(new Error('存在相同名称的节点'))
+        }
+        else {
+          callback();
+        }
+      }, 1000);
+    };
+
+    const checkSymbolSize = (rule, value, callback) => {
+      if (value === '') {
+        return callback(new Error('图形大小不能为空'));
+      }
+      setTimeout(() => {
+        if (isNaN(value)) {
+          console.log(value)
+          callback(new Error('请输入数字'));
+        }
+        else if (value < 0) {
+          callback(new Error('图形大小不能为负'))
+        } else {
+          callback()
+        }
+      }, 1000)
+    };
+
+    const checkCategory = (rule, value, callback) => {
+      let that = this;
+      if (value === '') {
+        return callback(new Error('类型不能为空'));
+      }
+      setTimeout(() => {
+        if (isNaN(value)) {
+          callback(new Error('请输入数字'))
+        }
+        else if (value < 0) {
+          callback(new Error('类型不能为负数'))
+        }
+        else if (value >= that.savedgraph.categories.length) {
+          callback(new Error('输入类型不在已有类型中'))
+        }
+        else {
+          callback()
+        }
+      })
+    };
+
+    const checkSource = (rule, value, callback) => {
+      console.log(value)
+      if (value === '') {
+        return callback(new Error('起点不能为空'))
+      }
+      setTimeout(() => {
+        callback()
+      }, 1000)
+    };
+
+    const checkTarget = (rule, value, callback) => {
+      console.log(value)
+      if (value === '') {
+        return callback(new Error('终点不能为空'))
+      }
+      setTimeout(() => {
+        callback()
+      }, 1000)
+    };
     return {
       //目前存有三种模式，后续迭代将加入更多表现模式
 //1.关系图
@@ -211,6 +285,42 @@ export default {
       addEdgeVisible: false,
       savedgraph: '',
       myChart: '',
+
+      addEdgeForm: {
+        source: '',
+        target: ''
+      },
+
+      addNodeForm: {
+        name: '',
+        symbolSize: '',
+        category: ''
+      },
+
+
+      rulesN: {
+        name: [
+          { validator: checkName, trigger: 'blur' }
+        ],
+
+        symbolSize: [
+          { validator: checkSymbolSize, trigger: 'blur' }
+        ],
+
+        category: [
+          { validator: checkCategory, trigger: 'blur' }
+        ]
+      },
+
+      rulesE: {
+        source: [
+          { validator: checkSource, trigger: 'blur' }
+        ],
+
+        target: [
+          { validator: checkTarget, trigger: 'blur' }
+        ]
+      },
     }
   },
 
