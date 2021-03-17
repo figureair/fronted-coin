@@ -899,7 +899,7 @@ export default {
             category: parseInt(that.addNodeForm.category),
             name: that.addNodeForm.name,
             symbolSize: that.addNodeForm.symbolSize,
-            id: (that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id - 1).toString(),
+            id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id+1,
             value: that.addNodeForm.value,
             x: Math.random()*100,
             y: Math.random()*100
