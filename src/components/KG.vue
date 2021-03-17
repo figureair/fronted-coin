@@ -240,29 +240,6 @@ export default {
         category: ''
       },
 
-      editRulesN: {
-        name: [
-          { required: true, validator: this.checkEditName, trigger: 'blur' }
-        ],
-
-        symbolSize: [
-          { required: true, validator: this.checkSymbolSize, trigger: 'blur' }
-        ],
-
-        category: [
-          { required: true, validator: this.checkCategory, trigger: 'blur' }
-        ],
-      },
-
-      editRulesE: {
-        source: [
-          { required: true, trigger: 'blur', validator: this.checkEditSource }
-        ],
-
-        target: [
-          { required: true, trigger: 'blur', validator: this.checkEditTarget }
-        ]
-      },
 
       rulesN: {
         name: [
@@ -316,6 +293,7 @@ export default {
     },
 
     checkSource(rule, value, callback){
+      // console.log(value)
       if (value === '') {
         return callback(new Error('起点不能为空'))
       }
