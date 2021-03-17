@@ -256,11 +256,15 @@ describe('KG.vue', () => {
             initpage:jest.fn(function() {
                 return true;
             }),
-            selectedItem:[],
+            checked:true,
+            selectedItem:[{}],
+            editable:true,
             input:{index:0,source:1,target:2,name:'123',value:1,symbolSize:30},
             savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
         })
         const spyFn = jest.spyOn(wrapper.vm, "checkValidEdit");
+        wrapper.vm.showAllInfo()
+        expect(wrapper.vm.editable).toBe(false)
         wrapper.vm.checkValidEdit(true,'edge')
         wrapper.vm.checkValidEdit(true,'node')
         expect(spyFn).toHaveBeenCalled()

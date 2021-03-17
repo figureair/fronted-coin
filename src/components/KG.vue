@@ -135,6 +135,7 @@
       </el-popover>
       <div class="box-item">
         <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
+        <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
       </div>
 
       <div class="box-item">
@@ -201,6 +202,7 @@ export default {
   name: "KG",
   data() {
     return {
+      checked:false,
       //目前存有三种模式，后续迭代将加入更多表现模式
       // 1.关系图
       option1: '',
@@ -297,7 +299,7 @@ export default {
   methods: {
     showAllInfo(){
       this.editable=false
-      this.$message.info(JSON.stringify(this.selectedItem[0]))
+      if(this.checked){this.$message.info(JSON.stringify(this.selectedItem[0]))}
     },
 
     checkCategory (rule, value, callback) {
@@ -1041,8 +1043,8 @@ export default {
   border: 1px;
 }
 
-.el-form-item {
-  margin-bottom: 0;
+#checkbox1 {
+  margin-top: 10px;
 }
 
 </style>

@@ -39,6 +39,7 @@ exports[`KG.vue 快照测试，渲染正确UI 1`] = `
     </el-popover-stub>
     <div class="box-item">
       <el-button-stub type="primary" icon="" nativetype="button" plain="true">查 看 数 据</el-button-stub>
+      <el-checkbox-stub id="checkbox1">更多信息</el-checkbox-stub>
     </div>
     <div class="box-item">
       <el-popover-stub transformorigin="true" placement="left" boundariespadding="5" offset="0" visiblearrow="true" arrowoffset="0" appendtobody="true" popperoptions="[object Object]" trigger="click" opendelay="0" closedelay="200" width="400px" transition="fade-in-linear" tabindex="0" class="form">
