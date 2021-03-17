@@ -50,71 +50,91 @@
           placement="left"
           trigger="click"
       >
-        <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
-          <el-table-column width="100" property="source" label="source">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.source }}</div>
-              <el-input v-else v-model="scope.row.source"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="100" property="target" label="target">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.target }}</div>
-              <el-input v-else v-model="scope.row.target"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="250" label="option">
-            <template slot-scope="scope">
-              <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
-              <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
-              <el-button v-if="editable" @click="editable=false">取消</el-button>
-              <el-button type="danger" @click="deleteEdge(scope.row, 'edge')">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
-          <el-table-column width="100" property="id" label="id">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.id }}</div>
-              <el-input v-else v-model="scope.row.id"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="150" property="name" label="name">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.name }}</div>
-              <el-input v-else v-model="scope.row.name"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="100" property="category" label="category">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.category }}</div>
-              <el-input v-else v-model="scope.row.category"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="200" property="symbolSize" label="symbolSize">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.symbolSize }}</div>
-              <el-input v-else v-model="scope.row.symbolSize"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="150" property="value" label="value">
-            <template slot-scope="scope">
-              <div v-if="!editable">{{ scope.row.value }}</div>
-              <el-input v-else v-model="scope.row.symbolSize"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column width="250" label="option">
-            <template slot-scope="scope">
-              <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
-              <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
-              <el-button v-if="editable" @click="editable=false">取消</el-button>
-              <el-button type="danger" @click="deleteNode(scope.row)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-form ref="input" :model="input" :rules="editRulesE" status-icon>
+          <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
+            <el-table-column width="100" property="source" label="source">
+              <template slot-scope="scope">
+                <div v-if="!editable">{{ scope.row.source }}</div>
+                <el-form-item v-else prop="source">
+                  <el-input v-model="input.source"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="100" property="target" label="target">
+              <template slot-scope="scope">
+                <div v-if="!editable">{{ scope.row.target }}</div>
+                <el-form-item v-else prop="source">
+                  <el-input v-model="input.target"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="250" label="option">
+              <template slot-scope="scope">
+                <el-form-item>
+                  <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
+                  <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
+                  <el-button v-if="editable" @click="editable=false">取消</el-button>
+                  <el-button type="danger" @click="deleteEdge(scope.row, 'edge')">删除</el-button>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form>
+
+        <el-form ref="input" :model="input" :rules="editRulesN" status-icon>
+          <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
+            <el-table-column width="100" property="id" label="id">
+              <template slot-scope="scope">
+                <div>{{ scope.row.id }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column width="150" property="name" label="name">
+              <template slot-scope="scope">
+                <div v-if="!editable">{{ scope.row.name }}</div>
+                <el-form-item v-else prop="name">
+                  <el-input v-model="input.name"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="100" property="category" label="category">
+              <template slot-scope="scope">
+                <div v-if="!editable">{{ scope.row.category }}</div>
+                <el-form-item v-else prop="category">
+                  <el-input v-model="input.category"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="200" property="symbolSize" label="symbolSize">
+              <template slot-scope="scope">
+                <div v-if="!editable">{{ scope.row.symbolSize }}</div>
+                <el-form-item v-else prop="symbolSize">
+                  <el-input v-model="input.symbolSize"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="150" property="value" label="value">
+              <template slot-scope="scope">
+                <div v-if="!editable">{{ scope.row.value }}</div>
+                <el-form-item v-else prop="value">
+                  <el-input v-model="input.value"></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column width="250" label="option">
+              <template slot-scope="scope">
+                <el-form-item>
+                  <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
+                  <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
+                  <el-button v-if="editable" @click="editable=false">取消</el-button>
+                  <el-button type="danger" @click="deleteNode(scope.row)">删除</el-button>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form>
       </el-popover>
       <div class="box-item">
-        <el-button type="primary" plain v-popover:popover1>查 看 数 据</el-button>
+        <el-button @click="editable=false" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
       </div>
 
       <div class="box-item">
@@ -220,6 +240,29 @@ export default {
         category: ''
       },
 
+      editRulesN: {
+        name: [
+          { required: true, validator: this.checkEditName, trigger: 'blur' }
+        ],
+
+        symbolSize: [
+          { required: true, validator: this.checkSymbolSize, trigger: 'blur' }
+        ],
+
+        category: [
+          { required: true, validator: this.checkCategory, trigger: 'blur' }
+        ],
+      },
+
+      editRulesE: {
+        source: [
+          { required: true, trigger: 'blur', validator: this.checkEditSource }
+        ],
+
+        target: [
+          { required: true, trigger: 'blur', validator: this.checkEditTarget }
+        ]
+      },
 
       rulesN: {
         name: [
@@ -273,7 +316,6 @@ export default {
     },
 
     checkSource(rule, value, callback){
-      // console.log(value)
       if (value === '') {
         return callback(new Error('起点不能为空'))
       }
@@ -302,19 +344,64 @@ export default {
     },
 
     checkName (rule, value, callback) {
-      let that=this
+      let that = this;
       if (value === '') {
         callback(new Error('节点名称不能为空'));
       }
+      if (that.savedgraph.nodes.find(function(element) {
+        return element.name === value;
+      })) {
+        callback(new Error('存在相同名称的节点'))
+      }
+      else {
+        callback();
+      }
+    },
 
-        if (that.savedgraph.nodes.find(function(element) {
-          return element.name === value;
+    checkEditSource (rule, value, callback) {
+        if (value === '') {
+          return callback(new Error('起点不能为空'))
+        }
+        let that = this;
+        if (!that.savedgraph.nodes.find(function (element) {
+          return element.id === value;
         })) {
-          callback(new Error('存在相同名称的节点'))
+          callback(new Error('不存在与该起始节点相同id的节点'))
         }
         else {
-          callback();
+          callback()
         }
+    },
+
+    checkEditTarget (rule, value, callback) {
+      if (value === '') {
+        return callback(new Error('终点不能为空'))
+      }
+      let that = this;
+      if (!that.savedgraph.nodes.find(function (element) {
+        return element.id === value;
+      })) {
+        callback(new Error('不存在与该终点节点相同id的节点'))
+      }
+      else {
+        callback()
+      }
+    },
+
+    checkEditName (rule, value, callback) {
+      if (value === '') {
+        return callback(new Error('名称不能为空'))
+      }
+      let that = this;
+      let id = that.savedgraph.nodes.findIndex(function (element) {
+        return element.name === value;
+      })
+      if (id !== -1 && id !== that.selectedItem[0].index) {
+        callback(new Error('存在相同名称的节点'))
+      }
+      else {
+        callback()
+      }
     },
 
     initdata() {
@@ -339,6 +426,7 @@ export default {
           that.selectedItem.length = 0;
           let id = event.data.index;
 
+
           // console.log(opt);
           switch (event.dataType) {
             case 'node':
@@ -356,7 +444,6 @@ export default {
             default:
               break;
           }
-          console.log(that.selectedItem)
         })
       })
     },
@@ -715,35 +802,72 @@ export default {
     },
 
     handleEdit(row, mode) {
-      console.log(row, mode);
-      console.log(this.selectedItem);
+      let that = this;
+      console.log(that.$refs['input'])
+      if (mode === 'edge') {
+        that.$refs['input'].validate((valid) => {
+          that.checkValidEdit(valid, mode)
+        })
+      }
+      else if (mode === 'node') {
+        that.$refs['input'].validate((valid) => {
+          that.checkValidEdit(valid, mode)
+        })
+      }
       this.editable = false;
+    },
+
+    checkValidEdit(valid, mode) {
+      let that = this;
+      if (valid) {
+        that.selectedItem.length = 0;
+        if (mode === 'edge') {
+          console.log("??!?>")
+          const tmp = that.savedgraph.links[that.input.index];
+          tmp.source = that.input.source;
+          tmp.target = that.input.target;
+          that.initpage()
+          that.selectedItem.push(that.savedgraph.links[that.input.index]);
+        }
+        else if (mode === 'node') {
+          const tmp = that.savedgraph.nodes[that.input.index];
+          tmp.name = that.input.name;
+          tmp.value = that.input.value;
+          tmp.symbolSize = that.input.symbolSize;
+          tmp.category = parseInt(that.input.category);
+          that.initpage();
+          that.selectedItem.push(that.savedgraph.nodes[that.input.index]);
+        }
+      }
     },
 
     startEdit(row, mode) {
       let that = this;
       that.input = {};
-      console.log(row, mode);
-      console.log(this.selectedItem);
 
-      // if (mode === 'node') {
-      //   that.input.id = row.id;
-      //   that.input.name = row.name;
-      //   that.input.category = row.category;
-      //   that.input.symbolSize = row.symbolSize;
-      //   that.input.value = row.value;
-      // }
-      // else if (mode === 'edge') {
-      //   that.input.source = row.source;
-      //   that.input.target = row.target;
-      // }
+      if (mode === 'node') {
+        that.input = {
+          index: row.index,
+          id: row.id,
+          name: row.name,
+          category: row.category,
+          symbolSize: row.symbolSize,
+          value: row.value
+        }
+
+      }
+      else if (mode === 'edge') {
+        that.input = {
+          index: row.index,
+          source: row.source,
+          target: row.target
+        }
+      }
       that.editable = true;
     },
 
     deleteNode(row) {
-      console.log(row)
       this.savedgraph.nodes.splice(row.index, 1);
-      console.log(this.savedgraph.nodes)
       this.initpage();
       this.editable = false;
       this.selectedType = '';
@@ -777,8 +901,8 @@ export default {
             symbolSize: that.addNodeForm.symbolSize,
             id: (that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id - 1).toString(),
             value: that.addNodeForm.value,
-            x:Math.random()*100,
-            y:Math.random()*100
+            x: Math.random()*100,
+            y: Math.random()*100
           };
           that.savedgraph.nodes.push(tmp);
           that.initpage();
@@ -875,6 +999,10 @@ export default {
   max-width: 400px;
   max-height: 280px;
   border: 1px;
+}
+
+.el-form-item {
+  margin-bottom: 0;
 }
 
 </style>
