@@ -134,7 +134,7 @@
         </el-form>
       </el-popover>
       <div class="box-item">
-        <el-button @click="editable=false" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
+        <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
       </div>
 
       <div class="box-item">
@@ -295,6 +295,11 @@ export default {
   },
 
   methods: {
+    showAllInfo(){
+      this.editable=false
+      this.$message.info(JSON.stringify(this.selectedItem[0]))
+    },
+
     checkCategory (rule, value, callback) {
       let that = this;
       if (value === '') {
