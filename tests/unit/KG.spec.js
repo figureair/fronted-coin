@@ -268,6 +268,7 @@ describe('KG.vue', () => {
         wrapper.vm.checkValidEdit(true,'edge')
         wrapper.vm.checkValidEdit(true,'node')
         expect(spyFn).toHaveBeenCalled()
+
         wrapper.destroy()
     })
 
