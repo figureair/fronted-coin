@@ -222,7 +222,8 @@ describe('KG.vue', () => {
             return true;
         })
         wrapper.setData({
-            savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+            selectedItem:[{index:1}],
+            savedgraph: JSON.parse('{"nodes":[{"id":1,"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
         })
         wrapper.vm.checkName('','当事人',mockFn)
         wrapper.vm.checkName('','',mockFn)
@@ -237,14 +238,42 @@ describe('KG.vue', () => {
         wrapper.vm.checkCategory('',-1,mockFn)
         wrapper.vm.checkCategory('',10,mockFn)
         wrapper.vm.checkCategory('',0,mockFn)
+        wrapper.vm.checkEditSource('','',mockFn)
+        wrapper.vm.checkEditSource('',10,mockFn)
+        wrapper.vm.checkEditSource('',1,mockFn)
+        wrapper.vm.checkEditTarget('','',mockFn)
+        wrapper.vm.checkEditTarget('',10,mockFn)
+        wrapper.vm.checkEditTarget('',1,mockFn)
+        wrapper.vm.checkEditName('','',mockFn)
+        wrapper.vm.checkEditName('','当事人',mockFn)
+        wrapper.vm.checkEditName('','123',mockFn)
         wrapper.destroy()
     })
 
-    it("修改节点", () => {
-
+    it("修改节点，修改边", () => {
+        const wrapper = mount(KG, {localVue})
+        wrapper.setData({
+            initpage:jest.fn(function() {
+                return true;
+            }),
+            selectedItem:[],
+            input:{index:0,source:1,target:2,name:'123',value:1,symbolSize:30},
+            savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}')
+        })
+        const spyFn = jest.spyOn(wrapper.vm, "checkValidEdit");
+        wrapper.vm.checkValidEdit(true,'edge')
+        wrapper.vm.checkValidEdit(true,'node')
+        expect(spyFn).toHaveBeenCalled()
+        wrapper.destroy()
     })
 
-    it("修改边", () => {
+    it("修改时传递参数", () => {
+        const wrapper = mount(KG, {localVue})
+        wrapper.vm.startEdit({index:0,source:1,target:2},'edge')
+        expect(wrapper.vm.input).toEqual({index:0,source:1,target:2})
+        wrapper.vm.startEdit({index:0,id:1,category:1,name:'123',value:1,symbolSize:30},'node')
+        expect(wrapper.vm.input).toEqual({index:0,id:1,category:1,name:'123',value:1,symbolSize:30})
 
+        wrapper.destroy()
     })
 })

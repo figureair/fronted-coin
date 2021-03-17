@@ -30,8 +30,12 @@ exports[`KG.vue 快照测试，渲染正确UI 1`] = `
         </span> <span class="dialog-footer"><el-button-stub type="primary" icon="" nativetype="button" id="tipclose">确 定</el-button-stub></span></el-dialog-stub>
     </div>
     <el-popover-stub transformorigin="true" placement="left" boundariespadding="5" offset="0" visiblearrow="true" arrowoffset="0" appendtobody="true" popperoptions="[object Object]" trigger="click" opendelay="0" closedelay="200" transition="fade-in-linear" tabindex="0">
-      <!---->
-      <!---->
+      <el-form-stub model="[object Object]" rules="[object Object]" labelsuffix="" statusicon="true" showmessage="true" validateonrulechange="true">
+        <!---->
+      </el-form-stub>
+      <el-form-stub model="[object Object]" rules="[object Object]" labelsuffix="" statusicon="true" showmessage="true" validateonrulechange="true">
+        <!---->
+      </el-form-stub>
     </el-popover-stub>
     <div class="box-item">
       <el-button-stub type="primary" icon="" nativetype="button" plain="true">查 看 数 据</el-button-stub>
