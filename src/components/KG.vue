@@ -54,13 +54,13 @@
           <el-table-column width="100" property="source" label="source">
             <template slot-scope="scope">
               <div v-if="!editable">{{ scope.row.source }}</div>
-              <el-input v-else v-model="scope.row.source"></el-input>
+              <el-input v-else v-model="input.source"></el-input>
             </template>
           </el-table-column>
           <el-table-column width="100" property="target" label="target">
             <template slot-scope="scope">
               <div v-if="!editable">{{ scope.row.target }}</div>
-              <el-input v-else v-model="scope.row.target"></el-input>
+              <el-input v-else v-model="input.target"></el-input>
             </template>
           </el-table-column>
           <el-table-column width="250" label="option">
@@ -726,17 +726,17 @@ export default {
       console.log(row, mode);
       console.log(this.selectedItem);
 
-      // if (mode === 'node') {
-      //   that.input.id = row.id;
-      //   that.input.name = row.name;
-      //   that.input.category = row.category;
-      //   that.input.symbolSize = row.symbolSize;
-      //   that.input.value = row.value;
-      // }
-      // else if (mode === 'edge') {
-      //   that.input.source = row.source;
-      //   that.input.target = row.target;
-      // }
+      if (mode === 'node') {
+        that.input.id = row.id;
+        that.input.name = row.name;
+        that.input.category = row.category;
+        that.input.symbolSize = row.symbolSize;
+        that.input.value = row.value;
+      }
+      else if (mode === 'edge') {
+        that.input.source = row.source;
+        that.input.target = row.target;
+      }
       that.editable = true;
     },
 

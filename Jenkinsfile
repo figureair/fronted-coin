@@ -15,6 +15,8 @@ pipeline{
                 sh "npm run build"
                 sh "tar -zcvf dist.tar.gz ./dist"
                 sh "mv dist.tar.gz ./dist"
+                sh "tar -zcvf report.tar.gz ./coverage/lcov-report"
+                sh "mv report.tar.gz ./coverage"
                 echo "build success"
             }
         }
