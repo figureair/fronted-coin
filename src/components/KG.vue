@@ -471,7 +471,8 @@ export default {
       that.option1 = {
         tooltip: {
           position: 'right',
-          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+          formatter: '{b}'
         },
         //图例
         legend: [{
@@ -483,6 +484,16 @@ export default {
         animationEasingUpdate: 'quadraticIn',
         series: [
           {
+            selectedMode:'single',
+            select: {
+              itemStyle: {
+                borderWidth: 10
+              },
+              lineStyle: {
+                width: 5,
+                color: "rgba(0, 0, 0, 1)"
+              }
+            },
             type: 'graph',
             //不采用任何布局
             layout: 'none',
@@ -563,7 +574,8 @@ export default {
       that.option2 = {
         tooltip: {
           position: 'right',
-          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+          formatter: '{b}'
         },
         //图例
         legend: [{
@@ -573,6 +585,17 @@ export default {
         }],
         series: [
           {
+            selectedMode:'single',
+            select: {
+              itemStyle: {
+                borderWidth: 10
+              },
+              lineStyle: {
+                width: 5,
+                color: "rgba(0, 0, 0, 1)"
+              }
+            },
+
             //当前视角的缩放比例
             zoom: 2,
             //是否可拖动
@@ -617,7 +640,8 @@ export default {
       that.option3 = {
         tooltip: {
           position: 'right',
-          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)'
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+          formatter: '{b}'
         },
         //图例
         legend: [{
@@ -629,6 +653,17 @@ export default {
         animationEasingUpdate: 'quinticInOut',
         series: [
           {
+            selectedMode:'single',
+            select: {
+              itemStyle: {
+                borderWidth: 10
+              },
+              lineStyle: {
+                width: 5,
+                color: "rgba(0, 0, 0, 1)"
+              }
+            },
+
             type: 'graph',
             layout: 'circular',
             circular: {
@@ -901,8 +936,8 @@ export default {
             symbolSize: that.addNodeForm.symbolSize,
             id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id+1,
             value: that.addNodeForm.value,
-            x: Math.random()*100,
-            y: Math.random()*100
+            x: Math.random()*1000,
+            y: Math.random()*1000
           };
           that.savedgraph.nodes.push(tmp);
           that.initpage();
