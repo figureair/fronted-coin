@@ -182,27 +182,6 @@ describe('KG.vue', () => {
         wrapper.destroy()
     })
 
-    it("增加节点", () => {
-        // const wrapper = mount(KG, {localVue})
-        //
-        // const spyFn = jest.spyOn(wrapper.vm, "addNode");
-        // wrapper.vm.$refs['addNodeForm'].validate=function (){
-        //     return true
-        // }
-        // wrapper.vm.addNode()
-        // expect(spyFn).toHaveBeenCalled()
-        // // echarts.dispose(tmpdom)
-        // wrapper.destroy()
-    })
-
-    it("修改节点", () => {
-
-    })
-
-    it("增加边", () => {
-
-    })
-
     it("删除边", () => {
         const wrapper = mount(KG, {localVue})
         wrapper.setData({
@@ -218,12 +197,23 @@ describe('KG.vue', () => {
 
     })
 
-    it("修改边", () => {
-
-    })
-
-    it("isValid测试", () => {
-
+    it("增加节点，增加边", () => {
+        const wrapper = mount(KG, {localVue})
+        wrapper.setData({
+            initpage:jest.fn(function() {
+                return true;
+            }),
+            cleanField:jest.fn(function() {
+                return true;
+            }),
+            savedgraph: JSON.parse('{"nodes":[{"symbolSize": 40,"name": "当事人","category": 0,"x":"1","y":"2"},{"symbolSize": 40,"name": "123","category": 0,"x":"2","y":"1"}],"links":[{"name":"dot","source": "0","target": "1"}],"categories":[{"name": "Person"}]}'),
+            addNodeForm:{category:1,name:"123",symbolSize:50,id:3,value:"1",target:1,source:2}
+        })
+        wrapper.vm.isValid(true,'node')
+        wrapper.vm.isValid(true,'edge')
+        wrapper.vm.cancel('edge')
+        wrapper.vm.cancel('node')
+        wrapper.destroy()
     })
 
     it("校验方法测试", () => {
@@ -248,5 +238,13 @@ describe('KG.vue', () => {
         wrapper.vm.checkCategory('',10,mockFn)
         wrapper.vm.checkCategory('',0,mockFn)
         wrapper.destroy()
+    })
+
+    it("修改节点", () => {
+
+    })
+
+    it("修改边", () => {
+
     })
 })

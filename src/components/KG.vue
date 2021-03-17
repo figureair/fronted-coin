@@ -776,11 +776,13 @@ export default {
             name: that.addNodeForm.name,
             symbolSize: that.addNodeForm.symbolSize,
             id: (that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id - 1).toString(),
-            value: that.addNodeForm.value
+            value: that.addNodeForm.value,
+            x:Math.random()*100,
+            y:Math.random()*100
           };
           that.savedgraph.nodes.push(tmp);
           that.initpage();
-          that.$refs['addNodeForm'].resetFields();
+          that.cleanField(mode)
         } else if (mode === 'edge') {
           const tmp = {
             source: that.addEdgeForm.source,
@@ -788,7 +790,7 @@ export default {
           }
           that.savedgraph.links.push(tmp);
           that.initpage();
-          that.$refs['addEdgeForm'].resetFields();
+          that.cleanField(mode)
         }
         console.log("SUCCESS!!!!!!!!")
       }
@@ -803,11 +805,20 @@ export default {
 
     cancel(mode) {
       if (mode === 'node') {
-        this.$refs['addNodeForm'].resetFields();
+        this.cleanField(mode)
         this.addNodeVisible = false;
       } else if (mode === 'edge') {
-        this.$refs['addEdgeForm'].resetFields();
+        this.cleanField(mode)
         this.addEdgeVisible = false;
+      }
+    },
+
+    cleanField(mode){
+      if(mode==='node') {
+        this.$refs['addNodeForm'].resetFields();
+      }
+      else{
+        this.$refs['addEdgeForm'].resetFields();
       }
     }
 
