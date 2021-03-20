@@ -1,24 +1,5 @@
 # fronted-coin
 
-## Project setup
-```
-npm install
-```
+前端
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+迭代一视频在文档仓库Iteration_1中，或者访问https://www.bilibili.com/video/BV1Xv411b7he
