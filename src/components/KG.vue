@@ -187,6 +187,11 @@
         </el-popover>
         <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>
       </div>
+
+      <div class="box-item">
+      <el-checkbox v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
+        <el-button type="primary" plain @click="chexiao">撤销</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -195,13 +200,15 @@
 <script>
 import $ from 'jquery'
 
-const ROOT_PATH = 'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/les-miserables.json';
+const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
 
 
 export default {
   name: "KG",
   data() {
     return {
+      previouschangeLayout:[],
+      changeLayout:false,
       checked:false,
       //目前存有三种模式，后续迭代将加入更多表现模式
       // 1.关系图
@@ -510,6 +517,7 @@ export default {
             nodeScaleRatio: 0,
             //开启鼠标缩放和漫游
             roam: true,
+            draggable:false,
             //边两端的标记
             edgeSymbol: ['none', 'arrow'],
             //边两端的标记大小
@@ -703,6 +711,138 @@ export default {
 
       that.changeOption(that.option1)
 
+    },
+
+    chexiao(){
+
+      let len=this.previouschangeLayout.length
+      if(len>0) {
+        let dataIndex = this.previouschangeLayout[len - 1][0]
+        let position = this.previouschangeLayout[len - 1][1]
+
+        this.option1.series[0].data[dataIndex].x = position[0];
+        this.option1.series[0].data[dataIndex].y = position[1];
+        this.myChart.setOption(this.option1);
+        this.updatePosition()
+        this.previouschangeLayout.splice(len - 1)
+      }
+      else{
+        this.$message.info("已撤销到底!")
+      }
+    },
+
+    fixLayoutChange(){
+      if(this.changeLayout) {
+        console.log(this.savedgraph)
+        this.$message.info("关闭roam以方便操作!")
+        this.myChart.setOption({
+          series:[
+            {
+              roam:false
+            }
+          ]
+        });
+
+        this.initInvisibleGraphic();
+      }
+      else{
+        this.$message.info("开启roam!")
+        this.myChart.setOption({
+          graphic:[],
+          series:[
+            {
+              roam:true
+            }
+          ]
+        },{
+          replaceMerge: ['graphic']
+        });
+      }
+    },
+
+    //在每个节点上覆盖一个圆形节点
+    initInvisibleGraphic() {
+      let that = this
+      let echarts = require('echarts');
+      this.myChart.setOption({
+        graphic: echarts.util.map(that.option1.series[0].data, function (item, dataIndex) {
+
+          let tmpPos = that.myChart.convertToPixel({seriesIndex: 0}, [item.x, item.y]);
+
+          return {
+            type: 'circle',
+            id: dataIndex,
+            position: tmpPos,
+            shape: {
+              cx: 0,
+              cy: 0,
+              r: 20
+            },
+
+            invisible: true,
+            draggable: true,
+            ondragend: echarts.util.curry(that.onPointDragging, dataIndex),
+            z: 100
+          };
+        })
+      });
+
+
+    },
+
+    //更新节点定位的函数
+    updatePosition() {
+      let that=this
+      let echarts = require('echarts');
+      this.myChart.setOption({
+        graphic:[],
+        series:[
+          {
+            roam:true
+          }
+        ]
+      },{
+        replaceMerge: ['graphic']
+      });
+      this.myChart.setOption({
+        graphic: echarts.util.map(that.option1.series[0].data, function (item,dataIndex) {
+          let tmpPos=that.myChart.convertToPixel({seriesIndex: 0},[item.x,item.y]);
+          return {
+            type: 'circle',
+            id: dataIndex,
+            position: tmpPos,
+            shape: {
+              cx: 0,
+              cy: 0,
+              r: 20
+            },
+
+            invisible: true,
+            draggable: true,
+            ondragend: echarts.util.curry(that.onPointDragging, dataIndex),
+            z: 100
+          };
+        },{
+          replaceMerge: ['graphic']
+        })
+      });
+
+    },
+
+    //节点上图层拖拽执行的函数
+    onPointDragging(dataIndex) {
+      let that=this
+
+      let position=that.myChart.convertFromPixel({seriesIndex: 0},this.myChart.getOption().graphic[0].elements[dataIndex].position);
+
+      this.previouschangeLayout.push([dataIndex,[this.option1.series[0].data[dataIndex].x,this.option1.series[0].data[dataIndex].y]]);
+
+
+      this.option1.series[0].data[dataIndex].x = position[0];
+      this.option1.series[0].data[dataIndex].y = position[1];
+      this.myChart.setOption(that.option1)
+
+      this.updatePosition()
     },
 
     changeOption(option){
