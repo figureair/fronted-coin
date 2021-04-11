@@ -189,8 +189,9 @@
       </div>
 
       <div class="box-item">
-      <el-checkbox v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
-        <el-button type="primary" plain @click="chexiao">撤销</el-button>
+        <el-checkbox v-if="nowOption==1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
+        <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption==1">撤销</el-button>
+        <el-button type="primary" plain @click="saveLayout" v-if="changeLayout && nowOption==1">保存布局</el-button>
       </div>
     </div>
   </div>
@@ -207,6 +208,7 @@ export default {
   name: "KG",
   data() {
     return {
+      nowOption:1,
       previouschangeLayout:[],
       changeLayout:false,
       checked:false,
@@ -474,6 +476,9 @@ export default {
           show: node.symbolSize >= 30
         };
         node.index = index++;
+        node.tooltip={
+          show:true
+        }
       });
       index = 0;
       graph.links.forEach(function (link) {
@@ -731,9 +736,14 @@ export default {
       }
     },
 
+    saveLayout(){
+      this.$message.info("将下载本地json，并上传至服务器")
+      this.savedgraph={"nodes":this.option1.series[0].data,"links":this.option1.series[0].links,"categories":this.option1.series[0].categories}
+      this.downloadJson()
+    },
+
     fixLayoutChange(){
       if(this.changeLayout) {
-        console.log(this.savedgraph)
         this.$message.info("关闭roam以方便操作!")
         this.myChart.setOption({
           series:[
@@ -856,12 +866,15 @@ export default {
       that.myChart.clear();
       switch (value) {
         case 1:
+          that.nowOption=1
           that.myChart.setOption(that.option1);
           return 1
         case 2:
+          that.nowOption=2
           that.myChart.setOption(that.option2);
           return 2
         case 3:
+          that.nowOption=3
           that.myChart.setOption(that.option3);
           return 3
       }
