@@ -3,196 +3,221 @@
     <div id="myChart"></div>
 
     <div id="text-box">
-      <div id="selector-box" class="box-item">
-        <div id="selector-title">样式选择:</div>
-        <el-select id="selector" v-model="value" @change="changeTo">
-          <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-      <div class="box-item">
-        <el-button type="primary" plain icon="el-icon-download" @click="downloadImg" id="downimg">下载Img</el-button>
-      </div>
-      <div class="box-item">
-        <el-button type="primary" plain icon="el-icon-download" @click="downloadJson" id="downjson">下载Json</el-button>
-      </div>
-      <div class="box-item">
-        <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
-      </div>
-      <!--      暂时不引入后端接口-->
-      <div class="box-item ">
-        <el-upload
-            action=""
-            :on-progress="initpage"
-            :before-upload="beforeJSONUpload"
-        >
-          <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
+      <el-tabs v-model="activeName">
+      <el-tab-pane label="基础设置" name="first">
+        <div id="selector-box" class="box-item">
+          <div id="selector-title">样式选择:</div>
+          <el-select id="selector" v-model="value" @change="changeTo">
+            <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+        <div class="box-item">
+          <el-button type="primary" plain icon="el-icon-download" @click="downloadImg" id="downimg">下载Img</el-button>
+        </div>
+        <div class="box-item">
+          <el-button type="primary" plain icon="el-icon-download" @click="downloadJson" id="downjson">下载Json</el-button>
+        </div>
+        <div class="box-item">
+          <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
+        </div>
+        <!--      暂时不引入后端接口-->
+        <div class="box-item ">
+          <el-upload
+              action=""
+              :on-progress="initpage"
+              :before-upload="beforeJSONUpload"
+          >
+            <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
 
-        </el-upload>
-        <el-button type="text" id="tip" @click="dialogVisible=true">导入须知</el-button>
-        <el-dialog
-            title="导入须知"
-            :visible.sync="dialogVisible"
-            width="30%">
+          </el-upload>
+          <el-button type="text" id="tip" @click="dialogVisible=true">导入须知</el-button>
+          <el-dialog
+              title="导入须知"
+              :visible.sync="dialogVisible"
+              width="30%">
           <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories三个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
           </span>
-          <span slot="footer" class="dialog-footer">
+            <span slot="footer" class="dialog-footer">
             <el-button type="primary" id="tipclose" @click="dialogVisible=false">确 定</el-button>
           </span>
-        </el-dialog>
-      </div>
-      <el-popover
-          ref="popover1"
-          placement="left"
-          trigger="click"
-      >
-        <el-form ref="input" :model="input" :rules="editRulesE" status-icon>
-          <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
-            <el-table-column width="100" property="source" label="source">
-              <template slot-scope="scope">
-                <div v-if="!editable">{{ scope.row.source }}</div>
-                <el-form-item v-else prop="source">
-                  <el-input v-model="input.source"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column width="100" property="target" label="target">
-              <template slot-scope="scope">
-                <div v-if="!editable">{{ scope.row.target }}</div>
-                <el-form-item v-else prop="source">
-                  <el-input v-model="input.target"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column width="250" label="option">
-              <template slot-scope="scope">
-                <el-form-item>
-                  <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
-                  <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
-                  <el-button v-if="editable" @click="editable=false">取消</el-button>
-                  <el-button type="danger" @click="deleteEdge(scope.row, 'edge')">删除</el-button>
-                </el-form-item>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form>
-
-        <el-form ref="input" :model="input" :rules="editRulesN" status-icon>
-          <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
-            <el-table-column width="100" property="id" label="id">
-              <template slot-scope="scope">
-                <div>{{ scope.row.id }}</div>
-              </template>
-            </el-table-column>
-            <el-table-column width="150" property="name" label="name">
-              <template slot-scope="scope">
-                <div v-if="!editable">{{ scope.row.name }}</div>
-                <el-form-item v-else prop="name">
-                  <el-input v-model="input.name"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column width="100" property="category" label="category">
-              <template slot-scope="scope">
-                <div v-if="!editable">{{ scope.row.category }}</div>
-                <el-form-item v-else prop="category">
-                  <el-input v-model="input.category"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column width="200" property="symbolSize" label="symbolSize">
-              <template slot-scope="scope">
-                <div v-if="!editable">{{ scope.row.symbolSize }}</div>
-                <el-form-item v-else prop="symbolSize">
-                  <el-input v-model="input.symbolSize"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column width="150" property="value" label="value">
-              <template slot-scope="scope">
-                <div v-if="!editable">{{ scope.row.value }}</div>
-                <el-form-item v-else prop="value">
-                  <el-input v-model="input.value"></el-input>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column width="250" label="option">
-              <template slot-scope="scope">
-                <el-form-item>
-                  <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
-                  <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
-                  <el-button v-if="editable" @click="editable=false">取消</el-button>
-                  <el-button type="danger" @click="deleteNode(scope.row)">删除</el-button>
-                </el-form-item>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form>
-      </el-popover>
-      <div class="box-item">
-        <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
-        <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
-      </div>
-
-      <div class="box-item">
+          </el-dialog>
+        </div>
         <el-popover
-            width="400px"
-            class="form"
-            ref="popover2"
+            ref="popover1"
             placement="left"
-            trigger="click">
-          <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">
-            <el-form-item label="name" prop="name" :required="true">
-              <el-input v-model="addNodeForm.name" placeholder="name"></el-input>
-            </el-form-item>
-            <el-form-item label="symbolSize" prop="symbolSize" :required="true">
-              <el-input v-model="addNodeForm.symbolSize" placeholder="symbolSize"></el-input>
-            </el-form-item>
-            <el-form-item label="category" prop="category" :required="true">
-              <el-input v-model="addNodeForm.category" placeholder="category"></el-input>
-            </el-form-item>
-            <el-form-item label="value" prop="value">
-              <el-input v-model="addNodeForm.value" placeholder="value"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="addNode">添加</el-button>
-              <el-button @click="cancel('node')">取消</el-button>
-            </el-form-item>
+            trigger="click"
+        >
+          <el-form ref="input" :model="input" :rules="editRulesE" status-icon>
+            <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
+              <el-table-column width="100" property="source" label="source">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.source }}</div>
+                  <el-form-item v-else prop="source">
+                    <el-input v-model="input.source"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="100" property="target" label="target">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.target }}</div>
+                  <el-form-item v-else prop="source">
+                    <el-input v-model="input.target"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="250" label="option">
+                <template slot-scope="scope">
+                  <el-form-item>
+                    <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
+                    <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
+                    <el-button v-if="editable" @click="editable=false">取消</el-button>
+                    <el-button type="danger" @click="deleteEdge(scope.row, 'edge')">删除</el-button>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+
+          <el-form ref="input" :model="input" :rules="editRulesN" status-icon>
+            <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
+              <el-table-column width="100" property="id" label="id">
+                <template slot-scope="scope">
+                  <div>{{ scope.row.id }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column width="150" property="name" label="name">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.name }}</div>
+                  <el-form-item v-else prop="name">
+                    <el-input v-model="input.name"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="100" property="category" label="category">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.category }}</div>
+                  <el-form-item v-else prop="category">
+                    <el-input v-model="input.category"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="200" property="symbolSize" label="symbolSize">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.symbolSize }}</div>
+                  <el-form-item v-else prop="symbolSize">
+                    <el-input v-model="input.symbolSize"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="150" property="value" label="value">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.value }}</div>
+                  <el-form-item v-else prop="value">
+                    <el-input v-model="input.value"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="250" label="option">
+                <template slot-scope="scope">
+                  <el-form-item>
+                    <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
+                    <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
+                    <el-button v-if="editable" @click="editable=false">取消</el-button>
+                    <el-button type="danger" @click="deleteNode(scope.row)">删除</el-button>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
           </el-form>
         </el-popover>
-        <el-button v-popover:popover2 type="primary" plain @click="addNodeVisible=true">添加节点</el-button>
+        <div class="box-item">
+          <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
+          <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
+        </div>
+
+        <div class="box-item">
+          <el-popover
+              width="400px"
+              class="form"
+              ref="popover2"
+              placement="left"
+              trigger="click">
+            <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">
+              <el-form-item label="name" prop="name" :required="true">
+                <el-input v-model="addNodeForm.name" placeholder="name"></el-input>
+              </el-form-item>
+              <el-form-item label="symbolSize" prop="symbolSize" :required="true">
+                <el-input v-model="addNodeForm.symbolSize" placeholder="symbolSize"></el-input>
+              </el-form-item>
+              <el-form-item label="category" prop="category" :required="true">
+                <el-input v-model="addNodeForm.category" placeholder="category"></el-input>
+              </el-form-item>
+              <el-form-item label="value" prop="value">
+                <el-input v-model="addNodeForm.value" placeholder="value"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="addNode">添加</el-button>
+                <el-button @click="cancel('node')">取消</el-button>
+              </el-form-item>
+            </el-form>
+          </el-popover>
+          <el-button v-popover:popover2 type="primary" plain @click="addNodeVisible=true">添加节点</el-button>
 
 
-        <el-popover
-            width="400px"
-            class="form"
-            ref="popover3"
-            placement="left"
-            trigger="click">
-          <el-form v-if="addEdgeVisible" :inline="true" status-icon :model="addEdgeForm" ref="addEdgeForm">
-            <el-form-item label="source" prop="source" :required="true">
-              <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>
-            </el-form-item>
-            <el-form-item label="target" prop="target" :required="true">
-              <el-input v-model="addEdgeForm.target" placeholder="target"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="addEdge">添加</el-button>
-            </el-form-item>
-          </el-form>
-        </el-popover>
-        <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>
-      </div>
+          <el-popover
+              width="400px"
+              class="form"
+              ref="popover3"
+              placement="left"
+              trigger="click">
+            <el-form v-if="addEdgeVisible" :inline="true" status-icon :model="addEdgeForm" ref="addEdgeForm">
+              <el-form-item label="source" prop="source" :required="true">
+                <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>
+              </el-form-item>
+              <el-form-item label="target" prop="target" :required="true">
+                <el-input v-model="addEdgeForm.target" placeholder="target"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="addEdge">添加</el-button>
+              </el-form-item>
+            </el-form>
+          </el-popover>
+          <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>
+        </div>
 
-      <div class="box-item">
-        <el-checkbox v-if="nowOption==1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
-        <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption==1">撤销</el-button>
-        <el-button type="primary" plain @click="saveLayout" v-if="changeLayout && nowOption==1">保存布局</el-button>
-      </div>
+        <div class="box-item">
+          <el-checkbox v-if="nowOption==1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
+          <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption==1">撤销</el-button>
+          <el-button type="primary" plain @click="saveLayout" v-if="changeLayout && nowOption==1">保存布局</el-button>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="展示效果" name="second">
+        <div class="block">
+          <span class="demonstration">调整线条曲度(长度)</span>
+          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+        </div>
+        <div class="block">
+          <span class="demonstration">调整节点图标大小</span>
+          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+        </div>
+        <div class="block">
+          <span class="demonstration">调整节点文字大小</span>
+          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+        </div>
+        <div class="block">
+          <span class="demonstration">是否显示标签</span>
+          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+        </div>
+      </el-tab-pane>
+      </el-tabs>
+
+
+
     </div>
   </div>
 </template>
@@ -208,6 +233,8 @@ export default {
   name: "KG",
   data() {
     return {
+      changeStyle:false,
+      value1:0,
       nowOption:1,
       previouschangeLayout:[],
       changeLayout:false,
@@ -714,6 +741,8 @@ export default {
         ]
       };
 
+
+      that.value1=1;
       that.changeOption(that.option1)
 
     },
