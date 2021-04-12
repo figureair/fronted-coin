@@ -187,6 +187,10 @@
         </el-popover>
         <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>
       </div>
+      <div class="box-item">
+          <span>{{info}}</span>
+          <el-dialog class="detail-info" title="详析" :visible.sync="infovisible"></el-dialog>
+      </div>
     </div>
   </div>
 </template>
@@ -210,6 +214,7 @@ export default {
       option2: '',
       //3.环形关系图
       option3: '',
+
       options: [{
         value: 1,
         label: '关系图'
@@ -219,7 +224,8 @@ export default {
       }, {
         value: 3,
         label: '环形关系图'
-      }],
+      },
+      ],
       value: '',
       dialogVisible: false,
       editable: false,
@@ -230,6 +236,8 @@ export default {
       addEdgeVisible: false,
       savedgraph: '',
       myChart: '',
+      info: '',
+      infovisible: false,
 
       addEdgeForm: {
         source: '',
@@ -475,6 +483,7 @@ export default {
         }
         link.index = index++;
       });
+      that.info = '共有' + graph.nodes.length + '个节点，' + graph.links.length + '条边';
       that.option1 = {
         tooltip: {
           position: 'right',
@@ -556,7 +565,8 @@ export default {
 
             restore: {
               show: true,
-            }
+            },
+
           }
         }
       };
@@ -1023,6 +1033,7 @@ export default {
   width: 100%;
   justify-content: space-evenly;
   text-align: center;
+  align-items: center;
   margin: 10px 0;
 }
 
@@ -1045,6 +1056,11 @@ export default {
 
 #checkbox1 {
   margin-top: 10px;
+}
+
+.detail-info {
+    font-size: 14px;
+    text-align: center;
 }
 
 </style>
