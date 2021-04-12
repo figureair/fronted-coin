@@ -199,19 +199,18 @@
       <el-tab-pane label="展示效果" name="second">
         <div class="block">
           <span class="demonstration">调整线条曲度(长度)</span>
-          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+          <el-slider v-model="value1" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
         </div>
         <div class="block">
           <span class="demonstration">调整节点图标大小</span>
-          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+          <el-slider v-model="value2" @change="changeSymbolSize" :min=0.1 :max=2 :step=0.1></el-slider>
         </div>
         <div class="block">
           <span class="demonstration">调整节点文字大小</span>
-          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+          <el-slider v-model="value3" :min=5 :max=30 @change="changeFontSize"></el-slider>
         </div>
         <div class="block">
-          <span class="demonstration">是否显示标签</span>
-          <el-slider v-model="value1" max=1 step=0.1></el-slider>
+          <el-checkbox v-model="showTooltip" @change="changeTooltip" border>是否显示标签</el-checkbox>
         </div>
       </el-tab-pane>
       </el-tabs>
@@ -233,8 +232,12 @@ export default {
   name: "KG",
   data() {
     return {
+      showTooltip:true,
+      activeName:"first",
       changeStyle:false,
       value1:0,
+      value2:1,
+      value3:12,
       nowOption:1,
       previouschangeLayout:[],
       changeLayout:false,
@@ -333,6 +336,49 @@ export default {
   },
 
   methods: {
+
+    changeTooltip(){
+      this.myChart.setOption({
+        tooltip:{
+          show:this.showTooltip
+        }
+      })
+    },
+
+    changeCurveness(){
+      this.myChart.setOption({
+        series:[{
+          lineStyle:{
+            curveness:this.value1
+          }
+        }]
+          })
+    },
+
+    changeFontSize(){
+      this.myChart.setOption({
+        label:{
+          fontSize:this.value3
+        }
+      })
+    },
+
+    changeSymbolSize(){
+      let tmpcurveness=JSON.parse(JSON.stringify(this.option1.series[0].data))
+      for (let i=0;i<this.option1.series[0].data.length;i++)
+      {
+        tmpcurveness[i].symbolSize*=this.value2;
+      }
+
+      this.myChart.setOption({
+        series:[{
+          data:tmpcurveness
+        }]
+      })
+    },
+
+
+
     showAllInfo(){
       this.editable=false
       if(this.checked){this.$message.info(JSON.stringify(this.selectedItem[0]))}
@@ -503,9 +549,7 @@ export default {
           show: node.symbolSize >= 30
         };
         node.index = index++;
-        node.tooltip={
-          show:true
-        }
+
       });
       index = 0;
       graph.links.forEach(function (link) {
@@ -837,7 +881,7 @@ export default {
         graphic:[],
         series:[
           {
-            roam:true
+            roam:false
           }
         ]
       },{
