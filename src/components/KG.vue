@@ -249,6 +249,8 @@ export default {
       option2: '',
       //3.环形关系图
       option3: '',
+      //4.排版模式
+      option4:'',
       options: [{
         value: 1,
         label: '关系图'
@@ -258,6 +260,9 @@ export default {
       }, {
         value: 3,
         label: '环形关系图'
+      },{
+        value:4,
+        label:'排版模式'
       }],
       value: '',
       dialogVisible: false,
@@ -376,8 +381,6 @@ export default {
         }]
       })
     },
-
-
 
     showAllInfo(){
       this.editable=false
@@ -785,6 +788,112 @@ export default {
         ]
       };
 
+      graph = JSON.parse(JSON.stringify(that.savedgraph))
+      index = 0;
+      graph.nodes.forEach(function (node) {
+        node.label = {
+          show: node.symbolSize >= 30
+        };
+        node.index = index++;
+      });
+      index = 0;
+      graph.links.forEach(function (link) {
+        if (link.name === "dot") {
+          link.lineStyle = {type: 'dotted', width: '2'}
+        }
+        link.index = index++;
+      });
+      let whichy=[]
+      for(let i=0;i<graph.categories.length;i++){
+        whichy.push(0)
+      }
+      for(let i=0;i<graph.nodes.length;i++){
+        let myx=0;
+        if(typeof(graph.nodes[i].category)=='number') {
+          myx=graph.nodes[i].category
+        }
+        else{
+          for(let j=0;j<graph.categories.length;j++){
+
+            if(graph.categories[j].name===graph.nodes[i].category){
+              myx=j;
+              break;
+            }
+          }
+        }
+        graph.nodes[i].x = myx * 50
+        graph.nodes[i].y = whichy[myx]
+        whichy[myx] += 50
+      }
+      that.option4 = {
+        tooltip: {
+          position: 'right',
+          extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+          formatter: '{b}'
+        },
+        //图例
+        legend: [{
+          data: graph.categories.map(function (a) {
+            return a.name;
+          })
+        }],
+        animationDuration: 1500,
+        animationEasingUpdate: 'quadraticIn',
+        series: [
+          {
+            selectedMode:'single',
+            select: {
+              itemStyle: {
+                borderWidth: 10
+              },
+              lineStyle: {
+                width: 5,
+                color: "rgba(0, 0, 0, 1)"
+              }
+            },
+            type: 'graph',
+            //不采用任何布局
+            layout: 'none',
+            //关闭悬停图例高亮
+            legendHoverLink: false,
+            //节点大小不随鼠标缩放而缩放
+            nodeScaleRatio: 0,
+            //开启鼠标缩放和漫游
+            roam: true,
+            draggable:false,
+            //边两端的标记
+            edgeSymbol: ['none', 'arrow'],
+            //边两端的标记大小
+            edgeSymbolSize: 5,
+            //悬停时鼠标样式
+            cursor: 'pointer',
+
+            data: graph.nodes,
+            links: graph.links,
+            categories: graph.categories,
+
+
+            label: {
+              position: 'right',
+              formatter: '{b}'
+            },
+
+            lineStyle: {
+              color: 'source',
+              curveness: 0.2,
+              width: 2,
+            },
+
+            emphasis: {
+              scale: true,
+              focus: 'adjacency',
+              lineStyle: {
+                width: 10
+              }
+            }
+          }
+        ]
+      };
 
       that.value1=1;
       that.changeOption(that.option1)
@@ -950,6 +1059,10 @@ export default {
           that.nowOption=3
           that.myChart.setOption(that.option3);
           return 3
+        case 4:
+          that.nowOption=4
+          that.myChart.setOption(that.option4);
+          return 4
       }
 
     },
