@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>知识图谱可视化系统</h1>
-    <h4 id="tools">Echarts+Vue+SpringBoot+Neo4j</h4>
+    <h4 id="tools">Echarts+Vue+SpringBoot+MySQL</h4>
     <KG/>
     <h6>KG666小组呈现</h6>
   </div>

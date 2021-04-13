@@ -25,10 +25,10 @@
         <div class="box-item">
           <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
         </div>
-        <!--      暂时不引入后端接口-->
+<!--        上传知识图谱-->
         <div class="box-item ">
           <el-upload
-              action=""
+              action="http://47.99.190.169:8888/save"
               :on-progress="initpage"
               :before-upload="beforeJSONUpload"
           >
@@ -193,7 +193,7 @@
         <div class="box-item">
           <el-checkbox v-if="nowOption==1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
           <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption==1">撤销</el-button>
-          <el-button type="primary" plain @click="saveLayout" v-if="changeLayout && nowOption==1">保存布局</el-button>
+          <el-button type="primary" plain @click="saveLayout">保存布局</el-button>
         </div>
       </el-tab-pane>
       <el-tab-pane label="展示效果" name="second">
