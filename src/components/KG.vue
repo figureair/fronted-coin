@@ -200,8 +200,8 @@
         </div>
 
         <div class="box-item">
-          <el-checkbox v-if="nowOption==1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
-          <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption==1">撤销</el-button>
+          <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
+          <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
           <el-button type="primary" plain @click="saveLayout">保存布局</el-button>
         </div>
       </el-tab-pane>
@@ -217,6 +217,11 @@
         <div class="block">
           <span class="demonstration">调整节点文字大小</span>
           <el-slider v-model="value3" :min=5 :max=30 @change="changeFontSize"></el-slider>
+        </div>
+        <div class="block">
+          <span class="demonstration">缩放等级</span>
+          <el-slider v-model="value4" :min=0.1 :max=3 :step="0.1" @change="changeZoom"></el-slider>
+          <el-button type="primary" plain @click="gobackZoom">恢复</el-button>
         </div>
         <div class="block">
           <el-checkbox v-model="showTooltip" @change="changeTooltip" border>是否显示标签</el-checkbox>
@@ -241,6 +246,9 @@ export default {
   name: "KG",
   data() {
     return {
+      old_value4:1,
+      value4:1,
+      last_value2:1,
       tmpgraph: {},
       haveGraphInDatabase:false,
       showTooltip:true,
@@ -353,38 +361,75 @@ export default {
 
   methods: {
 
-    changeTooltip(){
+    gobackZoom(){
       this.myChart.setOption({
-        tooltip:{
-          show:this.showTooltip
+        series:{
+          center:null,
+          zoom:this.old_value4
         }
+      })
+    },
+
+    changeZoom(){
+
+
+
+      this.myChart.setOption({
+        series: {
+          zoom: this.value4
+        }
+      })
+    },
+
+    changeTooltip(){
+      let tmptooltip=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
+      for (let i=0;i<this.option1.series[0].links.length;i++)
+      {
+        tmptooltip[i].tooltip.show=this.showTooltip;
+      }
+
+      this.myChart.setOption({
+        series:[{
+          links:tmptooltip
+        }]
       })
     },
 
     changeCurveness(){
+      let tmpcurveness=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
+      for (let i=0;i<this.option1.series[0].links.length;i++)
+      {
+        tmpcurveness[i].lineStyle.curveness=this.value1;
+      }
+
       this.myChart.setOption({
         series:[{
-          lineStyle:{
-            curveness:this.value1
-          }
+          links:tmpcurveness
         }]
-          })
+      })
     },
 
     changeFontSize(){
+      let tmpfontsize=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].data))
+      for (let i=0;i<this.option1.series[0].data.length;i++)
+      {
+        tmpfontsize[i].label.fontSize=this.value3;
+      }
+
       this.myChart.setOption({
-        label:{
-          fontSize:this.value3
-        }
+        series:[{
+          data:tmpfontsize
+        }]
       })
     },
 
     changeSymbolSize(){
-      let tmpcurveness=JSON.parse(JSON.stringify(this.option1.series[0].data))
+      let tmpcurveness=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].data))
       for (let i=0;i<this.option1.series[0].data.length;i++)
       {
-        tmpcurveness[i].symbolSize*=this.value2;
+        tmpcurveness[i].symbolSize=tmpcurveness[i].symbolSize/this.last_value2*this.value2;
       }
+      this.last_value2=this.value2
 
       this.myChart.setOption({
         series:[{
@@ -640,7 +685,7 @@ export default {
             //关闭悬停图例高亮
             legendHoverLink: false,
             //节点大小不随鼠标缩放而缩放
-            nodeScaleRatio: 0,
+            nodeScaleRatio: 1,
             //开启鼠标缩放和漫游
             roam: true,
             draggable:false,
@@ -707,6 +752,12 @@ export default {
       //预存option2
       graph = JSON.parse(JSON.stringify(that.savedgraph))
       index = 0;
+      if(graph.nodes.length>=15 || graph.links.length>=30){
+        graph.zoom=3
+      }
+      else{
+        graph.zoom=0.6
+      }
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
@@ -746,7 +797,7 @@ export default {
             },
 
             //当前视角的缩放比例
-            zoom: 2,
+            zoom: graph.zoom,
             //是否可拖动
             draggable: true,
             type: 'graph',
@@ -759,8 +810,13 @@ export default {
 
             //开启鼠标缩放和漫游
             roam: true,
+            nodeScaleRatio: 0.1,
             label: {
-              position: 'right'
+              position: 'right',
+              fontSize:12
+            },
+            lineStyle: {
+              curveness: 0
             },
             force: {
               //斥力
@@ -802,6 +858,7 @@ export default {
         animationEasingUpdate: 'quinticInOut',
         series: [
           {
+            zoom:1,
             selectedMode:'single',
             select: {
               itemStyle: {
@@ -827,7 +884,8 @@ export default {
 
             label: {
               position: 'right',
-              formatter: '{b}'
+              formatter: '{b}',
+              fontSize:12
             },
             lineStyle: {
               color: 'source',
@@ -844,6 +902,12 @@ export default {
       };
 
       graph = JSON.parse(JSON.stringify(that.savedgraph))
+      if(graph.nodes.length>=15 || graph.links.length>=30){
+        graph.zoom=1
+      }
+      else{
+        graph.zoom=0.6
+      }
       index = 0;
       graph.nodes.forEach(function (node) {
         node.label = {
@@ -896,6 +960,7 @@ export default {
         animationEasingUpdate: 'quadraticIn',
         series: [
           {
+            zoom:graph.zoom,
             selectedMode:'single',
             select: {
               itemStyle: {
@@ -930,7 +995,8 @@ export default {
 
             label: {
               position: 'right',
-              formatter: '{b}'
+              formatter: '{b}',
+              fontSize:12
             },
 
             lineStyle: {
@@ -950,8 +1016,8 @@ export default {
         ]
       };
 
-      that.value1=1;
-      that.changeOption(that.option1)
+      that.value=1;
+      that.changeTo(1)
 
     },
 
@@ -1119,6 +1185,18 @@ export default {
 
     changeOption(option){
       this.myChart.setOption(option);
+      this.value2=1;
+      this.last_value2=1;
+      if(option.series[0].lineStyle.curveness!=null)
+        this.value1=option.series[0].lineStyle.curveness;
+      else
+        this.value1=option.series[0].links[0].lineStyle.curveness;
+      if(option.series[0].label.fontSize!=null)
+        this.value3=option.series[0].label.fontSize;
+      else
+        this.value3=option.series[0].data[0].label.fontSize;
+      this.value4=option.series[0].zoom
+      this.old_value4=option.series[0].zoom
       return true
     },
 
@@ -1129,21 +1207,22 @@ export default {
       switch (value) {
         case 1:
           that.nowOption=1
-          that.myChart.setOption(that.option1);
+          that.changeOption(that.option1);
           return 1
         case 2:
           that.nowOption=2
-          that.myChart.setOption(that.option2);
+          that.changeOption(that.option2);
           return 2
         case 3:
           that.nowOption=3
-          that.myChart.setOption(that.option3);
+          that.changeOption(that.option3);
           return 3
         case 4:
           that.nowOption=4
-          that.myChart.setOption(that.option4);
+          that.changeOption(that.option4);
           return 4
       }
+
 
     },
 
@@ -1173,12 +1252,19 @@ export default {
               success: function (res) {
                 console.log(res)
                 if (res.content == null) {
-                  that.uploadJSON()
+                  //that.uploadJSON()
                 }
                 else{
                   console.log(res)
                   that.haveGraphInDatabase=true
                   that.tmpgraph=res.content
+                  if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
+                    for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
+                      let prop = that.tmpgraph.nodes[i]
+                      prop.x = 100 * Math.random()
+                      prop.y = 100 * Math.random()
+                    }
+                  }
                 }
               }
             })
