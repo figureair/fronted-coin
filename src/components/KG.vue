@@ -28,8 +28,7 @@
 <!--        上传知识图谱-->
         <div class="box-item ">
           <el-upload
-              action="http://47.99.190.169:8888/save"
-              :on-progress="initpage"
+              action=""
               :before-upload="beforeJSONUpload"
           >
             <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
@@ -40,10 +39,20 @@
               title="导入须知"
               :visible.sync="dialogVisible"
               width="30%">
-          <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories三个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
+          <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories，pic_name四个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
           </span>
             <span slot="footer" class="dialog-footer">
             <el-button type="primary" id="tipclose" @click="dialogVisible=false">确 定</el-button>
+          </span>
+          </el-dialog>
+          <el-dialog
+              title="已存在"
+              :visible.sync="haveGraphInDatabase"
+              width="30%">
+          <span>查询到数据库已存在同名知识图谱，是否导入？（之后的操作将对同名知识图谱造成影响，如有必要，请重命名pic_name）</span>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="ifimportfromDatabase(false)">取 消</el-button>
+            <el-button type="primary" @click="ifimportfromDatabase(true)">确 定</el-button>
           </span>
           </el-dialog>
         </div>
@@ -232,6 +241,8 @@ export default {
   name: "KG",
   data() {
     return {
+      tmpgraph: {},
+      haveGraphInDatabase:false,
       showTooltip:true,
       activeName:"first",
       changeStyle:false,
@@ -547,19 +558,53 @@ export default {
       //初始设置为option1
       let graph = JSON.parse(JSON.stringify(that.savedgraph))
       let index = 0;
+      if(graph.zoom==null){
+        graph.zoom=1
+      }
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
         };
         node.index = index++;
-
+        if(typeof(node.category)!='number'){
+          for(let i=0;i<graph.categories.length;i++){
+            if(graph.categories[i].name===node.category){
+              node.category=i;
+              break;
+            }
+          }
+        }
+        if(node.value==null)node.value=null
+        if(node.symbol==null)node.symbol=null
+        if(node.itemStyle==null)node.itemStyle={color:null}
+        else if (node.itemStyle.color==null)node.itemStyle.color=null
+        if(node.tooltip==null)node.tooltip={show:true}
+        else if(node.tooltip.show==null)node.tooltip.show=true
+        if(node.label.fontSize==null)node.label.fontSize=12
       });
       index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted'}
         }
+        link.id=index+''
         link.index = index++;
+        if(link.lineStyle==null)link.lineStyle={color:null,width:2,type:'solid',curveness:1}
+        else {
+          if (link.lineStyle.color== null) link.lineStyle.color = null
+          if (link.lineStyle.width== null) link.lineStyle.width = 2
+          if (link.lineStyle.type== null) link.lineStyle.type = 'solid'
+          if (link.lineStyle.curveness== null) link.lineStyle.curveness = 1
+        }
+
+        if(link.tooltip==null)link.tooltip={show:true}
+        else if(link.tooltip.show==null)link.tooltip.show=true
+
+        if(link.label==null)link.label={show:false,fontSize:12}
+        else {
+          if (link.label.show == null) link.label.show = false
+          if (link.label.fontSize == null) link.label.fontSize = false
+        }
       });
       that.option1 = {
         tooltip: {
@@ -577,6 +622,8 @@ export default {
         animationEasingUpdate: 'quadraticIn',
         series: [
           {
+            center:null,
+            zoom:graph.zoom,
             selectedMode:'single',
             select: {
               itemStyle: {
@@ -608,8 +655,12 @@ export default {
             links: graph.links,
             categories: graph.categories,
 
+            itemStyle:{
+              color:null
+            },
 
             label: {
+              fontsize:12,
               position: 'right',
               formatter: '{b}'
             },
@@ -618,6 +669,7 @@ export default {
               color: 'source',
               curveness: 1,
               width: 2,
+              type:'solid'
             },
 
             emphasis: {
@@ -626,6 +678,9 @@ export default {
               lineStyle: {
                 width: 10
               }
+            },
+            tooltip:{
+              show:true
             }
           }
         ],
@@ -920,8 +975,32 @@ export default {
 
     saveLayout(){
       this.$message.info("将下载本地json，并上传至服务器")
-      this.savedgraph={"nodes":this.option1.series[0].data,"links":this.option1.series[0].links,"categories":this.option1.series[0].categories}
-      this.downloadJson()
+      let tmpOption=this.myChart.getOption().series[0]
+
+      let res={'pic_name':this.savedgraph.pic_name,'uid':0,'center':tmpOption.center,
+        'zoom':tmpOption.zoom,'itemStyle':tmpOption.itemStyle,
+        'lineStyle':tmpOption.lineStyle,'label':tmpOption.label,'tooltip':tmpOption.tooltip,
+        'categories':tmpOption.categories,'nodes':tmpOption.data,'links':tmpOption.links}
+      console.log(res)
+
+      $.ajax({
+        url: 'http://47.99.190.169:8888/saveLayout',
+        type: 'post',
+        data: JSON.stringify(res),
+        dataType: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {if(res.success)console.log("样式上传成功!")
+        else console.log("样式上传失败")}
+      })
+
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res));
+      let downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "knowledge-graph" + ".json");
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+
     },
 
     fixLayoutChange(){
@@ -939,6 +1018,7 @@ export default {
       }
       else{
         this.$message.info("开启roam!")
+        this.previouschangeLayout=[]
         this.myChart.setOption({
           graphic:[],
           series:[
@@ -1081,14 +1161,78 @@ export default {
         reader.onload = () => {
           tmpjson = JSON.parse(reader.result)
           console.log(tmpjson)
-          this.checkjson(tmpjson)
+          if (this.checkjson(tmpjson)) {
+            this.initpage()
+            let that=this
+
+            $.ajax({
+              url: 'http://47.99.190.169:8888/?pic_name=' + tmpjson.pic_name + '&uid=0',
+              type: 'get',
+              data: {},
+              dataType: 'json',
+              success: function (res) {
+                console.log(res)
+                if (res.content == null) {
+                  that.uploadJSON()
+                }
+                else{
+                  console.log(res)
+                  that.haveGraphInDatabase=true
+                  that.tmpgraph=res.content
+                }
+              }
+            })
+          }
         }
       }
       return true
     },
 
+    ifimportfromDatabase(bool){
+      this.haveGraphInDatabase=false
+      if(bool) {
+        this.savedgraph = this.tmpgraph
+        this.initpage()
+      }
+    },
+
+    uploadJSON(){
+      let tmpOption=this.myChart.getOption().series[0]
+
+      let res={'pic_name':this.savedgraph.pic_name,'uid':0,'center':tmpOption.center,
+        'zoom':tmpOption.zoom,'itemStyle':tmpOption.itemStyle,
+        'lineStyle':tmpOption.lineStyle,'label':tmpOption.label,'tooltip':tmpOption.tooltip,
+        'categories':tmpOption.categories,'nodes':tmpOption.data,'links':tmpOption.links}
+      console.log(res)
+
+      $.ajax({
+        url: 'http://47.99.190.169:8888/save',
+        type: 'post',
+        data: JSON.stringify(res),
+        dataType: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {if(res.success)console.log("数据上传成功!")
+        else console.log("数据上传失败")}
+      })
+
+      $.ajax({
+        url: 'http://47.99.190.169:8888/saveLayout',
+        type: 'post',
+        data: JSON.stringify(res),
+        dataType: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        success: function (res) {if(res.success)console.log("样式上传成功!")
+        else console.log("样式上传失败")}
+      })
+
+    },
+
     checkjson(tmpjson) {
       //判断是否为符合格式的json对象
+      if (!('pic_name' in tmpjson)) {
+        this.$message.error('内容格式错误!(无pic_name属性)');
+        return false
+      }
       if (!('nodes' in tmpjson)) {
         this.$message.error('内容格式错误!(无nodes属性)');
         return false
