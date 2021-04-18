@@ -202,8 +202,7 @@
           </div>
       </el-tab-pane>
 
-        <el-tab-pane label="样式设置" name="second">
-          <div class="style-box">
+        <el-tab-pane label="展示效果" name="second">
             <div class="style-box-item">
               <span class="demonstration">调整线条曲度(长度)</span>
               <el-slider v-model="value1" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
@@ -218,76 +217,79 @@
             </div>
             <div class="style-box-item">
               <span class="demonstration">缩放等级</span>
+              <i class="el-icon-refresh-left" @click="gobackZoom" style="margin-left: 10px"></i>
               <el-slider v-model="value4" :min=0.1 :max=3 :step="0.1" @change="changeZoom"></el-slider>
-              <el-button type="primary" plain @click="gobackZoom">恢复</el-button>
             </div>
-            <div class="block">
-              <el-checkbox v-model="showTooltip" @change="changeTooltip" border>是否显示标签</el-checkbox>
+            <div class="style-box-item">
+              <el-checkbox v-model="showTooltip" @change="changeTooltip">是否显示标签</el-checkbox>
             </div>
-            <div class="block">
-              <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
-                         @click="startGraphicalEdit"></el-button>
-              <el-button-group v-if="editmode!=='none'">
-                <el-button type="text" icon="el-icon-plus" @click="setEditMode('add')">
-                  <!--                      <el-select>-->
-                  <!--                          <el-option v-for="(item, index) in addTypes" :value="item" :label="item" :key="index"></el-option>-->
-                  <!--                      </el-select>-->
-                </el-button>
-                <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
-                <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
-                <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
-                <el-button type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
-              </el-button-group>
-              <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
-                       :rules="graphicalAddNodeRules" status-icon>
-                <!--                <el-form-item label="pic_name">-->
-                <!--                    <el-input disabled v-model="graphicalAddNodeForm.pic_name"></el-input>-->
-                <!--                </el-form-item>-->
-                <el-form-item label="name">
-                  <el-input v-model="graphicalAddNodeForm.name"></el-input>
-                </el-form-item>
-                <el-form-item label="category">
-                  <el-select v-model="graphicalAddNodeForm.category">
-                    <el-option v-for="(item, index) in savedgraph.categories"
-                               :key="index" :label="item.name" :value="item.name"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="itemStyle">
-                  <el-color-picker label="color" v-model="graphicalAddNodeForm.itemStyle.color"></el-color-picker>
-                </el-form-item>
-                <el-form-item label="label">
-                  <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
-                  <!--                    <el-switch label="show" v-model="graphicalAddNodeForm.label.show"></el-switch>-->
-                </el-form-item>
-                <el-form-item label="symbol">
-                  <el-select v-model="graphicalAddNodeForm.category">
-                    <el-option v-for="(item, index) in savedgraph.categories"
-                               :key="index" :label="item.name" :value="index"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="symbolSize">
-                  <el-input v-model="graphicalAddNodeForm.symbolSize"></el-input>
-                </el-form-item>
-                <el-form-item label="value">
-                  <el-input v-model="graphicalAddNodeForm.value"></el-input>
-                </el-form-item>
-                <el-form-item label="x-position">
-                  <el-input v-model="graphicalAddNodeForm.x"></el-input>
-                </el-form-item>
-                <el-form-item label="y-position">
-                  <el-input v-model="graphicalAddNodeForm.y"></el-input>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="graphicalAddNode">添加</el-button>
-                  <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>
-                  <el-button>取消</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
+
+        </el-tab-pane>
+
+        <el-tab-pane label="图元编辑" name="third">
+          <div class="block">
+            <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
+                       @click="startGraphicalEdit"></el-button>
+            <el-button-group v-if="editmode!=='none'">
+              <el-button type="text" icon="el-icon-plus" @click="setEditMode('add')">
+                <!--                      <el-select>-->
+                <!--                          <el-option v-for="(item, index) in addTypes" :value="item" :label="item" :key="index"></el-option>-->
+                <!--                      </el-select>-->
+              </el-button>
+              <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
+              <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
+              <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
+              <el-button type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
+            </el-button-group>
+            <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
+                     :rules="graphicalAddNodeRules" status-icon>
+              <!--                <el-form-item label="pic_name">-->
+              <!--                    <el-input disabled v-model="graphicalAddNodeForm.pic_name"></el-input>-->
+              <!--                </el-form-item>-->
+              <el-form-item label="name">
+                <el-input v-model="graphicalAddNodeForm.name"></el-input>
+              </el-form-item>
+              <el-form-item label="category">
+                <el-select v-model="graphicalAddNodeForm.category">
+                  <el-option v-for="(item, index) in savedgraph.categories"
+                             :key="index" :label="item.name" :value="item.name"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="itemStyle">
+                <el-color-picker label="color" v-model="graphicalAddNodeForm.itemStyle.color"></el-color-picker>
+              </el-form-item>
+              <el-form-item label="label">
+                <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
+                <!--                    <el-switch label="show" v-model="graphicalAddNodeForm.label.show"></el-switch>-->
+              </el-form-item>
+              <el-form-item label="symbol">
+                <el-select v-model="graphicalAddNodeForm.category">
+                  <el-option v-for="(item, index) in savedgraph.categories"
+                             :key="index" :label="item.name" :value="index"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="symbolSize">
+                <el-input v-model="graphicalAddNodeForm.symbolSize"></el-input>
+              </el-form-item>
+              <el-form-item label="value">
+                <el-input v-model="graphicalAddNodeForm.value"></el-input>
+              </el-form-item>
+              <el-form-item label="x-position">
+                <el-input v-model="graphicalAddNodeForm.x"></el-input>
+              </el-form-item>
+              <el-form-item label="y-position">
+                <el-input v-model="graphicalAddNodeForm.y"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="graphicalAddNode">添加</el-button>
+                <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>
+                <el-button>取消</el-button>
+              </el-form-item>
+            </el-form>
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="搜索" name="third">
+        <el-tab-pane label="搜索" name="fourth">
           <div class="box-item">
             <el-form ref="searchNodeForm" :model="searchNodeForm">
               <!--                      <el-form-item label="pic_name">-->
@@ -351,7 +353,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="下载" name="fourth">
+        <el-tab-pane label="下载" name="fifth">
           <div class="download-box">
             <div class="download-box-item">
               <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载Img
@@ -2308,6 +2310,8 @@ export default {
 
 .style-box-item{
   width:80%;
+  margin: 0 auto;
+  margin-top: 10px;
 }
 
 </style>
