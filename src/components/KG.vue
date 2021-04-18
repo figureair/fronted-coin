@@ -89,9 +89,9 @@
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
                        @click="startGraphicalEdit"></el-button>
             <el-button-group v-if="editmode!=='none'">
-              <el-popover ref="addNodePopover" placement="left" trigger="click">
+              <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
-                         :rules="graphicalAddNodeRules" status-icon>
+                         :rules="graphicalAddNodeRules" status-icon label="添加节点" style="width: 300px" label-position="top" label-width="180px">
                   <el-form-item label="name">
                     <el-input v-model="graphicalAddNodeForm.name"></el-input>
                   </el-form-item>
@@ -106,12 +106,11 @@
                   </el-form-item>
                   <el-form-item label="label">
                     <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
-                    <!--                    <el-switch label="show" v-model="graphicalAddNodeForm.label.show"></el-switch>-->
                   </el-form-item>
                   <el-form-item label="symbol">
-                    <el-select v-model="graphicalAddNodeForm.category">
-                      <el-option v-for="(item, index) in savedgraph.categories"
-                                 :key="index" :label="item.name" :value="index"></el-option>
+                    <el-select v-model="graphicalAddNodeForm.symbol">
+                      <el-option v-for="(item, index) in ECHARTS_SYMBOLS"
+                                 :key="index" :label="item" :value="item"></el-option>
                     </el-select>
                   </el-form-item>
                   <el-form-item label="symbolSize">
@@ -128,13 +127,12 @@
                   </el-form-item>
                   <el-form-item>
                     <el-button type="primary" @click="graphicalAddNode">添加</el-button>
-                    <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>
-                    <el-button>取消</el-button>
+<!--                    <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>-->
+<!--                    <el-button @click="graphicalAddNodePopoverVisible=false">取消</el-button>-->
                   </el-form-item>
                 </el-form>
               </el-popover>
-              <el-button type="text" icon="el-icon-plus" @click="setEditMode('add')" v-popover="addNodePopover">
-              </el-button>
+              <el-button v-popover:addnodepopover type="text" icon="el-icon-plus" @click="setEditMode('add')" ></el-button>
               <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
               <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
               <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
@@ -288,9 +286,6 @@
         <el-tab-pane label="搜索" name="fourth">
           <div class="box-item">
             <el-form ref="searchNodeForm" :model="searchNodeForm">
-              <!--                      <el-form-item label="pic_name">-->
-              <!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
-              <!--                      </el-form-item>-->
               <el-form-item label="category">
                 <el-autocomplete
                     class="inline-input"
@@ -377,8 +372,6 @@ import $ from 'jquery'
 
 const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
 
-// const ECHARTS_SYMBOLS = ['circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow',' none'];
-
 export default {
   name: "KG",
   data() {
@@ -436,6 +429,8 @@ export default {
       editions: [],
 
       searchMode: 'node',
+      ECHARTS_SYMBOLS: ['circle'],
+      graphicalAddNodePopoverVisible: true,
 
       copiedgraph: '',
 
@@ -2225,6 +2220,9 @@ export default {
       setEditMode(mode) {
         this.$message.info('now in ' + mode + ' mode');
         this.editmode = mode;
+        if (mode === 'add') {
+          this.graphicalAddNodePopoverVisible = true;
+        }
       }
   }
 }
