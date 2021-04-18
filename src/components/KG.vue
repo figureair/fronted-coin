@@ -85,7 +85,7 @@
                     <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
                     <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
                     <el-button v-if="editable" @click="editable=false">取消</el-button>
-                    <el-button type="danger" @click="deleteEdge(scope.row, 'edge')">删除</el-button>
+                    <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>
                   </el-form-item>
                 </template>
               </el-table-column>
@@ -137,7 +137,7 @@
                     <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
                     <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
                     <el-button v-if="editable" @click="editable=false">取消</el-button>
-                    <el-button type="danger" @click="deleteNode(scope.row)">删除</el-button>
+                    <el-button type="danger" @click="handleDelete(scope.row, 'node')">删除</el-button>
                   </el-form-item>
                 </template>
               </el-table-column>
@@ -226,13 +226,142 @@
         <div class="block">
           <el-checkbox v-model="showTooltip" @change="changeTooltip" border>是否显示标签</el-checkbox>
         </div>
+        <div class="block">
+          <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit" @click="startGraphicalEdit"></el-button>
+          <el-button-group v-if="editmode!=='none'">
+                      <el-button type="text" icon="el-icon-plus" @click="setEditMode('add')">
+<!--                      <el-select>-->
+<!--                          <el-option v-for="(item, index) in addTypes" :value="item" :label="item" :key="index"></el-option>-->
+<!--                      </el-select>-->
+                      </el-button>
+              <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
+              <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
+              <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
+              <el-button type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
+          </el-button-group>
+            <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm" :rules="graphicalAddNodeRules" status-icon>
+<!--                <el-form-item label="pic_name">-->
+<!--                    <el-input disabled v-model="graphicalAddNodeForm.pic_name"></el-input>-->
+<!--                </el-form-item>-->
+                <el-form-item label="name">
+                    <el-input v-model="graphicalAddNodeForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="category">
+                    <el-select v-model="graphicalAddNodeForm.category">
+                        <el-option v-for="(item, index) in savedgraph.categories"
+                                   :key="index" :label="item.name" :value="item.name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="itemStyle">
+                    <el-color-picker label="color" v-model="graphicalAddNodeForm.itemStyle.color"></el-color-picker>
+                </el-form-item>
+                <el-form-item label="label">
+                    <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
+<!--                    <el-switch label="show" v-model="graphicalAddNodeForm.label.show"></el-switch>-->
+                </el-form-item>
+                <el-form-item label="symbol">
+                    <el-select v-model="graphicalAddNodeForm.category">
+                        <el-option v-for="(item, index) in savedgraph.categories"
+                                   :key="index" :label="item.name" :value="index"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="symbolSize">
+                    <el-input v-model="graphicalAddNodeForm.symbolSize"></el-input>
+                </el-form-item>
+                <el-form-item label="value">
+                    <el-input v-model="graphicalAddNodeForm.value"></el-input>
+                </el-form-item>
+                <el-form-item label="x-position">
+                    <el-input v-model="graphicalAddNodeForm.x"></el-input>
+                </el-form-item>
+                <el-form-item label="y-position">
+                    <el-input v-model="graphicalAddNodeForm.y"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="graphicalAddNode">添加</el-button>
+                    <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>
+                    <el-button>取消</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
       </el-tab-pane>
+          <el-tab-pane label="搜索" name="third">
+              <div class="box-item">
+                  <el-form ref="searchNodeForm" :model="searchNodeForm">
+<!--                      <el-form-item label="pic_name">-->
+<!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
+<!--                      </el-form-item>-->
+                      <el-form-item label="category">
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchNodeForm.label"
+                                  :fetch-suggestions="labelComplete"></el-autocomplete>
+                      </el-form-item>
+                      <el-form-item label="name">
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchNodeForm.name"
+                                  :fetch-suggestions="nnameComplete"></el-autocomplete>
+                      </el-form-item>
+                      <el-form-item label="lowerBound">
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchNodeForm.lowerbound"
+                                  :fetch-suggestions="lbComplete"></el-autocomplete>
+                      </el-form-item>
+                      <el-form-item label="upperBound">
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchNodeForm.upperbound"
+                                  :fetch-suggestions="ubComplete"></el-autocomplete>
+                      </el-form-item>
+                      <el-form-item>
+                          <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
+                          <el-button>取消</el-button>
+                      </el-form-item>
+                  </el-form>
+              </div>
+              <div class="box-item">
+                  <el-form ref="searchEdgeForm" :model="searchEdgeForm">
+<!--                      <el-form-item label="pic_name">-->
+<!--                          <el-input v-model="searchEdgeForm.pic_name" disabled></el-input>-->
+<!--                      </el-form-item>-->
+                      <el-form-item label="name">
+                          <el-input v-model="searchEdgeForm.name"></el-input>
+                      </el-form-item>
+                      <el-form-item label="source">
+                          <el-input v-model="searchEdgeForm.source"></el-input>
+                      </el-form-item>
+                      <el-form-item label="target">
+                          <el-input v-model="searchEdgeForm.target"></el-input>
+                      </el-form-item>
+                      <el-form-item>
+                          <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
+                          <el-button>取消</el-button>
+                      </el-form-item>
+                  </el-form>
+              </div>
+          </el-tab-pane>
       </el-tabs>
-
       <div class="box-item">
-          <span>{{info}}</span>
-          <el-dialog class="detail-info" title="详析" :visible.sync="infovisible"></el-dialog>
+        <span style="font-size: 14px">{{info}}</span>
+<!--        <el-button class="detail-info" type="text" @click="infovisible=true">详细</el-button>-->
+<!--        <el-dialog-->
+<!--          class="detail-info"-->
+<!--          title="详细"-->
+<!--          width="50%"-->
+<!--          :visible.sync="infovisible"-->
+<!--          center>-->
+<!--          <span>........</span>-->
+<!--          <template #footer>-->
+<!--            <span class="dialog-footer">-->
+<!--              <el-button @click="infovisible=false">取 消</el-button>-->
+<!--              <el-button type="primary" @click="infovisible=false">确 定</el-button>-->
+<!--            </span>-->
+<!--          </template>-->
+<!--        </el-dialog>-->
       </div>
+
     </div>
   </div>
 </template>
@@ -243,6 +372,7 @@ import $ from 'jquery'
 
 const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
 
+// const ECHARTS_SYMBOLS = ['circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow',' none'];
 
 export default {
   name: "KG",
@@ -297,6 +427,98 @@ export default {
       myChart: '',
       info: '',
       infovisible: false,
+      editmode: 'none',
+      editions: [],
+
+      copiedgraph: '',
+
+      searchNodeForm: {},
+      searchNodeHistory: [],
+
+      searchEdgeForm: {},
+      searchEdgeHistory: [],
+
+      labelComplete: (queryString, cb) => {
+          let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.label }))
+          let results = queryString? labels.filter((his) =>
+              his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+          ): labels
+          cb(results);
+      },
+
+      nnameComplete: (queryString, cb) => {
+          let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.name }))
+          let results = queryString? labels.filter((his) =>
+              his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+          ): labels
+          cb(results);
+      },
+
+        lbComplete: (queryString, cb) => {
+            let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.lowerBound }))
+            console.log(labels);
+            let results = queryString? labels.filter((his) =>
+                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            ): labels
+            cb(results);
+        },
+
+        ubComplete: (queryString, cb) => {
+            let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.upperBound }))
+            console.log(labels);
+
+            let results = queryString? labels.filter((his) =>
+                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            ): labels
+            cb(results);
+        },
+
+        enameComplete: (queryString, cb) => {
+            let labels = this.searchEdgeHistory.map((item) => Object.assign({}, { value: item.name }))
+            let results = queryString? labels.filter((his) =>
+                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            ): labels
+            cb(results);
+        },
+
+        sourceComplete: (queryString, cb) => {
+            let labels = this.searchEdgeHistory.map((item) => Object.assign({}, { value: item.source }))
+            let results = queryString? labels.filter((his) =>
+                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            ): labels
+            cb(results);
+        },
+
+        targetComplete: (queryString, cb) => {
+            let labels = this.searchEdgeHistory.map((item) => Object.assign({}, { value: item.target }))
+            let results = queryString? labels.filter((his) =>
+                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            ): labels
+            cb(results);
+        },
+
+      graphicalAddNodeForm: {
+          // pic_name: this.option1.pic_name,
+          name: '',
+          category: '',
+          itemStyle: {
+              color: null,
+          },
+          label: {
+              fontSize: '',
+          },
+          symbol: '',
+          symbolSize: '',
+          value: '',
+          x: '',
+          y: '',
+      },
+      graphicalAddNodeVisible: false,
+
+      addTypes: [
+        '节点',
+        '边'
+      ],
 
       addEdgeForm: {
         source: '',
@@ -307,6 +529,36 @@ export default {
         name: '',
         symbolSize: '',
         category: ''
+      },
+
+      graphicalAddNodeRules: {
+        name: [
+            { required: true, validator: this.checkName, trigger: 'blur'}
+        ],
+
+        category: [
+            { required: true, trigger: 'change', message: '请选择节点所属类别'}
+        ],
+
+        label: [
+            { trigger: 'change', validator: this.checkLabel }
+        ],
+
+        value: [
+            { required: true }
+        ],
+
+        symbolSize: [
+            { required: true, validator: this.checkSymbolSize, trigger: 'blur' }
+        ],
+
+        x: [
+            { trigger: 'change', validator: this.checkPosition }
+        ],
+
+        y: [
+            { trigger: 'change', validator: this.checkPosition }
+        ]
       },
 
       editRulesN: {
@@ -474,7 +726,6 @@ export default {
     },
 
     checkTarget(rule, value, callback) {
-      console.log(value)
       if (value === '') {
         return callback(new Error('终点不能为空'))
       }
@@ -556,6 +807,21 @@ export default {
       }
     },
 
+    checkLabel (rule, value, callback) {
+        console.log(value);
+        callback();
+    },
+
+    checkPosition (rule, value, callback) {
+        if (value === '') {
+            callback();
+        }
+        if (isNaN(value)) {
+            callback(new Error("请输入数字"))
+        }
+        callback();
+    },
+
     initdata() {
       // 初始化echarts实例
       let that = this
@@ -572,27 +838,87 @@ export default {
           that.initpage()
         });
 
-
         that.myChart.on('click', 'series.graph', function (event) {
-          console.log(event);
-          that.selectedItem.length = 0;
+          // console.log(event);
           let id = event.data.index;
+          let item;
+          console.log(event);
+          console.log(that.savedgraph)
+            switch (event.dataType) {
+              case 'node':
+                  item = that.savedgraph.nodes[id];
+                  console.log(item);
+                  if (that.editmode === 'delete') {
+                      const op = {
+                          option: 'delete',
+                          type: 'node',
+                          dataIndex: id,
+                          data: item
+                      };
+                      that.editions.push(op);
+                      that.deleteNode(id);
+                  }
+                  else if (that.editmode === 'add') {
+                      console.log("add");
+                      if (that.selectedItem.length < 2) {
+                          console.log(that.selectedItem);
+                          if (that.selectedType === 'edge') {
+                            that.selectedItem = [];
+                            that.selectedType = '';
+                          }
+                          if (that.selectedItem.find((element) =>
+                               element.id === item.id)) {
+                              console.log("????!!!!")
+                              // 与上一次点击的节点相同则清除
+                              that.selectedItem = [];
+                          }
+                          else {
+                              that.selectedItem.push(item);
+                              console.log("<<<<<<<<<<<");
+                              if (that.selectedItem.length === 2) {
+                                  that.addEdgeOfSelectedNodes();
+                                  that.selectedItem = [];
+                                  console.log(">>>>>>>>>")
+                              }
+                          }
 
+                      }
+                      else {
+                          // 防bug，测试完没问题后删
+                          console.log("出错了")
+                      }
+                  }
+                  else {
+                      that.selectedItem.length = 0;
+                      that.selectedItem.push(item);
+                      that.selectedItem[0].index = id;
+                  }
+                that.selectedType = 'node';
+                break;
+              case 'edge':
+                  item = that.savedgraph.links[id];
+                  // console.log(that.savedgraph)
+                  if (that.editmode === 'delete') {
+                      const op = {
+                          option: 'delete',
+                          type: 'edge',
+                          dataIndex: id,
+                          data: item
+                      };
+                      that.editions.push(op);
+                      that.deleteEdge(id);
+                  }
+                  // else if (that.editmode === 'add') {
+                  //     console.log('add');
+                  // }
+                  else {
+                      that.selectedItem.length = 0;
+                      that.selectedItem.push(item);
+                      that.selectedItem[0].index = id;
+                  }
+                that.selectedType = 'edge';
+                break;
 
-          // console.log(opt);
-          switch (event.dataType) {
-            case 'node':
-              that.selectedType = 'node';
-              that.selectedItem.push(that.savedgraph.nodes[id]);
-              that.selectedItem[0].index = id;
-              console.log(that.savedgraph)
-              break;
-            case 'edge':
-              that.selectedType = 'edge';
-              that.selectedItem.push(that.savedgraph.links[id]);
-              that.selectedItem[0].index = id;
-              console.log(that.savedgraph)
-              break;
             default:
               break;
           }
@@ -610,6 +936,7 @@ export default {
       if(graph.zoom==null){
         graph.zoom=1
       }
+      console.log(graph)
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
@@ -693,7 +1020,7 @@ export default {
             nodeScaleRatio: 1,
             //开启鼠标缩放和漫游
             roam: true,
-            draggable:false,
+            draggable: false,
             //边两端的标记
             edgeSymbol: ['none', 'arrow'],
             //边两端的标记大小
@@ -1024,10 +1351,10 @@ export default {
       that.value=1;
       that.changeTo(1)
 
+        console.log(that.option1)
     },
 
     chexiao(){
-
       let len=this.previouschangeLayout.length
       if(len>0) {
         let dataIndex = this.previouschangeLayout[len - 1][0]
@@ -1282,7 +1609,8 @@ export default {
     ifimportfromDatabase(bool){
       this.haveGraphInDatabase=false
       if(bool) {
-        this.savedgraph = this.tmpgraph
+          this.myChart.hideLoading();
+          this.savedgraph = this.tmpgraph
         this.initpage()
       }
     },
@@ -1419,7 +1747,6 @@ export default {
 
     handleEdit(row, mode) {
       let that = this;
-      console.log(that.$refs['input'])
       if (mode === 'edge') {
         that.$refs['input'].validate((valid) => {
           that.checkValidEdit(valid, mode)
@@ -1438,7 +1765,6 @@ export default {
       if (valid) {
         that.selectedItem.length = 0;
         if (mode === 'edge') {
-          console.log("??!?>")
           const tmp = that.savedgraph.links[that.input.index];
           tmp.source = that.input.source;
           tmp.target = that.input.target;
@@ -1482,22 +1808,46 @@ export default {
       that.editable = true;
     },
 
-    deleteNode(row) {
-      this.savedgraph.nodes.splice(row.index, 1);
-      this.initpage();
+    handleDelete(row, type) {
+      if (type === 'node') {
+          this.deleteNode(row.index);
+      }
+      else if (type === 'edge') {
+          this.deleteEdge(row.index);
+      }
       this.editable = false;
-      this.selectedType = '';
-      this.selectedItem = [];
     },
 
-    deleteEdge(row) {
-      console.log(row);
-      this.savedgraph.links.splice(row.index, 1);
-      console.log(this.savedgraph.links)
-      this.initpage();
-      this.editable = false;
+    deleteNode(index) {
+      this.savedgraph.nodes.splice(index, 1);
       this.selectedType = '';
       this.selectedItem = [];
+      // let that = this;
+      // this.myChart.setOption({
+      //   series: [
+      //     {
+      //       data: that.savedgraph.nodes,
+      //       links: that.savedgraph.links
+      //     }
+      //   ]
+      // })
+        this.initpage();
+    },
+
+    deleteEdge(index) {
+      this.savedgraph.links.splice(index, 1);
+      this.selectedType = '';
+      this.selectedItem = [];
+      // let that = this;
+      // this.myChart.setOption({
+      //     series: [
+      //         {
+      //             data: that.savedgraph.nodes,
+      //             links: that.savedgraph.links
+      //         }
+      //     ]
+      // })
+        this.initpage();
     },
 
     addNode() {
@@ -1505,6 +1855,34 @@ export default {
       this.$refs['addNodeForm'].validate((valid) => {
         that.isValid(valid, 'node')
       })
+    },
+
+    addNodeAt(index, item) {
+      this.savedgraph.nodes.splice(index, 0, item);
+      // let that = this;
+      // this.myChart.setOption({
+      //     series: [
+      //         {
+      //             data: that.savedgraph.nodes,
+      //             links: that.savedgraph.links
+      //         }
+      //     ]
+      // })
+        this.initpage()
+    },
+
+    addEdgeAt(index, item) {
+      this.savedgraph.links.splice(index, 0, item);
+      // let that = this;
+      // this.myChart.setOption({
+      //   series: [
+      //     {
+      //       data: that.savedgraph.nodes,
+      //       links: that.savedgraph.links
+      //     }
+      //   ]
+      // })
+        this.initpage();
     },
 
     isValid(valid, mode) {
@@ -1515,7 +1893,7 @@ export default {
             category: parseInt(that.addNodeForm.category),
             name: that.addNodeForm.name,
             symbolSize: that.addNodeForm.symbolSize,
-            id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id+1,
+            id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id + 1,
             value: that.addNodeForm.value,
             x: Math.random()*1000,
             y: Math.random()*1000
@@ -1560,8 +1938,238 @@ export default {
       else{
         this.$refs['addEdgeForm'].resetFields();
       }
-    }
+    },
 
+      deleteHistory(e) {
+          console.log(e);
+      },
+
+      // 在线编辑撤回
+      backtrack() {
+          console.log(this.editions)
+          console.log(this.savedgraph)
+          let op = this.editions[this.editions.length - 1];
+          if (!op) {
+            this.$message.info("已撤销到底!")
+            return;
+          }
+          if (op.option === 'delete') {
+              let type = op.type;
+              if (type === 'node') {
+                  this.addNodeAt(op.dataIndex, op.data);
+              }
+              else if (type === 'edge') {
+                  // console.log(op);
+                  this.addEdgeAt(op.dataIndex, op.data);
+              }
+          }
+          else if (op.option === 'add') {
+              let type = op.type;
+              if (type === 'node') {
+                  this.deleteNode(op.dataIndex)
+              }
+              else if (type === 'edge') {
+                  this.deleteEdge(op.dataIndex)
+              }
+          }
+          console.log(this.savedgraph);
+          this.editions.splice(this.editions.length - 1, 1);
+          // this.initpage();
+      },
+
+      // 开启在线编辑
+      startGraphicalEdit() {
+          this.editmode = 'add';
+          this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
+          this.selectedItem = [];
+          this.selectedType = '';
+      },
+
+      addEdgeOfSelectedNodes() {
+          let that = this;
+          // source跟target是id？
+          const newEdge = {
+              source: that.selectedItem[0].id,
+              target: that.selectedItem[1].id,
+              name: this.source + '->' + this.target,
+          }
+          console.log("line 1703")
+          that.savedgraph.links.push(newEdge);
+          // that.myChart.setOption({
+          //   series: [
+          //     {
+          //       data: that.savedgraph.nodes,
+          //       links: that.savedgraph.links
+          //     }
+          //   ]
+          // });
+          that.initpage();
+          const op = {
+            option: 'add',
+            type: 'edge',
+            data: newEdge,
+            dataIndex: that.savedgraph.links.length - 1
+          }
+          that.editions.push(op)
+      },
+
+      endGraphicalEdit(e) {
+        console.log(e);
+        this.savedgraph = JSON.parse(JSON.stringify(this.copiedgraph));
+        this.copiedgraph = '';
+        this.editmode = 'none';
+        console.log(this.savedgraph)
+        this.selectedItem = [];
+        this.selectedType = '';
+        this.initpage();
+        console.log("??????????");
+        console.log('end edit');
+      },
+
+      // 保存编辑结果
+      saveGraphicalEdit(e) {
+          console.log(e);
+          this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
+          // this.uploadJSON();
+          if (this.editions.length === 0) this.$message.info('毫无变化');
+        console.log("save and upload")
+      },
+
+      addTypeCheck(type) {
+        this.editmode = 'add';
+        console.log(type);
+      },
+
+      // 添加新节点
+      graphicalAddNode() {
+        let that = this;
+        this.$refs['graphicalAddNodeForm'].validate((valid) => {
+            if (valid) {
+                alert('submit!')
+                console.log(that.graphicalAddNodeForm)
+                that.checkFormAndAdd();
+            }
+            else {
+                console.log('error!!!!!!!');
+                return false;
+            }
+        })
+      },
+
+      checkFormAndAdd() {
+        let that = this;
+        const newNode = {
+            id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id + 1,
+            name: that.graphicalAddNodeForm.name,
+            category: parseInt(that.graphicalAddNodeForm.category),
+            itemStyle: that.graphicalAddNodeForm.itemStyle,
+            symbolSize: that.graphicalAddNodeForm.symbolSize,
+            label: that.graphicalAddNodeForm.label,
+            x: that.graphicalAddNodeForm.x,
+            y: that.graphicalAddNodeForm.y,
+            pic_name: that.savedgraph.nodes[0].pic_name,
+        };
+        if (newNode.x === '') {
+            newNode.x = Math.random() * 1000;
+        }
+        if (newNode.y === '') {
+            newNode.y = Math.random() * 1000;
+        }
+        if (that.graphicalAddNodeForm.value !== '') {
+            newNode.value = that.graphicalAddNodeForm.value;
+        }
+        that.savedgraph.nodes.push(newNode);
+        that.initpage();
+        that.resetGraphicalAddNodeForm();
+        that.editmode = '';
+      },
+
+      resetGraphicalAddNodeForm() {
+        this.$refs['graphicalAddNodeForm'].resetFields();
+      },
+
+      handleNodeSearch() {
+        let that = this;
+        this.$refs['searchNodeForm'].validate((valid) => {
+            if (valid) {
+                const res = {
+                    'pic_name': that.savedgraph.pic_name,
+                    'uid': 0,
+                    'name': that.searchNodeForm.name,
+                    'label': that.searchNodeForm.label,
+                    'lowerBound': that.searchNodeForm.lowerbound,
+                    'upperBound': that.searchNodeForm.upperbound,
+                };
+                $.ajax({
+                    url: 'http://47.99.190.169:8888/node/find',
+                    type: 'post',
+                    data: JSON.stringify(res),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (r) {
+                        console.log(r)
+                        if (r.success) {
+                            that.searchNodeHistory.push(res);
+                            const nodes = r.content;
+                            console.log(nodes);
+                            console.log(that.searchNodeHistory);
+                            that.resetSearchForm();
+                        }
+                    }
+                })
+            }
+            else {
+                console.log('error??!!')
+            }
+        })
+      },
+
+      handleEdgeSearch() {
+          let that = this;
+          this.$refs['searchNodeForm'].validate((valid) => {
+              if (valid) {
+                  console.log(that.searchEdgeForm);
+                  const res = {
+                      'pic_name': that.savedgraph.pic_name,
+                      'uid': 0,
+                      'name': that.searchEdgeForm.name,
+                      'source': that.searchEdgeForm.label,
+                      'target': that.searchEdgeForm.target,
+                  };
+
+                  $.ajax({
+                      url: 'http://47.99.190.169:8888/relationship/find',
+                      type: 'post',
+                      data: JSON.stringify(res),
+                      dataType: 'json',
+                      contentType: 'application/json; charset=UTF-8',
+                      success: function (r) {
+                          console.log(r)
+                          if (r.success) {
+                              that.searchEdgeHistory.push(res);
+                              const edges = r.content;
+                              console.log(edges)
+                              console.log(that.searchEdgeHistory)
+                          }
+                      }
+                  })
+              }
+              else {
+                  console.log('error??!!')
+              }
+          })
+      },
+
+      resetSearchForm() {
+        this.$refs['searchNodeForm'].resetFields();
+        this.$refs['searchEdgeForm'].resetFields();
+      },
+
+
+      setEditMode(mode) {
+        this.$message.info('now in ' + mode + ' mode');
+        this.editmode = mode;
+      }
   }
 }
 </script>
@@ -1625,6 +2233,11 @@ export default {
 .detail-info {
     font-size: 14px;
     text-align: center;
+}
+
+.searchInput {
+  width: 70%;
+  margin: 0 10px 0;
 }
 
 </style>
