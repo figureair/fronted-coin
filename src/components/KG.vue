@@ -197,6 +197,16 @@
                       </el-form-item>
                     </template>
                   </el-table-column>
+                    <el-table-column width="150" property="symbol" label="symbol">
+                        <template slot-scope="scope">
+                            <div v-if="!editable">{{ scope.row.symbol }}</div>
+                            <el-form-item v-else prop="value">
+                                <el-select v-model="input.symbol">
+                                    <el-option v-for="(item, index) in ECHARTS_SYMBOLS"
+                                               :key="index" :label="item" :value="item"></el-option>
+                                </el-select>                            </el-form-item>
+                        </template>
+                    </el-table-column>
                   <el-table-column width="200" property="symbolSize" label="symbolSize">
                     <template slot-scope="scope">
                       <div v-if="!editable">{{ scope.row.symbolSize }}</div>
@@ -205,14 +215,31 @@
                       </el-form-item>
                     </template>
                   </el-table-column>
-                  <el-table-column width="150" property="value" label="value">
+                    <el-table-column width="150" property="value" label="value">
+                        <template slot-scope="scope">
+                            <div v-if="!editable">{{ scope.row.value }}</div>
+                            <el-form-item v-else prop="value">
+                                <el-input v-model="input.value"></el-input>
+                            </el-form-item>
+                        </template>
+                    </el-table-column>
+                  <el-table-column width="80" property="x" label="x">
                     <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.value }}</div>
+                      <div v-if="!editable">{{ scope.row.x }}</div>
                       <el-form-item v-else prop="value">
-                        <el-input v-model="input.value"></el-input>
+                        <el-input v-model="input.x"></el-input>
                       </el-form-item>
                     </template>
                   </el-table-column>
+                    <el-table-column width="80" property="y" label="y">
+                        <template slot-scope="scope">
+                            <div v-if="!editable">{{ scope.row.y }}</div>
+                            <el-form-item v-else prop="value">
+                                <el-input v-model="input.y"></el-input>
+                            </el-form-item>
+                        </template>
+                    </el-table-column>
+
                   <el-table-column width="250" label="option">
                     <template slot-scope="scope">
                       <el-form-item>
@@ -231,55 +258,55 @@
               <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
             </div>
 
-            <div class="box-item">
-              <el-popover
-                      width="400px"
-                      class="form"
-                      ref="popover2"
-                      placement="left"
-                      trigger="click">
-                <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">
-                  <el-form-item label="name" prop="name" :required="true">
-                    <el-input v-model="addNodeForm.name" placeholder="name"></el-input>
-                  </el-form-item>
-                  <el-form-item label="symbolSize" prop="symbolSize" :required="true">
-                    <el-input v-model="addNodeForm.symbolSize" placeholder="symbolSize"></el-input>
-                  </el-form-item>
-                  <el-form-item label="category" prop="category" :required="true">
-                    <el-input v-model="addNodeForm.category" placeholder="category"></el-input>
-                  </el-form-item>
-                  <el-form-item label="value" prop="value">
-                    <el-input v-model="addNodeForm.value" placeholder="value"></el-input>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button type="primary" @click="addNode">添加</el-button>
-                    <el-button @click="cancel('node')">取消</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-popover>
-              <el-button v-popover:popover2 type="primary" plain @click="addNodeVisible=true">添加节点</el-button>
+<!--            <div class="box-item">-->
+<!--              <el-popover-->
+<!--                      width="400px"-->
+<!--                      class="form"-->
+<!--                      ref="popover2"-->
+<!--                      placement="left"-->
+<!--                      trigger="click">-->
+<!--                <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">-->
+<!--                  <el-form-item label="name" prop="name" :required="true">-->
+<!--                    <el-input v-model="addNodeForm.name" placeholder="name"></el-input>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="symbolSize" prop="symbolSize" :required="true">-->
+<!--                    <el-input v-model="addNodeForm.symbolSize" placeholder="symbolSize"></el-input>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="category" prop="category" :required="true">-->
+<!--                    <el-input v-model="addNodeForm.category" placeholder="category"></el-input>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="value" prop="value">-->
+<!--                    <el-input v-model="addNodeForm.value" placeholder="value"></el-input>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item>-->
+<!--                    <el-button type="primary" @click="addNode">添加</el-button>-->
+<!--                    <el-button @click="cancel('node')">取消</el-button>-->
+<!--                  </el-form-item>-->
+<!--                </el-form>-->
+<!--              </el-popover>-->
+<!--              <el-button v-popover:popover2 type="primary" plain @click="addNodeVisible=true">添加节点</el-button>-->
 
 
-              <el-popover
-                      width="400px"
-                      class="form"
-                      ref="popover3"
-                      placement="left"
-                      trigger="click">
-                <el-form v-if="addEdgeVisible" :inline="true" status-icon :model="addEdgeForm" ref="addEdgeForm">
-                  <el-form-item label="source" prop="source" :required="true">
-                    <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>
-                  </el-form-item>
-                  <el-form-item label="target" prop="target" :required="true">
-                    <el-input v-model="addEdgeForm.target" placeholder="target"></el-input>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button type="primary" @click="addEdge">添加</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-popover>
-              <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>
-            </div>
+<!--              <el-popover-->
+<!--                      width="400px"-->
+<!--                      class="form"-->
+<!--                      ref="popover3"-->
+<!--                      placement="left"-->
+<!--                      trigger="click">-->
+<!--                <el-form v-if="addEdgeVisible" :inline="true" status-icon :model="addEdgeForm" ref="addEdgeForm">-->
+<!--                  <el-form-item label="source" prop="source" :required="true">-->
+<!--                    <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="target" prop="target" :required="true">-->
+<!--                    <el-input v-model="addEdgeForm.target" placeholder="target"></el-input>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item>-->
+<!--                    <el-button type="primary" @click="addEdge">添加</el-button>-->
+<!--                  </el-form-item>-->
+<!--                </el-form>-->
+<!--              </el-popover>-->
+<!--              <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>-->
+<!--            </div>-->
           </div>
         </el-tab-pane>
 
@@ -439,7 +466,7 @@ export default {
       editions: [],
 
       searchMode: 'node',
-      ECHARTS_SYMBOLS: ['circle'],
+      ECHARTS_SYMBOLS: ['circle','rect','roundRect','triangle','diamond','pin','arrow'],
       graphicalAddNodePopoverVisible: true,
 
       copiedgraph: '',
@@ -1621,9 +1648,10 @@ export default {
                   //that.uploadJSON()
                 }
                 else{
-                  console.log(res)
+
                   that.haveGraphInDatabase=true
                   that.tmpgraph=res.content
+
                   if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
                     for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
                       let prop = that.tmpgraph.nodes[i]
@@ -1811,6 +1839,9 @@ export default {
           tmp.value = that.input.value;
           tmp.symbolSize = that.input.symbolSize;
           tmp.category = parseInt(that.input.category);
+          tmp.symbol = that.input.symbol;
+          tmp.x = that.input.x;
+          tmp.y = that.input.y;
           that.initpage();
           that.selectedItem.push(that.savedgraph.nodes[that.input.index]);
         }
@@ -1828,7 +1859,10 @@ export default {
           name: row.name,
           category: row.category,
           symbolSize: row.symbolSize,
-          value: row.value
+          value: row.value,
+            symbol: row.symbol,
+            x: row.x,
+            y: row.y
         }
 
       }
