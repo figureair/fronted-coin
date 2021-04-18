@@ -367,7 +367,6 @@
             </div>
           </div>
         </el-tab-pane>
-
       </el-tabs>
     </div>
 
@@ -437,6 +436,8 @@ export default {
       infovisible: false,
       editmode: 'none',
       editions: [],
+
+      searchMode: 'node',
 
       copiedgraph: '',
 
@@ -1404,6 +1405,16 @@ export default {
         else console.log("样式上传失败")}
       })
 
+        $.ajax({
+            url: 'http://47.99.190.169:8888/save',
+            type: 'post',
+            data: JSON.stringify(res),
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            success: function (res) {if(res.success)console.log("数据上传成功!")
+            else console.log("数据上传失败")}
+        })
+
       let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res));
       let downloadAnchorNode = document.createElement('a');
       downloadAnchorNode.setAttribute("href", dataStr);
@@ -2014,14 +2025,6 @@ export default {
           }
           console.log("line 1703")
           that.savedgraph.links.push(newEdge);
-          // that.myChart.setOption({
-          //   series: [
-          //     {
-          //       data: that.savedgraph.nodes,
-          //       links: that.savedgraph.links
-          //     }
-          //   ]
-          // });
           that.initpage();
           const op = {
             option: 'add',
@@ -2049,7 +2052,7 @@ export default {
       saveGraphicalEdit(e) {
           console.log(e);
           this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
-          // this.uploadJSON();
+          this.uploadJSON();
           if (this.editions.length === 0) this.$message.info('毫无变化');
         console.log("save and upload")
       },
@@ -2119,6 +2122,7 @@ export default {
                     'lowerBound': that.searchNodeForm.lowerbound,
                     'upperBound': that.searchNodeForm.upperbound,
                 };
+                console.log(res);
                 $.ajax({
                     url: 'http://47.99.190.169:8888/node/find',
                     type: 'post',
@@ -2130,8 +2134,24 @@ export default {
                         if (r.success) {
                             that.searchNodeHistory.push(res);
                             const nodes = r.content;
-                            console.log(nodes);
-                            console.log(that.searchNodeHistory);
+                            let opt = that.myChart.getOption();
+                            opt.series[0].data.forEach((node) => {
+                                if (nodes.findIndex((item) => item.id === node.id) !== -1) {
+                                    if (node.itemStyle == null) {
+                                        node.itemStyle = {
+                                            borderWidth: 10,
+                                            borderColor: "rgba(0, 0, 0, 1)"
+
+                                        };
+                                    }
+                                    else {
+                                        node.itemStyle.borderWidth = 10
+                                        node.itemStyle.borderColor = "rgba(0, 0, 0, 1)"
+
+                                    }
+                                }
+                            })
+                            that.myChart.setOption(opt);
                             that.resetSearchForm();
                         }
                     }
@@ -2145,16 +2165,18 @@ export default {
 
       handleEdgeSearch() {
           let that = this;
-          this.$refs['searchNodeForm'].validate((valid) => {
+          this.$refs['searchEdgeForm'].validate((valid) => {
               if (valid) {
                   console.log(that.searchEdgeForm);
                   const res = {
                       'pic_name': that.savedgraph.pic_name,
                       'uid': 0,
                       'name': that.searchEdgeForm.name,
-                      'source': that.searchEdgeForm.label,
+                      'source': that.searchEdgeForm.source,
                       'target': that.searchEdgeForm.target,
                   };
+
+                  console.log(res);
 
                   $.ajax({
                       url: 'http://47.99.190.169:8888/relationship/find',
@@ -2168,7 +2190,24 @@ export default {
                               that.searchEdgeHistory.push(res);
                               const edges = r.content;
                               console.log(edges)
-                              console.log(that.searchEdgeHistory)
+                              let opt = that.myChart.getOption();
+                              opt.series[0].links.forEach((edge) => {
+                                  if (edges.findIndex((item) => item.id == edge.id) !== -1) {
+                                      if (edge.lineStyle == null) {
+                                          edge.lineStyle = {
+                                              width: 10,
+                                              color: "rgba(0, 0, 0, 1)"
+                                          };
+                                      }
+                                      else {
+                                          edge.lineStyle.width = 10
+                                          edge.lineStyle.color = "rgba(0, 0, 0, 1)"
+                                      }
+                                  }
+                              })
+
+                              that.myChart.setOption(opt);
+                              that.resetSearchForm();
                           }
                       }
                   })
