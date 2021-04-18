@@ -1368,6 +1368,11 @@ export default {
 
         this.option1.series[0].data[dataIndex].x = position[0];
         this.option1.series[0].data[dataIndex].y = position[1];
+        let tmpg=this.option1.series[0]
+        this.savedgraph={uid:tmpg.uid,nodes:tmpg.data,links:tmpg.links,categories:tmpg.categories,
+          itemStyle:tmpg.itemStyle,lineStyle:tmpg.lineStyle,pic_name:tmpg.pic_name,
+          label:tmpg.label,tooltip:tmpg.tooltip}
+
         this.myChart.setOption(this.option1);
         this.updatePosition()
         this.previouschangeLayout.splice(len - 1)
@@ -1516,6 +1521,12 @@ export default {
 
       this.option1.series[0].data[dataIndex].x = position[0];
       this.option1.series[0].data[dataIndex].y = position[1];
+
+      let tmpg=this.option1.series[0]
+      this.savedgraph={uid:tmpg.uid,nodes:tmpg.data,links:tmpg.links,categories:tmpg.categories,
+      itemStyle:tmpg.itemStyle,lineStyle:tmpg.lineStyle,pic_name:tmpg.pic_name,
+      label:tmpg.label,tooltip:tmpg.tooltip}
+
       this.myChart.setOption(that.option1)
 
       this.updatePosition()
