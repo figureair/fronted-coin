@@ -48,7 +48,98 @@
           </span>
           </el-dialog>
         </div>
+        <el-popover
+            ref="popover1"
+            placement="left"
+            trigger="click"
+        >
+          <el-form ref="input" :model="input" :rules="editRulesE" status-icon>
+            <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
+              <el-table-column width="100" property="source" label="source">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.source }}</div>
+                  <el-form-item v-else prop="source">
+                    <el-input v-model="input.source"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="100" property="target" label="target">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.target }}</div>
+                  <el-form-item v-else prop="source">
+                    <el-input v-model="input.target"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="250" label="option">
+                <template slot-scope="scope">
+                  <el-form-item>
+<!--                    <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>-->
+                    <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
+                    <el-button v-if="editable" @click="editable=false">取消</el-button>
+                    <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
 
+          <el-form ref="input" :model="input" :rules="editRulesN" status-icon>
+            <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
+              <el-table-column width="100" property="id" label="id">
+                <template slot-scope="scope">
+                  <div>{{ scope.row.id }}</div>
+                </template>
+              </el-table-column>
+              <el-table-column width="150" property="name" label="name">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.name }}</div>
+                  <el-form-item v-else prop="name">
+                    <el-input v-model="input.name"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="100" property="category" label="category">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.category }}</div>
+                  <el-form-item v-else prop="category">
+                    <el-input v-model="input.category"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="200" property="symbolSize" label="symbolSize">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.symbolSize }}</div>
+                  <el-form-item v-else prop="symbolSize">
+                    <el-input v-model="input.symbolSize"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="150" property="value" label="value">
+                <template slot-scope="scope">
+                  <div v-if="!editable">{{ scope.row.value }}</div>
+                  <el-form-item v-else prop="value">
+                    <el-input v-model="input.value"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column width="250" label="option">
+                <template slot-scope="scope">
+                  <el-form-item>
+                    <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
+                    <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
+                    <el-button v-if="editable" @click="editable=false">取消</el-button>
+                    <el-button type="danger" @click="handleDelete(scope.row, 'node')">删除</el-button>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+        </el-popover>
+        <div class="box-item">
+          <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
+          <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
+        </div>
 
         <div class="box-item">
           <el-popover
@@ -110,249 +201,173 @@
             <span style="font-size: 12px">{{info}}</span>
           </div>
       </el-tab-pane>
-        <el-tab-pane label="样式设置" name="second">
-        <div class="block">
-          <span class="demonstration">调整线条曲度(长度)</span>
-          <el-slider v-model="value1" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
-        </div>
-        <div class="block">
-          <span class="demonstration">调整节点图标大小</span>
-          <el-slider v-model="value2" @change="changeSymbolSize" :min=0.1 :max=2 :step=0.1></el-slider>
-        </div>
-        <div class="block">
-          <span class="demonstration">调整节点文字大小</span>
-          <el-slider v-model="value3" :min=5 :max=30 @change="changeFontSize"></el-slider>
-        </div>
-        <div class="block">
-          <span class="demonstration">缩放等级</span>
-          <el-slider v-model="value4" :min=0.1 :max=3 :step="0.1" @change="changeZoom"></el-slider>
-          <el-button type="primary" plain @click="gobackZoom">恢复</el-button>
-        </div>
-        <div class="block">
-          <el-checkbox v-model="showTooltip" @change="changeTooltip" border>是否显示标签</el-checkbox>
-        </div>
-        <div class="block">
-          <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit" @click="startGraphicalEdit"></el-button>
-          <el-button-group v-if="editmode!=='none'">
-                      <el-button type="text" icon="el-icon-plus" @click="setEditMode('add')">
-<!--                      <el-select>-->
-<!--                          <el-option v-for="(item, index) in addTypes" :value="item" :label="item" :key="index"></el-option>-->
-<!--                      </el-select>-->
-                      </el-button>
-              <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
-              <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
-              <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
-              <el-button type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
-              <el-popover
-                      ref="popover1"
-                      placement="left"
-                      trigger="click"
-              >
-                  <el-form ref="input" :model="input" :rules="editRulesE" status-icon>
-                      <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
-                          <el-table-column width="100" property="source" label="source">
-                              <template slot-scope="scope">
-                                  <div v-if="!editable">{{ scope.row.source }}</div>
-                                  <el-form-item v-else prop="source">
-                                      <el-input v-model="input.source"></el-input>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="100" property="target" label="target">
-                              <template slot-scope="scope">
-                                  <div v-if="!editable">{{ scope.row.target }}</div>
-                                  <el-form-item v-else prop="source">
-                                      <el-input v-model="input.target"></el-input>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="250" label="option">
-                              <template slot-scope="scope">
-                                  <el-form-item>
-                                      <!--                    <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>-->
-                                      <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
-                                      <el-button v-if="editable" @click="editable=false">取消</el-button>
-                                      <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                      </el-table>
-                  </el-form>
 
-                  <el-form ref="input" :model="input" :rules="editRulesN" status-icon>
-                      <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
-                          <el-table-column width="100" property="id" label="id">
-                              <template slot-scope="scope">
-                                  <div>{{ scope.row.id }}</div>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="150" property="name" label="name">
-                              <template slot-scope="scope">
-                                  <div v-if="!editable">{{ scope.row.name }}</div>
-                                  <el-form-item v-else prop="name">
-                                      <el-input v-model="input.name"></el-input>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="100" property="category" label="category">
-                              <template slot-scope="scope">
-                                  <div v-if="!editable">{{ scope.row.category }}</div>
-                                  <el-form-item v-else prop="category">
-                                      <el-input v-model="input.category"></el-input>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="200" property="symbolSize" label="symbolSize">
-                              <template slot-scope="scope">
-                                  <div v-if="!editable">{{ scope.row.symbolSize }}</div>
-                                  <el-form-item v-else prop="symbolSize">
-                                      <el-input v-model="input.symbolSize"></el-input>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="150" property="value" label="value">
-                              <template slot-scope="scope">
-                                  <div v-if="!editable">{{ scope.row.value }}</div>
-                                  <el-form-item v-else prop="value">
-                                      <el-input v-model="input.value"></el-input>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                          <el-table-column width="250" label="option">
-                              <template slot-scope="scope">
-                                  <el-form-item>
-                                      <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
-                                      <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
-                                      <el-button v-if="editable" @click="editable=false">取消</el-button>
-                                      <el-button type="danger" @click="handleDelete(scope.row, 'node')">删除</el-button>
-                                  </el-form-item>
-                              </template>
-                          </el-table-column>
-                      </el-table>
-                  </el-form>
-              </el-popover>
-              <div class="box-item">
-                  <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
-                  <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
-              </div>
-          </el-button-group>
-            <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm" :rules="graphicalAddNodeRules" status-icon>
+        <el-tab-pane label="样式设置" name="second">
+          <div class="style-box">
+            <div class="style-box-item">
+              <span class="demonstration">调整线条曲度(长度)</span>
+              <el-slider v-model="value1" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
+            </div>
+            <div class="style-box-item">
+              <span class="demonstration">调整节点图标大小</span>
+              <el-slider v-model="value2" @change="changeSymbolSize" :min=0.1 :max=2 :step=0.1></el-slider>
+            </div>
+            <div class="style-box-item">
+              <span class="demonstration">调整节点文字大小</span>
+              <el-slider v-model="value3" :min=5 :max=30 @change="changeFontSize"></el-slider>
+            </div>
+            <div class="style-box-item">
+              <span class="demonstration">缩放等级</span>
+              <el-slider v-model="value4" :min=0.1 :max=3 :step="0.1" @change="changeZoom"></el-slider>
+              <el-button type="primary" plain @click="gobackZoom">恢复</el-button>
+            </div>
+            <div class="block">
+              <el-checkbox v-model="showTooltip" @change="changeTooltip" border>是否显示标签</el-checkbox>
+            </div>
+            <div class="block">
+              <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
+                         @click="startGraphicalEdit"></el-button>
+              <el-button-group v-if="editmode!=='none'">
+                <el-button type="text" icon="el-icon-plus" @click="setEditMode('add')">
+                  <!--                      <el-select>-->
+                  <!--                          <el-option v-for="(item, index) in addTypes" :value="item" :label="item" :key="index"></el-option>-->
+                  <!--                      </el-select>-->
+                </el-button>
+                <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
+                <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
+                <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
+                <el-button type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
+              </el-button-group>
+              <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
+                       :rules="graphicalAddNodeRules" status-icon>
+                <!--                <el-form-item label="pic_name">-->
+                <!--                    <el-input disabled v-model="graphicalAddNodeForm.pic_name"></el-input>-->
+                <!--                </el-form-item>-->
                 <el-form-item label="name">
-                    <el-input v-model="graphicalAddNodeForm.name"></el-input>
+                  <el-input v-model="graphicalAddNodeForm.name"></el-input>
                 </el-form-item>
                 <el-form-item label="category">
-                    <el-select v-model="graphicalAddNodeForm.category">
-                        <el-option v-for="(item, index) in savedgraph.categories"
-                                   :key="index" :label="item.name" :value="item.name"></el-option>
-                    </el-select>
+                  <el-select v-model="graphicalAddNodeForm.category">
+                    <el-option v-for="(item, index) in savedgraph.categories"
+                               :key="index" :label="item.name" :value="item.name"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="itemStyle">
-                    <el-color-picker label="color" v-model="graphicalAddNodeForm.itemStyle.color"></el-color-picker>
+                  <el-color-picker label="color" v-model="graphicalAddNodeForm.itemStyle.color"></el-color-picker>
                 </el-form-item>
                 <el-form-item label="label">
-                    <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
-<!--                    <el-switch label="show" v-model="graphicalAddNodeForm.label.show"></el-switch>-->
+                  <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
+                  <!--                    <el-switch label="show" v-model="graphicalAddNodeForm.label.show"></el-switch>-->
                 </el-form-item>
                 <el-form-item label="symbol">
-                    <el-select v-model="graphicalAddNodeForm.category">
-                        <el-option v-for="(item, index) in savedgraph.categories"
-                                   :key="index" :label="item.name" :value="index"></el-option>
-                    </el-select>
+                  <el-select v-model="graphicalAddNodeForm.category">
+                    <el-option v-for="(item, index) in savedgraph.categories"
+                               :key="index" :label="item.name" :value="index"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="symbolSize">
-                    <el-input v-model="graphicalAddNodeForm.symbolSize"></el-input>
+                  <el-input v-model="graphicalAddNodeForm.symbolSize"></el-input>
                 </el-form-item>
                 <el-form-item label="value">
-                    <el-input v-model="graphicalAddNodeForm.value"></el-input>
+                  <el-input v-model="graphicalAddNodeForm.value"></el-input>
                 </el-form-item>
                 <el-form-item label="x-position">
-                    <el-input v-model="graphicalAddNodeForm.x"></el-input>
+                  <el-input v-model="graphicalAddNodeForm.x"></el-input>
                 </el-form-item>
                 <el-form-item label="y-position">
-                    <el-input v-model="graphicalAddNodeForm.y"></el-input>
+                  <el-input v-model="graphicalAddNodeForm.y"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="graphicalAddNode">添加</el-button>
-                    <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>
-                    <el-button>取消</el-button>
+                  <el-button type="primary" @click="graphicalAddNode">添加</el-button>
+                  <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>
+                  <el-button>取消</el-button>
                 </el-form-item>
-            </el-form>
-        </div>
-      </el-tab-pane>
-        <el-tab-pane label="搜索" name="third">
-              <div class="box-item">
-                  <el-form ref="searchNodeForm" :model="searchNodeForm">
-<!--                      <el-form-item label="pic_name">-->
-<!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
-<!--                      </el-form-item>-->
-                      <el-form-item label="category">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchNodeForm.label"
-                                  :fetch-suggestions="labelComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item label="name">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchNodeForm.name"
-                                  :fetch-suggestions="nnameComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item label="lowerBound">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchNodeForm.lowerbound"
-                                  :fetch-suggestions="lbComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item label="upperBound">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchNodeForm.upperbound"
-                                  :fetch-suggestions="ubComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item>
-                          <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
-                          <el-button>取消</el-button>
-                      </el-form-item>
-                  </el-form>
-              </div>
-              <div class="box-item">
-                  <el-form ref="searchEdgeForm" :model="searchEdgeForm">
-                      <el-form-item label="name">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchEdgeForm.name"
-                                  :fetch-suggestions="enameComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item label="source">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchEdgeForm.source"
-                                  :fetch-suggestions="sourceComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item label="target">
-                          <el-autocomplete
-                                  class="inline-input"
-                                  v-model="searchEdgeForm.target"
-                                  :fetch-suggestions="targetComplete"></el-autocomplete>
-                      </el-form-item>
-                      <el-form-item>
-                          <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
-                          <el-button>取消</el-button>
-                      </el-form-item>
-                  </el-form>
-              </div>
-          </el-tab-pane>
-        <el-tab-pane label="下载" name="fourth">
-          <div class="box-item">
-            <el-button type="primary" plain icon="el-icon-download" @click="downloadImg" id="downimg">下载Img</el-button>
-          </div>
-          <div class="box-item">
-            <el-button type="primary" plain icon="el-icon-download" @click="downloadJson" id="downjson">下载Json</el-button>
-          </div>
-          <div class="box-item">
-            <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
+              </el-form>
+            </div>
           </div>
         </el-tab-pane>
+
+        <el-tab-pane label="搜索" name="third">
+          <div class="box-item">
+            <el-form ref="searchNodeForm" :model="searchNodeForm">
+              <!--                      <el-form-item label="pic_name">-->
+              <!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
+              <!--                      </el-form-item>-->
+              <el-form-item label="category">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchNodeForm.label"
+                    :fetch-suggestions="labelComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item label="name">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchNodeForm.name"
+                    :fetch-suggestions="nnameComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item label="lowerBound">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchNodeForm.lowerbound"
+                    :fetch-suggestions="lbComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item label="upperBound">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchNodeForm.upperbound"
+                    :fetch-suggestions="ubComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
+                <el-button>取消</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div class="box-item">
+            <el-form ref="searchEdgeForm" :model="searchEdgeForm">
+              <el-form-item label="name">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchEdgeForm.name"
+                    :fetch-suggestions="enameComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item label="source">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchEdgeForm.source"
+                    :fetch-suggestions="sourceComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item label="target">
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="searchEdgeForm.target"
+                    :fetch-suggestions="targetComplete"></el-autocomplete>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
+                <el-button>取消</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-tab-pane>
+
+        <el-tab-pane label="下载" name="fourth">
+          <div class="download-box">
+            <div class="download-box-item">
+              <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载Img
+              </el-button>
+            </div>
+            <div class="download-box-item">
+              <el-button type="primary" plain icon="el-icon-download" @click="downloadJson">下载Json
+              </el-button>
+            </div>
+            <div class="download-box-item">
+              <el-button type="primary" plain icon="el-icon-download" @click="downloadXml">下载Xml
+              </el-button>
+            </div>
+          </div>
+        </el-tab-pane>
+
       </el-tabs>
     </div>
 
@@ -363,7 +378,7 @@
 <script>
 import $ from 'jquery'
 
-const ROOT_PATH = 'http://figureair.gitee.io/figureair.github.io/data/les-miserables.json';
+const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
 
 // const ECHARTS_SYMBOLS = ['circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow',' none'];
 
@@ -422,8 +437,6 @@ export default {
       infovisible: false,
       editmode: 'none',
       editions: [],
-
-      searchMode: 'node',
 
       copiedgraph: '',
 
@@ -1391,16 +1404,6 @@ export default {
         else console.log("样式上传失败")}
       })
 
-        $.ajax({
-            url: 'http://47.99.190.169:8888/save',
-            type: 'post',
-            data: JSON.stringify(res),
-            dataType: 'json',
-            contentType: 'application/json; charset=UTF-8',
-            success: function (res) {if(res.success)console.log("数据上传成功!")
-            else console.log("数据上传失败")}
-        })
-
       let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res));
       let downloadAnchorNode = document.createElement('a');
       downloadAnchorNode.setAttribute("href", dataStr);
@@ -2011,6 +2014,14 @@ export default {
           }
           console.log("line 1703")
           that.savedgraph.links.push(newEdge);
+          // that.myChart.setOption({
+          //   series: [
+          //     {
+          //       data: that.savedgraph.nodes,
+          //       links: that.savedgraph.links
+          //     }
+          //   ]
+          // });
           that.initpage();
           const op = {
             option: 'add',
@@ -2038,7 +2049,7 @@ export default {
       saveGraphicalEdit(e) {
           console.log(e);
           this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
-          this.uploadJSON();
+          // this.uploadJSON();
           if (this.editions.length === 0) this.$message.info('毫无变化');
         console.log("save and upload")
       },
@@ -2108,7 +2119,6 @@ export default {
                     'lowerBound': that.searchNodeForm.lowerbound,
                     'upperBound': that.searchNodeForm.upperbound,
                 };
-                console.log(res);
                 $.ajax({
                     url: 'http://47.99.190.169:8888/node/find',
                     type: 'post',
@@ -2120,24 +2130,8 @@ export default {
                         if (r.success) {
                             that.searchNodeHistory.push(res);
                             const nodes = r.content;
-                            let opt = that.myChart.getOption();
-                            opt.series[0].data.forEach((node) => {
-                                if (nodes.findIndex((item) => item.id === node.id) !== -1) {
-                                    if (node.itemStyle == null) {
-                                        node.itemStyle = {
-                                            borderWidth: 10,
-                                            borderColor: "rgba(0, 0, 0, 1)"
-
-                                        };
-                                    }
-                                    else {
-                                        node.itemStyle.borderWidth = 10
-                                        node.itemStyle.borderColor = "rgba(0, 0, 0, 1)"
-
-                                    }
-                                }
-                            })
-                            that.myChart.setOption(opt);
+                            console.log(nodes);
+                            console.log(that.searchNodeHistory);
                             that.resetSearchForm();
                         }
                     }
@@ -2151,18 +2145,16 @@ export default {
 
       handleEdgeSearch() {
           let that = this;
-          this.$refs['searchEdgeForm'].validate((valid) => {
+          this.$refs['searchNodeForm'].validate((valid) => {
               if (valid) {
                   console.log(that.searchEdgeForm);
                   const res = {
                       'pic_name': that.savedgraph.pic_name,
                       'uid': 0,
                       'name': that.searchEdgeForm.name,
-                      'source': that.searchEdgeForm.source,
+                      'source': that.searchEdgeForm.label,
                       'target': that.searchEdgeForm.target,
                   };
-
-                  console.log(res);
 
                   $.ajax({
                       url: 'http://47.99.190.169:8888/relationship/find',
@@ -2176,25 +2168,7 @@ export default {
                               that.searchEdgeHistory.push(res);
                               const edges = r.content;
                               console.log(edges)
-                              let opt = that.myChart.getOption();
-                              opt.series[0].links.forEach((edge) => {
-                                  if (edges.findIndex((item) => item.id == edge.id) !== -1) {
-                                      console.log('........')
-                                      if (edge.lineStyle == null) {
-                                          edge.lineStyle = {
-                                              width: 10,
-                                              color: "rgba(0, 0, 0, 1)"
-                                          };
-                                      }
-                                      else {
-                                          edge.lineStyle.width = 10
-                                          edge.lineStyle.color = "rgba(0, 0, 0, 1)"
-                                      }
-                                  }
-                              })
-
-                              that.myChart.setOption(opt);
-                              that.resetSearchForm();
+                              console.log(that.searchEdgeHistory)
                           }
                       }
                   })
@@ -2283,6 +2257,18 @@ export default {
 .searchInput {
   width: 70%;
   margin: 0 10px 0;
+}
+
+.download-box{
+  margin-top: 50px;
+}
+
+.download-box-item{
+  margin-top: 20px;
+}
+
+.style-box-item{
+  width:80%;
 }
 
 </style>
