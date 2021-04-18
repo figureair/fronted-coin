@@ -439,7 +439,7 @@ export default {
       editions: [],
 
       searchMode: 'node',
-      ECHARTS_SYMBOLS: ['circle'],
+      ECHARTS_SYMBOLS: ['circle','rect','roundRect','triangle','diamond','pin','arrow'],
       graphicalAddNodePopoverVisible: true,
 
       copiedgraph: '',
