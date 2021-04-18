@@ -323,17 +323,23 @@
               </div>
               <div class="box-item">
                   <el-form ref="searchEdgeForm" :model="searchEdgeForm">
-<!--                      <el-form-item label="pic_name">-->
-<!--                          <el-input v-model="searchEdgeForm.pic_name" disabled></el-input>-->
-<!--                      </el-form-item>-->
                       <el-form-item label="name">
-                          <el-input v-model="searchEdgeForm.name"></el-input>
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchEdgeForm.name"
+                                  :fetch-suggestions="enameComplete"></el-autocomplete>
                       </el-form-item>
                       <el-form-item label="source">
-                          <el-input v-model="searchEdgeForm.source"></el-input>
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchEdgeForm.source"
+                                  :fetch-suggestions="sourceComplete"></el-autocomplete>
                       </el-form-item>
                       <el-form-item label="target">
-                          <el-input v-model="searchEdgeForm.target"></el-input>
+                          <el-autocomplete
+                                  class="inline-input"
+                                  v-model="searchEdgeForm.target"
+                                  :fetch-suggestions="targetComplete"></el-autocomplete>
                       </el-form-item>
                       <el-form-item>
                           <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
