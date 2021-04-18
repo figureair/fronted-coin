@@ -4,61 +4,61 @@
 
     <div id="text-box">
       <el-tabs v-model="activeName" type="card">
+
         <el-tab-pane label="基础信息" name="first">
-        <div id="selector-box" class="box-item">
-          <div id="selector-title">样式选择:</div>
-          <el-select id="selector" v-model="value" @change="changeTo">
-            <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-            </el-option>
-          </el-select>
-        </div>
+          <div id="selector-box" class="box-item">
+            <div id="selector-title">样式选择:</div>
+            <el-select id="selector" v-model="value" @change="changeTo">
+              <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
 
-<!--        上传知识图谱-->
-        <div class="box-item ">
-          <el-upload
-              action=""
-              :before-upload="beforeJSONUpload"
-          >
-            <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
+          <div class="box-item ">
+            <el-upload
+                action=""
+                :before-upload="beforeJSONUpload"
+            >
+              <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
 
-          </el-upload>
-          <el-button type="text" id="tip" @click="dialogVisible=true">导入须知</el-button>
-          <el-dialog
-              title="导入须知"
-              :visible.sync="dialogVisible"
-              width="30%">
+            </el-upload>
+            <el-button type="text" id="tip" @click="dialogVisible=true">导入须知</el-button>
+            <el-dialog
+                title="导入须知"
+                :visible.sync="dialogVisible"
+                width="30%">
           <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories，pic_name四个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
           </span>
-            <span slot="footer" class="dialog-footer">
+              <span slot="footer" class="dialog-footer">
             <el-button type="primary" id="tipclose" @click="dialogVisible=false">确 定</el-button>
           </span>
-          </el-dialog>
-          <el-dialog
-              title="已存在"
-              :visible.sync="haveGraphInDatabase"
-              width="30%">
-          <span>查询到数据库已存在同名知识图谱，是否导入？（之后的操作将对同名知识图谱造成影响，如有必要，请重命名pic_name）</span>
-            <span slot="footer" class="dialog-footer">
+            </el-dialog>
+            <el-dialog
+                title="已存在"
+                :visible.sync="haveGraphInDatabase"
+                width="30%">
+              <span>查询到数据库已存在同名知识图谱，是否导入？（之后的操作将对同名知识图谱造成影响，如有必要，请重命名pic_name）</span>
+              <span slot="footer" class="dialog-footer">
             <el-button @click="ifimportfromDatabase(false)">取 消</el-button>
             <el-button type="primary" @click="ifimportfromDatabase(true)">确 定</el-button>
           </span>
-          </el-dialog>
-        </div>
-
-        <div class="box-item">
-          <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
-          <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
-          <el-button type="primary" plain @click="saveLayout">保存布局</el-button>
-        </div>
+            </el-dialog>
+          </div>
 
           <div class="box-item">
-            <span style="font-size: 12px">{{info}}</span>
+            <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
+            <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
+            <el-button type="primary" plain @click="saveLayout">保存布局</el-button>
           </div>
-      </el-tab-pane>
+
+          <div class="box-item">
+            <span style="font-size: 12px">{{ info }}</span>
+          </div>
+        </el-tab-pane>
 
         <el-tab-pane label="展示效果" name="second">
             <div class="style-box-item">
@@ -284,64 +284,73 @@
         </el-tab-pane>
 
         <el-tab-pane label="搜索" name="fourth">
-          <div class="box-item">
-            <el-form ref="searchNodeForm" :model="searchNodeForm">
-              <el-form-item label="category">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchNodeForm.label"
-                    :fetch-suggestions="labelComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item label="name">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchNodeForm.name"
-                    :fetch-suggestions="nnameComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item label="lowerBound">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchNodeForm.lowerbound"
-                    :fetch-suggestions="lbComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item label="upperBound">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchNodeForm.upperbound"
-                    :fetch-suggestions="ubComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
-                <el-button>取消</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="box-item">
-            <el-form ref="searchEdgeForm" :model="searchEdgeForm">
-              <el-form-item label="name">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchEdgeForm.name"
-                    :fetch-suggestions="enameComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item label="source">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchEdgeForm.source"
-                    :fetch-suggestions="sourceComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item label="target">
-                <el-autocomplete
-                    class="inline-input"
-                    v-model="searchEdgeForm.target"
-                    :fetch-suggestions="targetComplete"></el-autocomplete>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
-                <el-button>取消</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
+          <el-tabs type="card" id="search-tab">
+            <el-tab-pane label="搜索节点" name="fourth-1">
+              <div class="search-box-item">
+                <el-form ref="searchNodeForm" :model="searchNodeForm" class="search-form">
+                  <!--                      <el-form-item label="pic_name">-->
+                  <!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
+                  <!--                      </el-form-item>-->
+                  <el-form-item label="category">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchNodeForm.label"
+                        :fetch-suggestions="labelComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item label="name">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchNodeForm.name"
+                        :fetch-suggestions="nnameComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item label="lowerBound">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchNodeForm.lowerbound"
+                        :fetch-suggestions="lbComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item label="upperBound">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchNodeForm.upperbound"
+                        :fetch-suggestions="ubComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
+                    <el-button>取消</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="搜索关系" name="fourth-2">
+              <div class="search-box-item">
+                <el-form ref="searchEdgeForm" :model="searchEdgeForm" class="search-form">
+                  <el-form-item label="name">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchEdgeForm.name"
+                        :fetch-suggestions="enameComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item label="source">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchEdgeForm.source"
+                        :fetch-suggestions="sourceComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item label="target">
+                    <el-autocomplete
+                        class="inline-input"
+                        v-model="searchEdgeForm.target"
+                        :fetch-suggestions="targetComplete"></el-autocomplete>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
+                    <el-button>取消</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </el-tab-pane>
 
         <el-tab-pane label="下载" name="fifth">
@@ -360,6 +369,7 @@
             </div>
           </div>
         </el-tab-pane>
+
       </el-tabs>
     </div>
 
@@ -626,6 +636,7 @@ export default {
           zoom:this.old_value4
         }
       })
+      this.value4=this.old_value4
     },
 
     changeZoom(){
@@ -2220,9 +2231,6 @@ export default {
       setEditMode(mode) {
         this.$message.info('now in ' + mode + ' mode');
         this.editmode = mode;
-        if (mode === 'add') {
-          this.graphicalAddNodePopoverVisible = true;
-        }
       }
   }
 }
@@ -2260,7 +2268,7 @@ export default {
   justify-content: space-evenly;
   text-align: center;
   align-items: center;
-  margin: 10px 0;
+  margin-top: 30px;
 }
 
 #selector-box {
@@ -2307,5 +2315,22 @@ export default {
   margin: 0 auto;
   margin-top: 10px;
 }
+
+.search-box-item{
+
+  width: 100%;
+  justify-content: space-evenly;
+  text-align: center;
+  align-items: center;
+
+  overflow-y: auto;
+  height:400px;
+  margin-top: 30px;
+}
+
+.search-form{
+  margin-left: 30px;
+}
+
 
 </style>
