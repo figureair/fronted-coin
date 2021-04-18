@@ -3,8 +3,8 @@
     <div id="myChart"></div>
 
     <div id="text-box">
-      <el-tabs v-model="activeName">
-      <el-tab-pane label="基础设置" name="first">
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="基础信息" name="first">
         <div id="selector-box" class="box-item">
           <div id="selector-title">样式选择:</div>
           <el-select id="selector" v-model="value" @change="changeTo">
@@ -16,15 +16,7 @@
             </el-option>
           </el-select>
         </div>
-        <div class="box-item">
-          <el-button type="primary" plain icon="el-icon-download" @click="downloadImg" id="downimg">下载Img</el-button>
-        </div>
-        <div class="box-item">
-          <el-button type="primary" plain icon="el-icon-download" @click="downloadJson" id="downjson">下载Json</el-button>
-        </div>
-        <div class="box-item">
-          <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
-        </div>
+
 <!--        上传知识图谱-->
         <div class="box-item ">
           <el-upload
@@ -82,7 +74,7 @@
               <el-table-column width="250" label="option">
                 <template slot-scope="scope">
                   <el-form-item>
-                    <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>
+<!--                    <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>-->
                     <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
                     <el-button v-if="editable" @click="editable=false">取消</el-button>
                     <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>
@@ -204,8 +196,12 @@
           <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
           <el-button type="primary" plain @click="saveLayout">保存布局</el-button>
         </div>
+
+          <div class="box-item">
+            <span style="font-size: 12px">{{info}}</span>
+          </div>
       </el-tab-pane>
-      <el-tab-pane label="展示效果" name="second">
+        <el-tab-pane label="样式设置" name="second">
         <div class="block">
           <span class="demonstration">调整线条曲度(长度)</span>
           <el-slider v-model="value1" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
@@ -285,7 +281,7 @@
             </el-form>
         </div>
       </el-tab-pane>
-          <el-tab-pane label="搜索" name="third">
+        <el-tab-pane label="搜索" name="third">
               <div class="box-item">
                   <el-form ref="searchNodeForm" :model="searchNodeForm">
 <!--                      <el-form-item label="pic_name">-->
@@ -348,27 +344,20 @@
                   </el-form>
               </div>
           </el-tab-pane>
+        <el-tab-pane label="下载" name="fourth">
+          <div class="box-item">
+            <el-button type="primary" plain icon="el-icon-download" @click="downloadImg" id="downimg">下载Img</el-button>
+          </div>
+          <div class="box-item">
+            <el-button type="primary" plain icon="el-icon-download" @click="downloadJson" id="downjson">下载Json</el-button>
+          </div>
+          <div class="box-item">
+            <el-button type="primary" plain icon="el-icon-download" @click="downloadXml" id="downxml">下载Xml</el-button>
+          </div>
+        </el-tab-pane>
       </el-tabs>
-      <div class="box-item">
-        <span style="font-size: 14px">{{info}}</span>
-<!--        <el-button class="detail-info" type="text" @click="infovisible=true">详细</el-button>-->
-<!--        <el-dialog-->
-<!--          class="detail-info"-->
-<!--          title="详细"-->
-<!--          width="50%"-->
-<!--          :visible.sync="infovisible"-->
-<!--          center>-->
-<!--          <span>........</span>-->
-<!--          <template #footer>-->
-<!--            <span class="dialog-footer">-->
-<!--              <el-button @click="infovisible=false">取 消</el-button>-->
-<!--              <el-button type="primary" @click="infovisible=false">确 定</el-button>-->
-<!--            </span>-->
-<!--          </template>-->
-<!--        </el-dialog>-->
-      </div>
-
     </div>
+
   </div>
 </template>
 
@@ -988,7 +977,7 @@ export default {
           if (link.label.fontSize == null) link.label.fontSize = false
         }
       });
-      that.info = '共有' + graph.nodes.length + '个节点，' + graph.links.length + '条边';
+      that.info = '统计:共有' + graph.nodes.length + '个节点,' + graph.links.length + '条边';
       that.option1 = {
         tooltip: {
           position: 'right',
