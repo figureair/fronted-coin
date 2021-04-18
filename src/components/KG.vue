@@ -197,6 +197,16 @@
                       </el-form-item>
                     </template>
                   </el-table-column>
+                    <el-table-column width="150" property="symbol" label="symbol">
+                        <template slot-scope="scope">
+                            <div v-if="!editable">{{ scope.row.symbol }}</div>
+                            <el-form-item v-else prop="value">
+                                <el-select v-model="input.symbol">
+                                    <el-option v-for="(item, index) in ECHARTS_SYMBOLS"
+                                               :key="index" :label="item" :value="item"></el-option>
+                                </el-select>                            </el-form-item>
+                        </template>
+                    </el-table-column>
                   <el-table-column width="200" property="symbolSize" label="symbolSize">
                     <template slot-scope="scope">
                       <div v-if="!editable">{{ scope.row.symbolSize }}</div>
@@ -205,14 +215,31 @@
                       </el-form-item>
                     </template>
                   </el-table-column>
-                  <el-table-column width="150" property="value" label="value">
+                    <el-table-column width="150" property="value" label="value">
+                        <template slot-scope="scope">
+                            <div v-if="!editable">{{ scope.row.value }}</div>
+                            <el-form-item v-else prop="value">
+                                <el-input v-model="input.value"></el-input>
+                            </el-form-item>
+                        </template>
+                    </el-table-column>
+                  <el-table-column width="80" property="x" label="x">
                     <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.value }}</div>
+                      <div v-if="!editable">{{ scope.row.x }}</div>
                       <el-form-item v-else prop="value">
-                        <el-input v-model="input.value"></el-input>
+                        <el-input v-model="input.x"></el-input>
                       </el-form-item>
                     </template>
                   </el-table-column>
+                    <el-table-column width="80" property="y" label="y">
+                        <template slot-scope="scope">
+                            <div v-if="!editable">{{ scope.row.y }}</div>
+                            <el-form-item v-else prop="value">
+                                <el-input v-model="input.y"></el-input>
+                            </el-form-item>
+                        </template>
+                    </el-table-column>
+
                   <el-table-column width="250" label="option">
                     <template slot-scope="scope">
                       <el-form-item>
@@ -1811,6 +1838,9 @@ export default {
           tmp.value = that.input.value;
           tmp.symbolSize = that.input.symbolSize;
           tmp.category = parseInt(that.input.category);
+          tmp.symbol = that.input.symbol;
+          tmp.x = that.input.x;
+          tmp.y = that.input.y;
           that.initpage();
           that.selectedItem.push(that.savedgraph.nodes[that.input.index]);
         }
@@ -1828,7 +1858,10 @@ export default {
           name: row.name,
           category: row.category,
           symbolSize: row.symbolSize,
-          value: row.value
+          value: row.value,
+            symbol: row.symbol,
+            x: row.x,
+            y: row.y
         }
 
       }
