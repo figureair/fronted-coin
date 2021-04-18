@@ -89,7 +89,7 @@
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
                        @click="startGraphicalEdit"></el-button>
             <el-button-group v-if="editmode!=='none'">
-              <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px">
+              <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px" class="popover4">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
                          :rules="graphicalAddNodeRules" status-icon label="添加节点" style="width: 300px" label-position="top" label-width="180px">
                   <el-form-item label="name">
@@ -2332,5 +2332,9 @@ export default {
   margin-left: 30px;
 }
 
+.el-form{
+  max-height: 600px;
+  overflow: auto;
+}
 
 </style>
