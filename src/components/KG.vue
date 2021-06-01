@@ -693,11 +693,10 @@ export default {
 
     changeCurveness(){
       let tmpcurveness=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
-      for (let i=0;i<this.option1.series[0].links.length;i++)
-      {
-        tmpcurveness[i].lineStyle.curveness=this.value1;
+      for (let i=0;i<this.option1.series[0].links.length;i++) {
+        if(tmpcurveness[i].lineStyle==null)tmpcurveness[i].lineStyle={curveness:this.value1}
+        else tmpcurveness[i].lineStyle.curveness = this.value1;
       }
-
       this.myChart.setOption({
         series:[{
           links:tmpcurveness
