@@ -667,9 +667,6 @@ export default {
     },
 
     changeZoom(){
-
-
-
       this.myChart.setOption({
         series: {
           zoom: this.value4
@@ -969,9 +966,16 @@ export default {
       $("#selector").val('关系图');
 
       let that = this
+
+      for (let i = 0; i < that.savedgraph.links.length; i++) {
+        let prop = that.savedgraph.links[i]
+        prop.source = prop.source+""
+        prop.target= prop.target+""
+      }
+
+
       //初始设置为option1
       let graph = JSON.parse(JSON.stringify(that.savedgraph))
-      let index = 0;
       if(graph.zoom==null){
         graph.zoom=1
       }
@@ -980,7 +984,7 @@ export default {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = index++;
+        node.index = node.id;
         if(typeof(node.category)!='number'){
           for(let i=0;i<graph.categories.length;i++){
             if(graph.categories[i].name===node.category){
@@ -997,13 +1001,16 @@ export default {
         else if(node.tooltip.show==null)node.tooltip.show=true
         if(node.label.fontSize==null)node.label.fontSize=12
       });
-      index = 0;
+      let index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted'}
         }
-        link.id=index+''
-        link.index = index++;
+        if (link.id == null){
+          link.id=index+''
+          index++
+        }
+        link.index = link.id;
         if(link.lineStyle==null)link.lineStyle={color:null,width:2,type:'solid',curveness:1}
         else {
           if (link.lineStyle.color== null) link.lineStyle.color = null
@@ -1122,7 +1129,6 @@ export default {
 
       //预存option2
       graph = JSON.parse(JSON.stringify(that.savedgraph))
-      index = 0;
       if(graph.nodes.length>=15 || graph.links.length>=30){
         graph.zoom=3
       }
@@ -1133,14 +1139,18 @@ export default {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = index++;
+        node.index = node.id;
       });
       index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted', width: '2'}
         }
-        link.index = index++;
+        if (link.id == null){
+          link.id=index+''
+          index++
+        }
+        link.index = link.id;
       });
       that.option2 = {
         tooltip: {
@@ -1199,19 +1209,22 @@ export default {
 
       //预存option3
       graph = JSON.parse(JSON.stringify(that.savedgraph))
-      index = 0;
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = index++;
+        node.index = node.id;
       });
       index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted', width: '2'}
         }
-        link.index = index++;
+        if (link.id == null){
+          link.id=index+''
+          index++
+        }
+        link.index = link.id;
       });
       that.option3 = {
         tooltip: {
@@ -1279,19 +1292,22 @@ export default {
       else{
         graph.zoom=0.6
       }
-      index = 0;
       graph.nodes.forEach(function (node) {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = index++;
+        node.index = node.id;
       });
       index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted', width: '2'}
         }
-        link.index = index++;
+        if (link.id == null){
+          link.id=index+''
+          index++
+        }
+        link.index = link.id;
       });
       let whichy=[]
       for(let i=0;i<graph.categories.length;i++){
@@ -1390,7 +1406,7 @@ export default {
       that.value=1;
       that.changeTo(1)
 
-        console.log(that.option1)
+      console.log(that.option1)
     },
 
     chexiao(){
@@ -1650,7 +1666,6 @@ export default {
 
                   that.haveGraphInDatabase=true
                   that.tmpgraph=res.content
-
                   if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
                     for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
                       let prop = that.tmpgraph.nodes[i]
@@ -1658,6 +1673,13 @@ export default {
                       prop.y = 100 * Math.random()
                     }
                   }
+
+                  for (let i = 0; i < that.tmpgraph.links.length; i++) {
+                    let prop = that.tmpgraph.links[i]
+                    prop.source = prop.source+""
+                    prop.target= prop.target+""
+                  }
+
                 }
               }
             })
@@ -2202,6 +2224,8 @@ export default {
 
       handleEdgeSearch() {
           let that = this;
+          console.log(this.myChart.getOption().series[0])
+
           this.$refs['searchEdgeForm'].validate((valid) => {
               if (valid) {
                   console.log(that.searchEdgeForm);
@@ -2230,6 +2254,7 @@ export default {
                               let opt = that.myChart.getOption();
                               opt.series[0].links.forEach((edge) => {
                                   if (edges.findIndex((item) => item.id == edge.id) !== -1) {
+                                    console.log(edge)
                                       if (edge.lineStyle == null) {
                                           edge.lineStyle = {
                                               width: 10,
