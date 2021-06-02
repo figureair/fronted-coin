@@ -87,8 +87,7 @@
         <el-tab-pane label="图元编辑" name="third">
           <div class="block">
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
-                       @click="startGraphicalEdit"></el-button>
-            <el-button-group v-if="editmode!=='none'">
+                       class="edit-button" @click="startGraphicalEdit"></el-button>
               <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px" class="popover4">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
                          :rules="graphicalAddNodeRules" status-icon label="添加节点" style="width: 300px" label-position="top" label-width="180px">
@@ -127,17 +126,14 @@
                   </el-form-item>
                   <el-form-item>
                     <el-button type="primary" @click="graphicalAddNode">添加</el-button>
-<!--                    <el-button type="primary" @click="resetGraphicalAddNodeForm">重置</el-button>-->
-<!--                    <el-button @click="graphicalAddNodePopoverVisible=false">取消</el-button>-->
                   </el-form-item>
                 </el-form>
               </el-popover>
-              <el-button v-popover:addnodepopover type="text" icon="el-icon-plus" @click="setEditMode('add')" ></el-button>
-              <el-button type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
-              <el-button type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
-              <el-button type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
-              <el-button type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
-            </el-button-group>
+              <el-button class="edit-button" v-if="editmode!=='delete' && editmode!=='none'" v-popover:addnodepopover type="text" icon="el-icon-plus" @click="setEditMode('add')" ></el-button>
+              <el-button class="edit-button" v-if="editmode!=='add' && editmode!=='none'" type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
+              <el-button class="edit-button" v-if="editmode!=='none'" type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
+              <el-button class="edit-button" v-if="editmode!=='none'" type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
+              <el-button class="edit-button" v-if="editmode!=='none'" type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
             <el-popover
                     ref="popover1"
                     placement="left"
@@ -257,86 +253,36 @@
               <el-button @click="showAllInfo" type="primary" plain v-popover:popover1>查 看 数 据</el-button>
               <el-checkbox v-model="checked" id="checkbox1">更多信息</el-checkbox>
             </div>
-
-<!--            <div class="box-item">-->
-<!--              <el-popover-->
-<!--                      width="400px"-->
-<!--                      class="form"-->
-<!--                      ref="popover2"-->
-<!--                      placement="left"-->
-<!--                      trigger="click">-->
-<!--                <el-form v-if="addNodeVisible" :model="addNodeForm" status-icon :rules="rulesN" ref="addNodeForm">-->
-<!--                  <el-form-item label="name" prop="name" :required="true">-->
-<!--                    <el-input v-model="addNodeForm.name" placeholder="name"></el-input>-->
-<!--                  </el-form-item>-->
-<!--                  <el-form-item label="symbolSize" prop="symbolSize" :required="true">-->
-<!--                    <el-input v-model="addNodeForm.symbolSize" placeholder="symbolSize"></el-input>-->
-<!--                  </el-form-item>-->
-<!--                  <el-form-item label="category" prop="category" :required="true">-->
-<!--                    <el-input v-model="addNodeForm.category" placeholder="category"></el-input>-->
-<!--                  </el-form-item>-->
-<!--                  <el-form-item label="value" prop="value">-->
-<!--                    <el-input v-model="addNodeForm.value" placeholder="value"></el-input>-->
-<!--                  </el-form-item>-->
-<!--                  <el-form-item>-->
-<!--                    <el-button type="primary" @click="addNode">添加</el-button>-->
-<!--                    <el-button @click="cancel('node')">取消</el-button>-->
-<!--                  </el-form-item>-->
-<!--                </el-form>-->
-<!--              </el-popover>-->
-<!--              <el-button v-popover:popover2 type="primary" plain @click="addNodeVisible=true">添加节点</el-button>-->
-
-
-<!--              <el-popover-->
-<!--                      width="400px"-->
-<!--                      class="form"-->
-<!--                      ref="popover3"-->
-<!--                      placement="left"-->
-<!--                      trigger="click">-->
-<!--                <el-form v-if="addEdgeVisible" :inline="true" status-icon :model="addEdgeForm" ref="addEdgeForm">-->
-<!--                  <el-form-item label="source" prop="source" :required="true">-->
-<!--                    <el-input v-model="addEdgeForm.source" placeholder="source"></el-input>-->
-<!--                  </el-form-item>-->
-<!--                  <el-form-item label="target" prop="target" :required="true">-->
-<!--                    <el-input v-model="addEdgeForm.target" placeholder="target"></el-input>-->
-<!--                  </el-form-item>-->
-<!--                  <el-form-item>-->
-<!--                    <el-button type="primary" @click="addEdge">添加</el-button>-->
-<!--                  </el-form-item>-->
-<!--                </el-form>-->
-<!--              </el-popover>-->
-<!--              <el-button v-popover:popover3 type="primary" plain @click="addEdgeVisible=true">添加边</el-button>-->
-<!--            </div>-->
           </div>
         </el-tab-pane>
 
         <el-tab-pane label="搜索" name="fourth">
-          <el-tabs type="card" id="search-tab">
+          <el-tabs type="card" id="search-tab" v-model="searchTab">
             <el-tab-pane label="搜索节点" name="fourth-1">
               <div class="search-box-item">
                 <el-form ref="searchNodeForm" :model="searchNodeForm" class="search-form">
                   <!--                      <el-form-item label="pic_name">-->
                   <!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
                   <!--                      </el-form-item>-->
-                  <el-form-item label="category">
+                  <el-form-item label="category" prop="label">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchNodeForm.label"
                         :fetch-suggestions="labelComplete"></el-autocomplete>
                   </el-form-item>
-                  <el-form-item label="name">
+                  <el-form-item label="name" prop="name">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchNodeForm.name"
                         :fetch-suggestions="nnameComplete"></el-autocomplete>
                   </el-form-item>
-                  <el-form-item label="lowerBound">
+                  <el-form-item label="lowerBound" prop="lowerbound">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchNodeForm.lowerbound"
                         :fetch-suggestions="lbComplete"></el-autocomplete>
                   </el-form-item>
-                  <el-form-item label="upperBound">
+                  <el-form-item label="upperBound" prop="upperbound">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchNodeForm.upperbound"
@@ -352,19 +298,19 @@
             <el-tab-pane label="搜索关系" name="fourth-2">
               <div class="search-box-item">
                 <el-form ref="searchEdgeForm" :model="searchEdgeForm" class="search-form">
-                  <el-form-item label="name">
+                  <el-form-item label="name" prop="name">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchEdgeForm.name"
                         :fetch-suggestions="enameComplete"></el-autocomplete>
                   </el-form-item>
-                  <el-form-item label="source">
+                  <el-form-item label="source" prop="source">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchEdgeForm.source"
                         :fetch-suggestions="sourceComplete"></el-autocomplete>
                   </el-form-item>
-                  <el-form-item label="target">
+                  <el-form-item label="target" prop="target">
                     <el-autocomplete
                         class="inline-input"
                         v-model="searchEdgeForm.target"
@@ -476,6 +422,9 @@ export default {
 
       searchEdgeForm: {},
       searchEdgeHistory: [],
+        searchTab: 'fourth-1',
+
+
 
       labelComplete: (queryString, cb) => {
           let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.label }))
@@ -904,17 +853,14 @@ export default {
                           }
                           if (that.selectedItem.find((element) =>
                                element.id === item.id)) {
-                              console.log("????!!!!")
                               // 与上一次点击的节点相同则清除
                               that.selectedItem = [];
                           }
                           else {
                               that.selectedItem.push(item);
-                              console.log("<<<<<<<<<<<");
                               if (that.selectedItem.length === 2) {
                                   that.addEdgeOfSelectedNodes();
                                   that.selectedItem = [];
-                                  console.log(">>>>>>>>>")
                               }
                           }
 
@@ -944,9 +890,6 @@ export default {
                       that.editions.push(op);
                       that.deleteEdge(id);
                   }
-                  // else if (that.editmode === 'add') {
-                  //     console.log('add');
-                  // }
                   else {
                       that.selectedItem.length = 0;
                       that.selectedItem.push(item);
@@ -2064,7 +2007,7 @@ export default {
 
       // 开启在线编辑
       startGraphicalEdit() {
-          this.editmode = 'add';
+          this.editmode = 'beginning';
           this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
           this.selectedItem = [];
           this.selectedType = '';
@@ -2123,7 +2066,7 @@ export default {
         this.$refs['graphicalAddNodeForm'].validate((valid) => {
             if (valid) {
                 alert('submit!')
-                console.log(that.graphicalAddNodeForm)
+                // console.log(that.graphicalAddNodeForm)
                 that.checkFormAndAdd();
             }
             else {
@@ -2145,6 +2088,7 @@ export default {
             x: that.graphicalAddNodeForm.x,
             y: that.graphicalAddNodeForm.y,
             pic_name: that.savedgraph.nodes[0].pic_name,
+            symbol: that.graphicalAddNodeForm.symbol,
         };
         if (newNode.x === '') {
             newNode.x = Math.random() * 1000;
@@ -2158,7 +2102,7 @@ export default {
         that.savedgraph.nodes.push(newNode);
         that.initpage();
         that.resetGraphicalAddNodeForm();
-        that.editmode = '';
+        that.editmode = 'add';
       },
 
       resetGraphicalAddNodeForm() {
@@ -2249,7 +2193,7 @@ export default {
                               console.log(edges)
                               let opt = that.myChart.getOption();
                               opt.series[0].links.forEach((edge) => {
-                                  if (edges.findIndex((item) => item.id == edge.id) !== -1) {
+                                  if (edges.findIndex((item) => item.id === edge.id) !== -1) {
                                     console.log(edge)
                                       if (edge.lineStyle == null) {
                                           edge.lineStyle = {
@@ -2279,13 +2223,18 @@ export default {
       resetSearchForm() {
         this.$refs['searchNodeForm'].resetFields();
         this.$refs['searchEdgeForm'].resetFields();
+        // console.log("????????")
       },
 
 
       setEditMode(mode) {
         this.$message.info('now in ' + mode + ' mode');
         this.editmode = mode;
-      }
+      },
+
+    // cancelNodeSearch() {
+    //   this.resetSearchForm();
+    // }
   }
 }
 </script>
@@ -2391,4 +2340,8 @@ export default {
   overflow: auto;
 }
 
+.edit-button {
+    font-size: 200%;
+    /*margin: 20px 30px;*/
+}
 </style>
