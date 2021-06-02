@@ -29,6 +29,7 @@ span{cursor:pointer;}
 span:hover{color:#41b883;}
 </style>
 
+
 <script>
 export default{
   data(){
