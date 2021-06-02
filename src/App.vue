@@ -1,18 +1,16 @@
 <template>
   <div id="app">
     <h1>知识图谱可视化系统</h1>
-    <KG/>
+    <router-view></router-view>
     <h6 id="tools">KG666小组呈现</h6>
   </div>
 </template>
 
-<script>
-import KG from './components/KG.vue'
 
+<script>
 export default {
   name: 'App',
   components: {
-    KG
   }
 }
 </script>
