@@ -973,7 +973,7 @@ export default {
         prop.target= prop.target+""
       }
 
-
+      let index=0
       //初始设置为option1
       let graph = JSON.parse(JSON.stringify(that.savedgraph))
       if(graph.zoom==null){
@@ -984,7 +984,7 @@ export default {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = node.id;
+        node.index = index++;
         if(typeof(node.category)!='number'){
           for(let i=0;i<graph.categories.length;i++){
             if(graph.categories[i].name===node.category){
@@ -1001,16 +1001,15 @@ export default {
         else if(node.tooltip.show==null)node.tooltip.show=true
         if(node.label.fontSize==null)node.label.fontSize=12
       });
-      let index = 0;
+      index = 0;
       graph.links.forEach(function (link) {
         if (link.name === "dot") {
           link.lineStyle = {type: 'dotted'}
         }
         if (link.id == null){
           link.id=index+''
-          index++
         }
-        link.index = link.id;
+        link.index = index++
         if(link.lineStyle==null)link.lineStyle={color:null,width:2,type:'solid',curveness:1}
         else {
           if (link.lineStyle.color== null) link.lineStyle.color = null
@@ -1139,7 +1138,7 @@ export default {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = node.id;
+        node.index = index++;
       });
       index = 0;
       graph.links.forEach(function (link) {
@@ -1148,9 +1147,8 @@ export default {
         }
         if (link.id == null){
           link.id=index+''
-          index++
         }
-        link.index = link.id;
+        link.index = index++;
       });
       that.option2 = {
         tooltip: {
@@ -1213,7 +1211,7 @@ export default {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = node.id;
+        node.index = index++;
       });
       index = 0;
       graph.links.forEach(function (link) {
@@ -1222,9 +1220,8 @@ export default {
         }
         if (link.id == null){
           link.id=index+''
-          index++
         }
-        link.index = link.id;
+        link.index = index++;
       });
       that.option3 = {
         tooltip: {
@@ -1296,7 +1293,7 @@ export default {
         node.label = {
           show: node.symbolSize >= 30
         };
-        node.index = node.id;
+        node.index = index++;
       });
       index = 0;
       graph.links.forEach(function (link) {
@@ -1305,9 +1302,8 @@ export default {
         }
         if (link.id == null){
           link.id=index+''
-          index++
         }
-        link.index = link.id;
+        link.index = index++;
       });
       let whichy=[]
       for(let i=0;i<graph.categories.length;i++){
