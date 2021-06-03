@@ -321,7 +321,7 @@
                   </el-form-item>
                   <el-form-item>
                     <el-button type="primary" @click="handleEdgeSearch" icon="el-icon-search">搜索</el-button>
-                    <el-button>取消</el-button>
+                    <el-button @click="cancelSearch">取消</el-button>
                   </el-form-item>
                 </el-form>
               </div>
@@ -420,10 +420,10 @@ export default {
 
       copiedgraph: '',
 
-      searchNodeForm: {},
+      searchNodeForm: {label:'',lowerbound:'',upperbound:'',name:''},
       searchNodeHistory: [],
 
-      searchEdgeForm: {},
+      searchEdgeForm: {name:'',source:'',target:''},
       searchEdgeHistory: [],
         searchTab: 'fourth-1',
 
@@ -2126,18 +2126,16 @@ export default {
                                         node.itemStyle = {
                                             borderWidth: 10,
                                             borderColor: "rgba(0, 0, 0, 1)"
-
                                         };
                                     }
                                     else {
                                         node.itemStyle.borderWidth = 10
                                         node.itemStyle.borderColor = "rgba(0, 0, 0, 1)"
-
                                     }
                                 }
                             })
                             that.myChart.setOption(opt);
-                            that.resetSearchForm();
+                            // that.resetSearchForm();
                         }
                     }
                 })
@@ -2195,7 +2193,7 @@ export default {
                               })
 
                               that.myChart.setOption(opt);
-                              that.resetSearchForm();
+                              // that.resetSearchForm();
                           }
                       }
                   })
@@ -2218,9 +2216,13 @@ export default {
         this.editmode = mode;
       },
 
-    // cancelNodeSearch() {
-    //   this.resetSearchForm();
-    // }
+      cancelSearch() {
+        this.resetSearchForm();
+        if(this.nowOption===1)this.myChart.setOption(this.option1);
+        else if(this.nowOption===2)this.myChart.setOption(this.option2);
+        else if(this.nowOption===3)this.myChart.setOption(this.option3);
+        else if(this.nowOption===4)this.myChart.setOption(this.option4);
+      }
   }
 }
 </script>
