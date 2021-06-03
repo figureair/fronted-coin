@@ -31,6 +31,7 @@ span:hover{color:#41b883;}
 
 
 <script>
+import $ from 'jquery'
 export default{
   data(){
     return{
@@ -41,7 +42,8 @@ export default{
       username: '',
       password: '',
       newUsername: '',
-      newPassword: ''
+      newPassword: '',
+      uid:0
     }
   },
   methods:{
@@ -54,10 +56,51 @@ export default{
       this.showLogin = true
     },
     login(){
-      this.$router.push('/KG')
+      if(this.newUsername === "" || this.newPassword === ""){
+        alert("请输入用户名或密码")
+      }else{
+        let res = {'uid':this.uid,'username':this.username,'password':this.password,'message':this.tishi}
+        $.ajax({
+          url:'http://47.99.190.169:8888/user/login',
+          type: 'POST',
+          dataType: 'json',
+          data:JSON.stringify(res),
+          success: function(data){
+            if(data.success){
+              res.uid=data.content
+              console.log(data.content+'登录成功!')
+              this.$router.push('/KG')
+            }else{
+              console.log(data.content)
+            }
+          }
+        })
+      }
     },
     register() {
-
+      if(this.newUsername === "" || this.newPassword === ""){
+        alert("请输入用户名或密码")
+      }else{
+        let res = {'username':this.username,'password':this.password}
+        $.ajax({
+          url:'http://47.99.190.169:8888/user/register',
+          type: 'POST',
+          dataType: 'json',
+          data:JSON.stringify(res),
+          success: function(data){
+            if(data.success){
+              console.log('注册成功!')
+              setTimeout(function(){
+                this.showRegister = false
+                this.showLogin = true
+                this.showTishi = false
+              }.bind(this),1000)
+            }else{
+              console.log('注册失败!')
+            }
+          }
+        })
+      }
     }
   }
 }
