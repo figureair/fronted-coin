@@ -88,40 +88,41 @@
           <div class="block">
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
                        class="edit-button" @click="startGraphicalEdit"></el-button>
+            <el-button-group v-if="editmode!=='none'">
               <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px" class="popover4">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
                          :rules="graphicalAddNodeRules" status-icon label="添加节点" style="width: 300px" label-position="top" label-width="180px">
-                  <el-form-item label="name">
+                  <el-form-item label="name" :required="true" prop="name">
                     <el-input v-model="graphicalAddNodeForm.name"></el-input>
                   </el-form-item>
-                  <el-form-item label="category">
+                  <el-form-item label="category" :required="true" prop="category">
                     <el-select v-model="graphicalAddNodeForm.category">
                       <el-option v-for="(item, index) in savedgraph.categories"
                                  :key="index" :label="item.name" :value="item.name"></el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="itemStyle">
+                  <el-form-item label="itemStyle" :required="true" prop="itemStyle">
                     <el-color-picker label="color" v-model="graphicalAddNodeForm.itemStyle.color"></el-color-picker>
                   </el-form-item>
-                  <el-form-item label="label">
+                  <el-form-item label="label" :required="true" prop="label">
                     <el-input label="fontSize" v-model="graphicalAddNodeForm.label.fontSize"></el-input>
                   </el-form-item>
-                  <el-form-item label="symbol">
+                  <el-form-item label="symbol" :required="true" prop="symbol">
                     <el-select v-model="graphicalAddNodeForm.symbol">
                       <el-option v-for="(item, index) in ECHARTS_SYMBOLS"
                                  :key="index" :label="item" :value="item"></el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="symbolSize">
+                  <el-form-item label="symbolSize" :required="true" prop="symbolSize">
                     <el-input v-model="graphicalAddNodeForm.symbolSize"></el-input>
                   </el-form-item>
-                  <el-form-item label="value">
+                  <el-form-item label="value" prop="value">
                     <el-input v-model="graphicalAddNodeForm.value"></el-input>
                   </el-form-item>
-                  <el-form-item label="x-position">
+                  <el-form-item label="x-position" prop="x">
                     <el-input v-model="graphicalAddNodeForm.x"></el-input>
                   </el-form-item>
-                  <el-form-item label="y-position">
+                  <el-form-item label="y-position" prop="y">
                     <el-input v-model="graphicalAddNodeForm.y"></el-input>
                   </el-form-item>
                   <el-form-item>
@@ -129,12 +130,13 @@
                   </el-form-item>
                 </el-form>
               </el-popover>
-              <el-button class="edit-button" v-if="editmode!=='delete' && editmode!=='none'" v-popover:addnodepopover type="text" icon="el-icon-plus" @click="setEditMode('add')" ></el-button>
-              <el-button class="edit-button" v-if="editmode!=='add' && editmode!=='none'" type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
-              <el-button class="edit-button" v-if="editmode!=='none'" type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
-              <el-button class="edit-button" v-if="editmode!=='none'" type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
-              <el-button class="edit-button" v-if="editmode!=='none'" type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
-            <el-popover
+              <el-button class="edit-button" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('add')" v-popover:addnodepopover></el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
+            </el-button-group>
+              <el-popover
                     ref="popover1"
                     placement="left"
                     trigger="click"
@@ -486,7 +488,6 @@ export default {
         },
 
       graphicalAddNodeForm: {
-          // pic_name: this.option1.pic_name,
           name: '',
           category: '',
           itemStyle: {
@@ -2070,6 +2071,7 @@ export default {
                 that.checkFormAndAdd();
             }
             else {
+              alert("error!")
                 console.log('error!!!!!!!');
                 return false;
             }
@@ -2099,6 +2101,7 @@ export default {
         if (that.graphicalAddNodeForm.value !== '') {
             newNode.value = that.graphicalAddNodeForm.value;
         }
+        console.log(newNode)
         that.savedgraph.nodes.push(newNode);
         that.initpage();
         that.resetGraphicalAddNodeForm();
@@ -2228,7 +2231,7 @@ export default {
 
 
       setEditMode(mode) {
-        this.$message.info('now in ' + mode + ' mode');
+        this.$message.info('Now in ' + mode + ' mode');
         this.editmode = mode;
       },
 
@@ -2342,6 +2345,5 @@ export default {
 
 .edit-button {
     font-size: 200%;
-    /*margin: 20px 30px;*/
 }
 </style>
