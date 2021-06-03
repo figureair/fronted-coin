@@ -130,11 +130,12 @@
                   </el-form-item>
                 </el-form>
               </el-popover>
-              <el-button class="edit-button" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('add')" v-popover:addnodepopover></el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-delete" @click="setEditMode('delete')"></el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-refresh-left" @click="backtrack"></el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-document" @click="saveGraphicalEdit"></el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-close" @click="endGraphicalEdit"></el-button>
+              <el-button class="edit-button" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('addNode')" v-popover:addnodepopover>节点新增</el-button>
+                <el-button class="edit-button" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('addEdge')">边新增</el-button>
+                <el-button class="edit-button" v-if="editmode!=='addNode' && editmode!=='addEdge'" type="text" icon="el-icon-delete" @click="setEditMode('delete')">删除</el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-refresh-left" @click="backtrack">撤销操作</el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-document" @click="saveGraphicalEdit">保存</el-button>
+              <el-button class="edit-button" type="text" icon="el-icon-close" @click="endGraphicalEdit">退出</el-button>
             </el-button-group>
               <el-popover
                     ref="popover1"
@@ -844,8 +845,8 @@ export default {
                       that.editions.push(op);
                       that.deleteNode(id);
                   }
-                  else if (that.editmode === 'add') {
-                      console.log("add");
+                  else if (that.editmode === 'addEdge') {
+                      console.log("addEdge");
                       if (that.selectedItem.length < 2) {
                           console.log(that.selectedItem);
                           if (that.selectedType === 'edge') {
@@ -1050,23 +1051,6 @@ export default {
             }
           }
         ],
-
-        toolbox: {
-          id: 'pie-chart',
-          itemSize: 15,
-          itemGap: 10,
-          right: 10,
-
-          feature: {
-            dataView: {
-              show: true,
-            },
-
-            restore: {
-              show: true,
-            }
-          }
-        }
       };
 
 
@@ -2043,7 +2027,6 @@ export default {
         this.selectedItem = [];
         this.selectedType = '';
         this.initpage();
-        console.log("??????????");
         console.log('end edit');
       },
 
@@ -2105,7 +2088,7 @@ export default {
         that.savedgraph.nodes.push(newNode);
         that.initpage();
         that.resetGraphicalAddNodeForm();
-        that.editmode = 'add';
+        that.editmode = 'addNode';
       },
 
       resetGraphicalAddNodeForm() {
@@ -2345,5 +2328,10 @@ export default {
 
 .edit-button {
     font-size: 200%;
+}
+
+.el-button-group>.el-button {
+    float: none;
+    position: relative;
 }
 </style>
