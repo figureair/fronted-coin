@@ -43,7 +43,6 @@ export default{
       password: '',
       newUsername: '',
       newPassword: '',
-      uid:0
     }
   },
   methods:{
@@ -58,7 +57,8 @@ export default{
     login(){
       if(this.newUsername === "" || this.newPassword === ""){
         alert("请输入用户名或密码")
-      }else{
+        this.$router.push('/KG')
+      } else{
         let res = {'uid':this.uid,'username':this.username,'password':this.password,'message':this.tishi}
         $.ajax({
           url:'http://47.99.190.169:8888/user/login',
