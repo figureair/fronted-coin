@@ -142,114 +142,156 @@
                     placement="left"
                     trigger="click"
             >
-              <el-form ref="input" :model="input" :rules="editRulesE" status-icon>
-                <el-table max-height="250" v-if="selectedType==='edge'" :data="selectedItem">
-                  <el-table-column width="100" property="source" label="source">
+              <el-form ref="input" :model="input" :rules="editRulesE" status-icon v-if="selectedType==='edge'">
+                <el-table max-height="450" :data="displayedItemData">
+                  <el-table-column width="200" prop="name">
                     <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.source }}</div>
-                      <el-form-item v-else prop="source">
-                        <el-input v-model="input.source"></el-input>
+                      {{scope.row.name}}
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="200" prop="data">
+                    <template slot-scope="scope">
+                      <div v-if="!editable || !scope.row.editable">{{scope.row.data}}</div>
+                      <el-form-item v-else :prop="scope.row.name">
+                        <el-input v-model="input[scope.row.name]"></el-input>
                       </el-form-item>
                     </template>
                   </el-table-column>
-                  <el-table-column width="100" property="target" label="target">
-                    <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.target }}</div>
-                      <el-form-item v-else prop="source">
-                        <el-input v-model="input.target"></el-input>
-                      </el-form-item>
-                    </template>
-                  </el-table-column>
-                  <el-table-column width="250" label="option">
-                    <template slot-scope="scope">
-                      <el-form-item>
-                        <!--                    <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>-->
-                        <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>
-                        <el-button v-if="editable" @click="editable=false">取消</el-button>
-                        <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>
-                      </el-form-item>
-                    </template>
-                  </el-table-column>
+<!--                  <el-table-column width="100" property="source" label="source">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div v-if="!editable">{{ scope.row.source }}</div>-->
+<!--                      <el-form-item v-else prop="source">-->
+<!--                        <el-input v-model="input.source"></el-input>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column width="100" property="target" label="target">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div v-if="!editable">{{ scope.row.target }}</div>-->
+<!--                      <el-form-item v-else prop="source">-->
+<!--                        <el-input v-model="input.target"></el-input>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column width="250" label="option">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <el-form-item>-->
+<!--                        <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>-->
+<!--                        <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>-->
+<!--                        <el-button v-if="editable" @click="editable=false">取消</el-button>-->
+<!--                        <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
                 </el-table>
+                <el-form-item>
+                  <el-button v-if="!editable" @click="startEdit('edge')">编辑</el-button>
+                  <el-button type="primary" v-if="editable" @click="handleEdit('edge')">确认</el-button>
+                  <el-button v-if="editable" @click="editable=false">取消</el-button>
+                  <el-button type="danger" @click="handleDelete('edge')">删除</el-button>
+                </el-form-item>
               </el-form>
 
-              <el-form ref="input" :model="input" :rules="editRulesN" status-icon>
-                <el-table max-height="250" v-if="selectedType==='node'" :data="selectedItem">
-                  <el-table-column width="100" property="id" label="id">
+              <el-form ref="input" :model="input" :rules="editRulesN" status-icon v-if="selectedType==='node'">
+                <el-table max-height="450" :data="displayedItemData">
+                  <el-table-column width="200" prop="name">
                     <template slot-scope="scope">
-                      <div>{{ scope.row.id }}</div>
+                      {{scope.row.name}}
                     </template>
                   </el-table-column>
-                  <el-table-column width="150" property="name" label="name">
+                  <el-table-column width="200" prop="data">
                     <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.name }}</div>
-                      <el-form-item v-else prop="name">
-                        <el-input v-model="input.name"></el-input>
+                      <div v-if="!editable || !scope.row.editable">{{scope.row.data}}</div>
+                      <el-form-item v-else :prop="scope.row.name">
+                        <el-select v-if="scope.row.name==='symbol'" v-model="input.symbol">
+                          <el-option v-for="(item, index) in ECHARTS_SYMBOLS"
+                                     :key="index" :label="item" :value="item"></el-option>
+                        </el-select>
+                        <el-input v-else v-model="input[scope.row.name]"></el-input>
                       </el-form-item>
                     </template>
                   </el-table-column>
-                  <el-table-column width="100" property="category" label="category">
-                    <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.category }}</div>
-                      <el-form-item v-else prop="category">
-                        <el-input v-model="input.category"></el-input>
-                      </el-form-item>
-                    </template>
-                  </el-table-column>
-                    <el-table-column width="150" property="symbol" label="symbol">
-                        <template slot-scope="scope">
-                            <div v-if="!editable">{{ scope.row.symbol }}</div>
-                            <el-form-item v-else prop="value">
-                                <el-select v-model="input.symbol">
-                                    <el-option v-for="(item, index) in ECHARTS_SYMBOLS"
-                                               :key="index" :label="item" :value="item"></el-option>
-                                </el-select>                            </el-form-item>
-                        </template>
-                    </el-table-column>
-                  <el-table-column width="200" property="symbolSize" label="symbolSize">
-                    <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.symbolSize }}</div>
-                      <el-form-item v-else prop="symbolSize">
-                        <el-input v-model="input.symbolSize"></el-input>
-                      </el-form-item>
-                    </template>
-                  </el-table-column>
-                    <el-table-column width="150" property="value" label="value">
-                        <template slot-scope="scope">
-                            <div v-if="!editable">{{ scope.row.value }}</div>
-                            <el-form-item v-else prop="value">
-                                <el-input v-model="input.value"></el-input>
-                            </el-form-item>
-                        </template>
-                    </el-table-column>
-                  <el-table-column width="80" property="x" label="x">
-                    <template slot-scope="scope">
-                      <div v-if="!editable">{{ scope.row.x }}</div>
-                      <el-form-item v-else prop="value">
-                        <el-input v-model="input.x"></el-input>
-                      </el-form-item>
-                    </template>
-                  </el-table-column>
-                    <el-table-column width="80" property="y" label="y">
-                        <template slot-scope="scope">
-                            <div v-if="!editable">{{ scope.row.y }}</div>
-                            <el-form-item v-else prop="value">
-                                <el-input v-model="input.y"></el-input>
-                            </el-form-item>
-                        </template>
-                    </el-table-column>
+<!--                  <el-table-column width="100" property="id" label="id">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div>{{ scope.row.id }}</div>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column width="150" property="name" label="name">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div v-if="!editable">{{ scope.row.name }}</div>-->
+<!--                      <el-form-item v-else prop="name">-->
+<!--                        <el-input v-model="input.name"></el-input>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column width="100" property="category" label="category">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div v-if="!editable">{{ scope.row.category }}</div>-->
+<!--                      <el-form-item v-else prop="category">-->
+<!--                        <el-input v-model="input.category"></el-input>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                    <el-table-column width="150" property="symbol" label="symbol">-->
+<!--                        <template slot-scope="scope">-->
+<!--                            <div v-if="!editable">{{ scope.row.symbol }}</div>-->
+<!--                            <el-form-item v-else prop="symbol">-->
+<!--                                <el-select v-model="input.symbol">-->
+<!--                                    <el-option v-for="(item, index) in ECHARTS_SYMBOLS"-->
+<!--                                               :key="index" :label="item" :value="item"></el-option>-->
+<!--                                </el-select>                            </el-form-item>-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+<!--                  <el-table-column width="200" property="symbolSize" label="symbolSize">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div v-if="!editable">{{ scope.row.symbolSize }}</div>-->
+<!--                      <el-form-item v-else prop="symbolSize">-->
+<!--                        <el-input v-model="input.symbolSize"></el-input>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                    <el-table-column width="150" property="value" label="value">-->
+<!--                        <template slot-scope="scope">-->
+<!--                            <div v-if="!editable">{{ scope.row.value }}</div>-->
+<!--                            <el-form-item v-else prop="value">-->
+<!--                                <el-input v-model="input.value"></el-input>-->
+<!--                            </el-form-item>-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+<!--                  <el-table-column width="80" property="x" label="x">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <div v-if="!editable">{{ scope.row.x }}</div>-->
+<!--                      <el-form-item v-else prop="value">-->
+<!--                        <el-input v-model="input.x"></el-input>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                    <el-table-column width="80" property="y" label="y">-->
+<!--                        <template slot-scope="scope">-->
+<!--                            <div v-if="!editable">{{ scope.row.y }}</div>-->
+<!--                            <el-form-item v-else prop="value">-->
+<!--                                <el-input v-model="input.y"></el-input>-->
+<!--                            </el-form-item>-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
 
-                  <el-table-column width="250" label="option">
-                    <template slot-scope="scope">
-                      <el-form-item>
-                        <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>
-                        <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>
-                        <el-button v-if="editable" @click="editable=false">取消</el-button>
-                        <el-button type="danger" @click="handleDelete(scope.row, 'node')">删除</el-button>
-                      </el-form-item>
-                    </template>
-                  </el-table-column>
+<!--                  <el-table-column width="250" label="option">-->
+<!--                    <template slot-scope="scope">-->
+<!--                      <el-form-item>-->
+<!--                        <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>-->
+<!--                        <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>-->
+<!--                        <el-button v-if="editable" @click="editable=false">取消</el-button>-->
+<!--                        <el-button type="danger" @click="handleDelete(scope.row, 'node')">删除</el-button>-->
+<!--                      </el-form-item>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
                 </el-table>
+                <el-form-item>
+                  <el-button v-if="!editable" @click="startEdit('node')">编辑</el-button>
+                  <el-button type="danger" @click="handleDelete('node')">删除</el-button>
+                  <el-button type="primary" v-if="editable" @click="handleEdit('node')">确认</el-button>
+                  <el-button v-if="editable" @click="editable=false">取消</el-button>
+                </el-form-item>
               </el-form>
             </el-popover>
             <div class="box-item">
@@ -264,9 +306,6 @@
             <el-tab-pane label="搜索节点" name="fourth-1">
               <div class="search-box-item">
                 <el-form ref="searchNodeForm" :model="searchNodeForm" class="search-form">
-                  <!--                      <el-form-item label="pic_name">-->
-                  <!--                          <el-input v-model="searchNodeForm.pic_name" disabled></el-input>-->
-                  <!--                      </el-form-item>-->
                   <el-form-item label="category" prop="label">
                     <el-autocomplete
                         class="inline-input"
@@ -402,8 +441,19 @@ export default {
       value: '',
       dialogVisible: false,
       editable: false,
-      selectedType: '',
-      selectedItem: [],
+      selectedType: 'edge',
+      selectedItem: [
+        {
+          "name": "提交",
+          "id": "3",
+          "source": "0",
+          "target": "1"
+        },
+      ],
+      displayedItemData: [],
+      displayedNodeTitle: ['id', 'name', 'category', 'symbol', 'symbolSize', 'value', 'x', 'y'],
+      displayedEdgeTitle: ['source', 'target'],
+
       input: {},
       addNodeVisible: false,
       addEdgeVisible: false,
@@ -602,7 +652,9 @@ export default {
   },
 
   mounted() {
+
     this.initdata()
+    console.log("????")
   },
 
   methods: {
@@ -683,7 +735,31 @@ export default {
 
     showAllInfo(){
       this.editable=false
+      this.updateDisplayedData()
       if(this.checked){this.$message.info(JSON.stringify(this.selectedItem[0]))}
+    },
+
+    updateDisplayedData(){
+      let data = this.selectedItem[0]
+      if (this.selectedType === 'node') {
+        this.displayedItemData = this.displayedNodeTitle.map((value) => {
+          return {
+            name: value,
+            data: data[value],
+            editable: value !== 'id'
+          };
+        })
+      }
+      else if (this.selectedType === 'edge') {
+        this.displayedItemData = this.displayedEdgeTitle.map((value) => {
+          return {
+            name: value,
+            data: data[value],
+            editable: value !== 'id'
+          };
+        })
+      }
+
     },
 
     checkCategory (rule, value, callback) {
@@ -1752,8 +1828,9 @@ export default {
       pom.click();
     },
 
-    handleEdit(row, mode) {
+    handleEdit(mode) {
       let that = this;
+      // console.log(this.input)
       if (mode === 'edge') {
         that.$refs['input'].validate((valid) => {
           that.checkValidEdit(valid, mode)
@@ -1775,7 +1852,8 @@ export default {
           const tmp = that.savedgraph.links[that.input.index];
           tmp.source = that.input.source;
           tmp.target = that.input.target;
-          that.initpage()
+          that.initpage();
+          that.updateDisplayedData();
           that.selectedItem.push(that.savedgraph.links[that.input.index]);
         }
         else if (mode === 'node') {
@@ -1788,45 +1866,48 @@ export default {
           tmp.x = that.input.x;
           tmp.y = that.input.y;
           that.initpage();
+          that.updateDisplayedData();
           that.selectedItem.push(that.savedgraph.nodes[that.input.index]);
         }
       }
     },
 
-    startEdit(row, mode) {
+    startEdit(mode) {
       let that = this;
       that.input = {};
+      let data = that.selectedItem[0];
 
       if (mode === 'node') {
         that.input = {
-          index: row.index,
-          id: row.id,
-          name: row.name,
-          category: row.category,
-          symbolSize: row.symbolSize,
-          value: row.value,
-            symbol: row.symbol,
-            x: row.x,
-            y: row.y
+          index: data.index,
+          id: data.id,
+          name: data.name,
+          category: data.category,
+          symbolSize: data.symbolSize,
+          value: data.value,
+            symbol: data.symbol,
+            x: data.x,
+            y: data.y
         }
 
       }
       else if (mode === 'edge') {
         that.input = {
-          index: row.index,
-          source: row.source,
-          target: row.target
+          index: data.index,
+          source: data.source,
+          target: data.target
         }
       }
       that.editable = true;
     },
 
-    handleDelete(row, type) {
+    handleDelete(type) {
+      let index = this.selectedItem[0].index
       if (type === 'node') {
-          this.deleteNode(row.index);
+          this.deleteNode(index);
       }
       else if (type === 'edge') {
-          this.deleteEdge(row.index);
+          this.deleteEdge(index);
       }
       this.editable = false;
     },
@@ -2209,7 +2290,6 @@ export default {
         this.$refs['searchEdgeForm'].resetFields();
         // console.log("????????")
       },
-
 
       setEditMode(mode) {
         this.$message.info('Now in ' + mode + ' mode');
