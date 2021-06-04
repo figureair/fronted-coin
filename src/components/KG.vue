@@ -331,7 +331,7 @@
                   </el-form-item>
                   <el-form-item>
                     <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
-                    <el-button>取消</el-button>
+                    <el-button @click="cancelSearch">取消</el-button>
                   </el-form-item>
                 </el-form>
               </div>
@@ -482,7 +482,7 @@ export default {
       labelComplete: (queryString, cb) => {
           let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.label }))
           let results = queryString? labels.filter((his) =>
-              his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+              his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
           ): labels
           cb(results);
       },
@@ -490,7 +490,7 @@ export default {
       nnameComplete: (queryString, cb) => {
           let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.name }))
           let results = queryString? labels.filter((his) =>
-              his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+              his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
           ): labels
           cb(results);
       },
@@ -499,7 +499,7 @@ export default {
             let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.lowerBound }))
             console.log(labels);
             let results = queryString? labels.filter((his) =>
-                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+                his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
             ): labels
             cb(results);
         },
@@ -509,7 +509,7 @@ export default {
             console.log(labels);
 
             let results = queryString? labels.filter((his) =>
-                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+                his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
             ): labels
             cb(results);
         },
@@ -517,7 +517,7 @@ export default {
         enameComplete: (queryString, cb) => {
             let labels = this.searchEdgeHistory.map((item) => Object.assign({}, { value: item.name }))
             let results = queryString? labels.filter((his) =>
-                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+                his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
             ): labels
             cb(results);
         },
@@ -525,7 +525,7 @@ export default {
         sourceComplete: (queryString, cb) => {
             let labels = this.searchEdgeHistory.map((item) => Object.assign({}, { value: item.source }))
             let results = queryString? labels.filter((his) =>
-                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+                his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
             ): labels
             cb(results);
         },
@@ -533,7 +533,7 @@ export default {
         targetComplete: (queryString, cb) => {
             let labels = this.searchEdgeHistory.map((item) => Object.assign({}, { value: item.target }))
             let results = queryString? labels.filter((his) =>
-                his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+                his.value && his.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
             ): labels
             cb(results);
         },
@@ -2182,14 +2182,14 @@ export default {
         let that = this;
         this.$refs['searchNodeForm'].validate((valid) => {
             if (valid) {
-                const res = {
+                let res = {
                     'pic_name': that.savedgraph.pic_name,
-                    'uid': this.uid,
-                    'name': that.searchNodeForm.name,
-                    'label': that.searchNodeForm.label,
-                    'lowerBound': that.searchNodeForm.lowerbound,
-                    'upperBound': that.searchNodeForm.upperbound,
+                    'uid': this.uid
                 };
+              if(that.searchNodeForm.name!==""){res['name']= that.searchNodeForm.name}
+              if(that.searchNodeForm.label!=="") {res['label']= that.searchNodeForm.label}
+              if(that.searchNodeForm.lowerbound!=="") {res['lowerBound']=that.searchNodeForm.lowerbound}
+              if(that.searchNodeForm.upperbound!=="") {res['upperBound']=that.searchNodeForm.upperbound}
                 console.log(res);
                 $.ajax({
                     url: 'http://47.99.190.169:8888/node/find',
@@ -2239,11 +2239,12 @@ export default {
                   console.log(that.searchEdgeForm);
                   const res = {
                       'pic_name': that.savedgraph.pic_name,
-                      'uid': this.uid,
-                      'name': that.searchEdgeForm.name,
-                      'source': that.searchEdgeForm.source,
-                      'target': that.searchEdgeForm.target,
+                      'uid': this.uid
                   };
+
+                if(that.searchEdgeForm.name!==""){res['name']=that.searchEdgeForm.name}
+                if(that.searchEdgeForm.source!==""){res['source']=that.searchEdgeForm.source}
+                if(that.searchEdgeForm.target!==""){res['target']=that.searchEdgeForm.target}
 
                   console.log(res);
 
