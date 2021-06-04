@@ -1,21 +1,21 @@
 <template>
   <div>
-    <div class="login-wrap" v-show="showLogin">
-      <h3>登录</h3>
-      <p v-show="showTishi">{{tishi}}</p>
-      <input type="text" placeholder="请输入用户名" v-model="username">
-      <input type="password" placeholder="请输入密码" v-model="password">
-      <button v-on:click="login">登录</button>
-      <span v-on:click="ToRegister">没有账号？马上注册</span>
-    </div>
+      <div class="login-wrap" v-show="showLogin">
+        <h3>登录</h3>
+        <p v-show="showTishi">{{tishi}}</p>
+        <input type="text" placeholder="请输入用户名" v-model="username">
+        <input type="password" placeholder="请输入密码" v-model="password">
+        <button v-on:click="login">登录</button>
+        <span v-on:click="ToRegister">没有账号？马上注册</span>
+      </div>
 
-    <div class="register-wrap" v-show="showRegister">
-      <h3>注册</h3>
-      <p v-show="showTishi">{{tishi}}</p>
-      <input type="text" placeholder="请输入用户名" v-model="newUsername">
-      <input type="password" placeholder="请输入密码" v-model="newPassword">
-      <button v-on:click="register">注册</button>
-      <span v-on:click="ToLogin">已有账号？马上登录</span>
+      <div class="register-wrap" v-show="showRegister">
+        <h3>注册</h3>
+        <p v-show="showTishi">{{tishi}}</p>
+        <input type="text" placeholder="请输入用户名" v-model="newUsername">
+        <input type="password" placeholder="请输入密码" v-model="newPassword">
+        <button v-on:click="register">注册</button>
+        <span v-on:click="ToLogin">已有账号？马上登录</span>
     </div>
   </div>
 </template>
@@ -35,6 +35,7 @@ import $ from 'jquery'
 export default{
   data(){
     return{
+      imgSrc: require('../img/01.jpg'),
       showLogin: true,
       showRegister: false,
       showTishi: false,
@@ -55,23 +56,24 @@ export default{
       this.showLogin = true
     },
     login(){
-      if(this.newUsername === "" || this.newPassword === ""){
+      let _this = this;
+      if(this.username === "" || this.password === ""){
         alert("请输入用户名或密码")
         this.$router.push('/KG')
-      } else{
-        let res = {'uid':this.uid,'username':this.username,'password':this.password,'message':this.tishi}
+      }else{
+        let res = {'name':this.username,'password':this.password}
         $.ajax({
           url:'http://47.99.190.169:8888/user/login',
           type: 'POST',
           dataType: 'json',
           data:JSON.stringify(res),
-          success: function(data){
-            if(data.success){
-              res.uid=data.content
-              console.log(data.content+'登录成功!')
-              this.$router.push('/KG')
+          contentType: 'application/json; charset=UTF-8',
+          success: function(res){
+            if(res.success){
+              alert('登录成功! UID: '+res.content)
+              _this.$router.push('/KG')
             }else{
-              console.log(data.content)
+              alert('登录失败!')
             }
           }
         })
@@ -81,22 +83,20 @@ export default{
       if(this.newUsername === "" || this.newPassword === ""){
         alert("请输入用户名或密码")
       }else{
-        let res = {'username':this.username,'password':this.password}
+        let res = {'name':this.newUsername,'password':this.newPassword}
+        console.log(res)
         $.ajax({
           url:'http://47.99.190.169:8888/user/register',
           type: 'POST',
           dataType: 'json',
           data:JSON.stringify(res),
-          success: function(data){
-            if(data.success){
-              console.log('注册成功!')
-              setTimeout(function(){
-                this.showRegister = false
-                this.showLogin = true
-                this.showTishi = false
-              }.bind(this),1000)
+          contentType: 'application/json; charset=UTF-8',
+          success: function(res){
+            console.log(res)
+            if(res.success){
+              alert('注册成功!')
             }else{
-              console.log('注册失败!')
+              alert('注册失败! '+res.message)
             }
           }
         })
@@ -105,3 +105,4 @@ export default{
   }
 }
 </script>
+
