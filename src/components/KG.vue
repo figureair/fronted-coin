@@ -400,6 +400,7 @@ export default {
   name: "KG",
   data() {
     return {
+      uid:0,
       old_value4:1,
       value4:1,
       last_value2:1,
@@ -651,6 +652,8 @@ export default {
   },
 
   mounted() {
+    this.uid=parseInt(this.$route.query.uid)
+    console.log(this.uid)
 
     this.initdata()
     console.log("????")
@@ -1434,7 +1437,7 @@ export default {
       this.$message.info("将下载本地json，并上传至服务器")
       let tmpOption=this.myChart.getOption().series[0]
 
-      let res={'pic_name':this.savedgraph.pic_name,'uid':0,'center':tmpOption.center,
+      let res={'pic_name':this.savedgraph.pic_name,'uid':this.uid,'center':tmpOption.center,
         'zoom':tmpOption.zoom,'itemStyle':tmpOption.itemStyle,
         'lineStyle':tmpOption.lineStyle,'label':tmpOption.label,'tooltip':tmpOption.tooltip,
         'categories':tmpOption.categories,'nodes':tmpOption.data,'links':tmpOption.links}
@@ -1652,7 +1655,7 @@ export default {
             let that=this
 
             $.ajax({
-              url: 'http://47.99.190.169:8888/?pic_name=' + tmpjson.pic_name + '&uid=0',
+              url: 'http://47.99.190.169:8888/?pic_name=' + tmpjson.pic_name + '&uid='+this.uid,
               type: 'get',
               data: {},
               dataType: 'json',
@@ -1700,7 +1703,7 @@ export default {
     uploadJSON(){
       let tmpOption=this.myChart.getOption().series[0]
 
-      let res={'pic_name':this.savedgraph.pic_name,'uid':0,'center':tmpOption.center,
+      let res={'pic_name':this.savedgraph.pic_name,'uid':this.uid,'center':tmpOption.center,
         'zoom':tmpOption.zoom,'itemStyle':tmpOption.itemStyle,
         'lineStyle':tmpOption.lineStyle,'label':tmpOption.label,'tooltip':tmpOption.tooltip,
         'categories':tmpOption.categories,'nodes':tmpOption.data,'links':tmpOption.links}
@@ -2181,7 +2184,7 @@ export default {
             if (valid) {
                 const res = {
                     'pic_name': that.savedgraph.pic_name,
-                    'uid': 0,
+                    'uid': this.uid,
                     'name': that.searchNodeForm.name,
                     'label': that.searchNodeForm.label,
                     'lowerBound': that.searchNodeForm.lowerbound,
@@ -2236,7 +2239,7 @@ export default {
                   console.log(that.searchEdgeForm);
                   const res = {
                       'pic_name': that.savedgraph.pic_name,
-                      'uid': 0,
+                      'uid': this.uid,
                       'name': that.searchEdgeForm.name,
                       'source': that.searchEdgeForm.source,
                       'target': that.searchEdgeForm.target,

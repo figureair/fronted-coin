@@ -71,7 +71,7 @@ export default{
           success: function(res){
             if(res.success){
               alert('登录成功! UID: '+res.content)
-              _this.$router.push('/KG')
+              _this.$router.push({path:'/KG',query: { uid:res.content }})
             }else{
               alert('登录失败!')
             }
