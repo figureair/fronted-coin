@@ -70,7 +70,7 @@ export default{
           contentType: 'application/json; charset=UTF-8',
           success: function(res){
             if(res.success){
-              alert(res.content+'登录成功!')
+              alert('登录成功! UID: '+res.content)
               _this.$router.push('/KG')
             }else{
               alert('登录失败!')
@@ -96,7 +96,7 @@ export default{
             if(res.success){
               alert('注册成功!')
             }else{
-              alert('注册失败!'+res.message)
+              alert('注册失败! '+res.message)
             }
           }
         })
