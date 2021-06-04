@@ -4,7 +4,6 @@
 
     <div id="text-box">
       <el-tabs v-model="activeName" type="card">
-
         <el-tab-pane label="基础信息" name="first">
           <div id="selector-box" class="box-item">
             <div id="selector-title">样式选择:</div>
@@ -87,7 +86,7 @@
         <el-tab-pane label="图元编辑" name="third">
           <div class="block">
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
-                       class="edit-button" @click="startGraphicalEdit"></el-button>
+                       class="edit-button" @click="startGraphicalEdit">创建删除模式</el-button>
             <el-button-group v-if="editmode!=='none'">
               <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px" class="popover4">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
@@ -130,12 +129,12 @@
                   </el-form-item>
                 </el-form>
               </el-popover>
-              <el-button class="edit-button" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('addNode')" v-popover:addnodepopover>节点新增</el-button>
-                <el-button class="edit-button" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('addEdge')">边新增</el-button>
-                <el-button class="edit-button" v-if="editmode!=='addNode' && editmode!=='addEdge'" type="text" icon="el-icon-delete" @click="setEditMode('delete')">删除</el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-refresh-left" @click="backtrack">撤销操作</el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-document" @click="saveGraphicalEdit">保存</el-button>
-              <el-button class="edit-button" type="text" icon="el-icon-close" @click="endGraphicalEdit">退出</el-button>
+              <el-button class="edit-button1" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('addNode')" v-popover:addnodepopover>节点新增</el-button>
+                <el-button class="edit-button1" v-if="editmode!=='delete'" type="text" icon="el-icon-plus" @click="setEditMode('addEdge')">边新增</el-button>
+                <el-button class="edit-button1" v-if="editmode!=='addNode' && editmode!=='addEdge'" type="text" icon="el-icon-delete" @click="setEditMode('delete')">删除</el-button>
+              <el-button class="edit-button1" type="text" icon="el-icon-refresh-left" @click="backtrack">撤销操作</el-button>
+              <el-button class="edit-button1" type="text" icon="el-icon-document" @click="saveGraphicalEdit">保存</el-button>
+              <el-button class="edit-button1" type="text" icon="el-icon-close" @click="endGraphicalEdit">退出</el-button>
             </el-button-group>
               <el-popover
                     ref="popover1"
@@ -2122,6 +2121,7 @@ export default {
                             let opt = that.myChart.getOption();
                             opt.series[0].data.forEach((node) => {
                                 if (nodes.findIndex((item) => item.id === node.id) !== -1) {
+                                  console.log(node)
                                     if (node.itemStyle == null) {
                                         node.itemStyle = {
                                             borderWidth: 10,
@@ -2329,7 +2329,7 @@ export default {
 }
 
 .edit-button {
-    font-size: 200%;
+    font-size: 120%;
 }
 
 .el-button-group>.el-button {
