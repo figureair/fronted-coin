@@ -2203,8 +2203,12 @@ export default {
                             that.searchNodeHistory.push(res);
                             const nodes = r.content;
                             let opt = that.myChart.getOption();
+                            console.log('11111')
+                            console.log(opt)
+                          console.log(nodes)
+                          console.log('11111')
                             opt.series[0].data.forEach((node) => {
-                                if (nodes.findIndex((item) => item.id === node.id) !== -1) {
+                                if (nodes.findIndex((item) => item.id === parseInt(node.id)) !== -1) {
                                   console.log(node)
                                     if (node.itemStyle == null) {
                                         node.itemStyle = {
@@ -2262,7 +2266,7 @@ export default {
                               console.log(edges)
                               let opt = that.myChart.getOption();
                               opt.series[0].links.forEach((edge) => {
-                                  if (edges.findIndex((item) => item.id === edge.id) !== -1) {
+                                  if (edges.findIndex((item) => item.id === parseInt(edge.id)) !== -1) {
                                     console.log(edge)
                                       if (edge.lineStyle == null) {
                                           edge.lineStyle = {
