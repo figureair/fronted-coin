@@ -1,5 +1,6 @@
 <template>
-  <div id="box">
+  <div>
+  <div class="box">
     <div id="myChart"></div>
 
     <div id="text-box">
@@ -387,6 +388,23 @@
       </el-tabs>
     </div>
 
+  </div>
+  <div class="box">
+    <div id="user_pic">
+
+    </div>
+    <div id="node_pic">
+
+    </div>
+  </div>
+    <div class="box">
+      <div id="node_info">
+
+      </div>
+      <div id="recommend">
+
+      </div>
+    </div>
   </div>
 </template>
 
@@ -2316,9 +2334,10 @@ export default {
 </script>
 
 <style scoped>
-#box {
+.box {
   display: flex;
   width: 100%;
+  margin-top: 20px;
 }
 
 #myChart {
@@ -2336,6 +2355,46 @@ export default {
   border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
   margin-left: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
+
+#node_info{
+  width: 74%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 30px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
+
+#recommend{
+  width: 20%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
+
+#node_pic{
+  width: 47%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
+
+#user_pic{
+  width: 47%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 30px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 }
