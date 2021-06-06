@@ -391,10 +391,61 @@
   </div>
   <div class="box">
     <div id="user_pic">
-
+      <div id="user_pic_box1">
+        <div id="user_pic_box1_item1">
+          <h2>用户画像</h2>
+        </div>
+        <div id="user_pic_box1_item2">
+          <h3>喜欢电影平均评分: {{avgRate}}</h3>
+          <h3>喜欢电影最老年代: {{oldShowtime}}年</h3>
+          <h3>喜欢电影最新年代: {{newShowtime}}年</h3>
+          <h3>喜欢电影平均时长: {{avgLength}}分钟</h3>
+        </div>
+      </div>
+      <div id="user_pic_box2">
+        <div class="user_pic_box2_item" id="user_pic1"></div>
+        <div class="user_pic_box2_item" id="user_pic2"></div>
+        <div class="user_pic_box2_item" id="user_pic3"></div>
+        <div class="user_pic_box2_item" id="user_pic4"></div>
+      </div>
     </div>
     <div id="recommend">
-
+      <div class="recommend_item" v-if="recommendUser">
+        <div class="recommend_title">
+          <h4>智能推荐电影</h4>
+        </div>
+        <div class="recommend_list_items">
+        <el-collapse>
+          <el-collapse-item v-for="v in recommendByUserShow" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+            <h4>别名: {{v.othername}}</h4>
+            <h4>国家: {{v.district}}</h4>
+            <h4>时长: {{v.length}}分钟</h4>
+            <h4>语言: {{v.language}}</h4>
+          </el-collapse-item>
+        </el-collapse>
+        </div>
+        <div class="recommend_bottom">
+          <el-button type="text" @click="recommendChange">换一换</el-button>
+        </div>
+      </div>
+      <div class="recommend_item" v-if="!recommendUser">
+        <div class="recommend_title">
+          <h4>当前电影类似推荐</h4>
+        </div>
+        <div class="recommend_list_items">
+          <el-collapse>
+            <el-collapse-item v-for="v in recommendByMovieShow" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+              <h4>别名: {{v.othername}}</h4>
+              <h4>国家: {{v.district}}</h4>
+              <h4>时长: {{v.length}}分钟</h4>
+              <h4>语言: {{v.language}}</h4>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+        <div class="recommend_bottom">
+          <el-button type="text" @click="recommendChange">换一换</el-button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="box">
@@ -481,6 +532,10 @@ export default {
   name: "KG",
   data() {
     return {
+      avgRate:0,
+      oldShowtime:2100,
+      newShowtime:0,
+      avgLength:0,
       play:['1'],
       direct:['1'],
       write:['1'],
@@ -862,6 +917,182 @@ export default {
           }
         ]
       },
+      userinfo: {
+        "movie": [{
+          "rate": 7.4,
+          "showtime": 2015,
+          "length": 135,
+          "name": "123",
+          "id": 2,
+          "category": "Movie"
+        }, {"rate": 4, "showtime": 1998, "name": "321", "length": 100, "id": 3, "category": "Movie"}],
+        "genre": [{"num": 1, "genre": "abc"}, {"num": 1, "genre": "cba"}]
+      },
+      recommendUser:true,
+      recommendByUserIndex:0,
+      recommendByMovieIndex:0,
+      recommendByUserShow:[],
+      recommendByMovieShow:[],
+      recommendByUser:[
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "门徒",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "我是路人甲",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "123",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "456",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "789",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "qwe",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        }
+      ],
+      recommendByMovie:[
+        {
+        "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+        "othername": "Protégé",
+        "rate": 7.4,
+        "showtime": 2007,
+        "district": "China_香港",
+        "length": 106,
+        "name": "门徒",
+        "language": "粤语、英语、泰语、汉语普通话",
+        "id": 1701,
+        "category": "Movie",
+        "url": "http://movie.douban.com/subject/1890784/"
+      },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "我是路人甲",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "123",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "456",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "789",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "qwe",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        }
+        ],
       uid:0,
       old_value4:1,
       value4:1,
@@ -1119,10 +1350,328 @@ export default {
 
     this.initdata()
     this.showInfoPic()
+    this.showUserPic()
+    this.recommendPush()
     console.log("????")
   },
 
   methods: {
+    recommendPush(){
+      for(let i=0;i<3;i++){
+        this.recommendByUserIndex=i
+        this.recommendByMovieIndex=i
+        this.recommendByUserShow.push(this.recommendByUser[i])
+        this.recommendByMovieShow.push(this.recommendByMovie[i])
+      }
+    },
+
+    recommendChange(){
+      console.log(1)
+      if(this.recommendUser){
+        for(let i=0;i<3;i++) {
+          let j=this.recommendByUserIndex+1
+          if(j>=this.recommendByUser.length){
+            j=0;
+          }
+          this.recommendByUserShow[i]=this.recommendByUser[j]
+          this.recommendByUserIndex=j
+          j++
+        }
+        console.log(this.recommendByUserShow)
+      }
+      else{
+        for(let i=0;i<3;i++) {
+          let j=this.recommendByMovieIndex+1
+          if(j>=this.recommendByMovie.length){
+            j=0;
+          }
+          this.recommendByMovieShow[i]=this.recommendByMovie[j]
+          this.recommendByMovieIndex=j
+          j++
+        }
+      }
+    },
+
+
+    showUserPic(){
+
+      let that=this
+
+      function rateShow(){
+        // 统计各个评分区间的数量并计算平均评分
+        let rates={'8分以上':0,'6~8分':0,'4~6分':0,'4分以下':0}
+        let totalRate=0
+        for(let i=0;i<that.userinfo['movie'].length;i++){
+          totalRate+=that.userinfo['movie'][i]['rate']
+          if(that.userinfo['movie'][i]['rate']<4){
+            rates['4分以下']=rates['4分以下']+1
+          }
+          else if(that.userinfo['movie'][i]['rate']<6){
+            rates['4~6分']=rates['4~6分']+1
+          }
+          else if(that.userinfo['movie'][i]['rate']<8){
+            rates['6~8分']=rates['6~8分']+1
+          }
+          else{
+            rates['8分以上']=rates['8分以上']+1
+          }
+
+        }
+        that.avgRate=totalRate/that.userinfo['movie'].length
+        let ratesData = [{name: '8分以上', value: rates['8分以上']}, {name: '6~8分', value: rates['6~8分']}, {
+          name: '4~6分', value: rates['4~6分']}, {name: '4分以下', value: rates['4分以下']}]
+
+        //生成评分饼图
+        let echarts = require('echarts');
+        let chartDom = document.getElementById('user_pic1');
+        let userPic1 = echarts.init(chartDom);
+
+        let colorList = ['#73DDFF', '#ff7373', '#FDD56A', '#6afd94']
+
+        let option = {
+          title: {
+            text: '评分区间比',
+            top:'5%',
+            left:'center',
+            textStyle: {
+              fontSize: 20
+            }
+          },
+          legend:{
+            type:"scroll",
+            top:'bottom',
+            textStyle: {
+              color:'#8C8C8C'
+            },
+          },
+          tooltip : {
+            trigger: 'item',
+            formatter: "{b}: {c}部 ({d}%)"
+          },
+          series: [
+            {
+              type: 'pie',
+              itemStyle: {
+                normal: {
+                  color: function(params) {
+                    return colorList[params.dataIndex]
+                  }
+                }
+              },
+              label: {
+                show: false
+              },
+              data:ratesData
+            }
+          ]
+        };
+        userPic1.setOption(option)
+
+      }
+
+      function lengthShow(){
+        // 统计各个时长区间的数量并计算平均时长
+        let lengths={'100分钟以下':0,'100~110分钟':0,'110~120分钟':0,'120分钟以上':0}
+        let totalLength=0
+        for(let i=0;i<that.userinfo['movie'].length;i++){
+          totalLength+=that.userinfo['movie'][i]['length']
+          if(that.userinfo['movie'][i]['length']<100){
+            lengths['100分钟以下']=lengths['100分钟以下']+1
+          }
+          else if(that.userinfo['movie'][i]['length']<110){
+            lengths['100~110分钟']=lengths['100~110分钟']+1
+          }
+          else if(that.userinfo['movie'][i]['length']<120){
+            lengths['110~120分钟']=lengths['110~120分钟']+1
+          }
+          else{
+            lengths['120分钟以上']=lengths['120分钟以上']+1
+          }
+
+        }
+        that.avgLength=totalLength/that.userinfo['movie'].length
+        let lengthsData = [{name: '100分钟以下', value: lengths['100分钟以下']}, {name: '100~110分钟', value: lengths['100~110分钟']}, {
+          name: '110~120分钟', value: lengths['110~120分钟']}, {name: '120分钟以上', value: lengths['120分钟以上']}]
+
+        //生成时长饼图
+        let echarts = require('echarts');
+        let chartDom = document.getElementById('user_pic2');
+        let userPic2 = echarts.init(chartDom);
+
+        let colorList = ['#73DDFF', '#ff7373', '#FDD56A', '#6afd94']
+
+        let option = {
+          title: {
+            text: '时长区间比',
+            top:'5%',
+            left:'center',
+            textStyle: {
+              fontSize: 20
+            }
+          },
+          legend:{
+            type:"scroll",
+            top:'bottom',
+            textStyle: {
+              color:'#8C8C8C'
+            },
+          },
+          tooltip : {
+            trigger: 'item',
+            formatter: "{b}: {c}部 ({d}%)"
+          },
+          series: [
+            {
+              type: 'pie',
+              itemStyle: {
+                normal: {
+                  color: function(params) {
+                    return colorList[params.dataIndex]
+                  }
+                }
+              },
+              label: {
+                show: false
+              },
+              data:lengthsData
+            }
+          ]
+        };
+        userPic2.setOption(option)
+
+      }
+
+      function showtimeShow(){
+        // 统计各个年代区间的数量并计算最新最老电影
+        let showtimes={'2000年以前':0,'2000~2010年':0,'2010~2020年':0,'2020年以后':0}
+        for(let i=0;i<that.userinfo['movie'].length;i++){
+          that.oldShowtime=Math.min(that.oldShowtime,that.userinfo['movie'][i]['showtime'])
+          that.newShowtime=Math.max(that.newShowtime,that.userinfo['movie'][i]['showtime'])
+          if(that.userinfo['movie'][i]['showtime']<2000){
+            showtimes['2000年以前']=showtimes['2000年以前']+1
+          }
+          else if(that.userinfo['movie'][i]['showtime']<2010){
+            showtimes['2000~2010年']=showtimes['2000~2010年']+1
+          }
+          else if(that.userinfo['movie'][i]['showtime']<2020){
+            showtimes['2010~2020年']=showtimes['2010~2020年']+1
+          }
+          else{
+            showtimes['2020年以后']=showtimes['2020年以后']+1
+          }
+
+        }
+
+        let showtimesData = [{name: '2000年以前', value: showtimes['2000年以前']}, {name: '2000~2010年', value: showtimes['2000~2010年']}, {
+          name: '2010~2020年', value: showtimes['2010~2020年']}, {name: '2020年以后', value: showtimes['2020年以后']}]
+
+        //生成年代饼图
+        let echarts = require('echarts');
+        let chartDom = document.getElementById('user_pic3');
+        let userPic3 = echarts.init(chartDom);
+
+        let colorList = ['#73DDFF', '#ff7373', '#FDD56A', '#6afd94']
+
+        let option = {
+          title: {
+            text: '年代区间比',
+            top:'5%',
+            left:'center',
+            textStyle: {
+              fontSize: 20
+            }
+          },
+          legend:{
+            type:"scroll",
+            top:'bottom',
+            textStyle: {
+              color:'#8C8C8C'
+            },
+          },
+          tooltip : {
+            trigger: 'item',
+            formatter: "{b}: {c}部 ({d}%)"
+          },
+          series: [
+            {
+              type: 'pie',
+              itemStyle: {
+                normal: {
+                  color: function(params) {
+                    return colorList[params.dataIndex]
+                  }
+                }
+              },
+              label: {
+                show: false
+              },
+              data:showtimesData
+            }
+          ]
+        };
+        userPic3.setOption(option)
+
+      }
+
+      function genreShow(){
+        let genreData=[]
+        for (let i=0;i<that.userinfo['genre'].length;i++)
+        {
+          genreData.push({'name':that.userinfo['genre'][i].genre,'value':parseInt(that.userinfo['genre'][i].num)})
+        }
+
+        let echarts = require('echarts');
+        let chartDom = document.getElementById('user_pic4');
+        let userPic4 = echarts.init(chartDom);
+
+        let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF','#1aff00','#ff0000']
+
+        let option = {
+          title: {
+            text: '类型区间比',
+            top:'5%',
+            left:'center',
+            textStyle: {
+              fontSize: 20
+            }
+          },
+          legend:{
+            type:"scroll",
+            top:'bottom',
+            textStyle: {
+              color:'#8C8C8C'
+            },
+          },
+          tooltip : {
+            trigger: 'item',
+            formatter: "{b}: {c}部 ({d}%)"
+          },
+          series: [
+            {
+              type: 'pie',
+              itemStyle: {
+                normal: {
+                  color: function(params) {
+                    return colorList[params.dataIndex]
+                  }
+                }
+              },
+              label: {
+                show: false
+              },
+              data:genreData
+            }
+          ]
+        };
+        userPic4.setOption(option)
+
+      }
+
+      rateShow()
+      lengthShow()
+      showtimeShow()
+      genreShow()
+    },
 
     showInfoPic(){
       let personData=[]
@@ -2879,23 +3428,78 @@ export default {
 }
 
 #recommend{
-  width: 29%;
-  height: 80vh;
+  width: 19%;
+  height: 40vh;
   border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
   margin-left: 20px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+  display: flex;
+  flex-direction: row;
+}
+
+.recommend_item{
+  flex:1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中 */
+}
+
+.recommend_list_items{
+  height:25vh;
+  width:90%;
+  overflow: auto;
+}
+
+.recommend_title{
+  height: 10vh;
+}
+
+.recommend_bottom{
+  height: 5vh;
+  float: right;
 }
 
 #user_pic{
-  width: 65%;
-  height: 80vh;
+  width: 75%;
+  height: 40vh;
   border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
   margin-left: 30px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+  display: flex;
+  flex-direction: row;
+}
+
+#user_pic_box1{
+  width:30%;
+  height:40vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#user_pic_box1_item1{
+  width: 100%;
+  height: 10vh;
+}
+
+#user_pic_box1_item2{
+  width: 100%;
+  height: 30vh;
+}
+
+#user_pic_box2{
+  width:70%;
+  height:40vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.user_pic_box2_item{
+  width:25%;
 }
 
 #person_info{
