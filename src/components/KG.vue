@@ -393,16 +393,68 @@
     <div id="user_pic">
 
     </div>
-    <div id="node_pic">
+    <div id="recommend">
 
     </div>
   </div>
     <div class="box">
       <div id="node_info">
-
-      </div>
-      <div id="recommend">
-
+        <div id="person_info" v-if="true">
+          <div id="person_info_box1">
+            <div id="simple_person_info">
+              <h1>姓名: 尔冬升 参演电影平均评分: 7.1</h1>
+            </div>
+            <div id="movie_list">
+              <div class="movie_list_item">
+                <h2>出演电影</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="play">
+                    <el-collapse-item v-for="v in playList" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                      <h4>别名: {{v.othername}}</h4>
+                      <h4>国家: {{v.district}}</h4>
+                      <h4>时长: {{v.length}}分钟</h4>
+                      <h4>语言: {{v.language}}</h4>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+              <div class="movie_list_item">
+                <h2>担任导演</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="direct">
+                    <el-collapse-item v-for="v in directList" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                      <h4>别名: {{v.othername}}</h4>
+                      <h4>国家: {{v.district}}</h4>
+                      <h4>时长: {{v.length}}分钟</h4>
+                      <h4>语言: {{v.language}}</h4>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+              <div class="movie_list_item">
+                <h2>担任编剧</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="write">
+                    <el-collapse-item v-for="v in writeList" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                      <h4>别名: {{v.othername}}</h4>
+                      <h4>国家: {{v.district}}</h4>
+                      <h4>时长: {{v.length}}分钟</h4>
+                      <h4>语言: {{v.language}}</h4>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="person_info_box2">
+            <h2>演员电影类型占比</h2>
+            <div id="person_pic1"></div>
+            <div id="person_pic2"></div>
+          </div>
+        </div>
+        <div id="movie_info" v-if="false">
+          123
+        </div>
       </div>
     </div>
   </div>
@@ -418,6 +470,301 @@ export default {
   name: "KG",
   data() {
     return {
+      play:['1'],
+      direct:['1'],
+      write:['1'],
+      playList:[
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "门徒",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "我是路人甲",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        }
+      ],
+      directList:[
+        {
+          "image": "http://img4.douban.com/lpic/s1354369.jpg",
+          "othername": "2 Young",
+          "rate": 6.6,
+          "showtime": 2005,
+          "district": "China_香港",
+          "length": 107,
+          "name": "早熟",
+          "language": "粤语",
+          "id": 3454,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1329962/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1309888084.jpg",
+          "othername": "The Shinjuku Incident",
+          "rate": 7.2,
+          "showtime": 2009,
+          "district": "China_香港",
+          "length": 119,
+          "name": "新宿事件",
+          "language": "汉语普通话、日语、粤语、英语、闽南语、福建话",
+          "id": 1788,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/2209368/"
+        },
+        {
+          "image": "http://img3.douban.com/lpic/s7049811.jpg",
+          "othername": "One Nite in Mongkok",
+          "rate": 7.2,
+          "showtime": 2004,
+          "district": "China_香港",
+          "length": 110,
+          "name": "旺角黑夜",
+          "language": "普通话、粤语",
+          "id": 1938,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1366853/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "我是路人甲",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        },
+        {
+          "image": "http://img4.douban.com/view/movie_poster_cover/lpst/public/p499521857.jpg",
+          "othername": "Triple Tap",
+          "rate": 6.6,
+          "showtime": 2010,
+          "district": "China_香港、China_中国大陆",
+          "length": 117,
+          "name": "枪王之王",
+          "language": "粤语、汉语普通话",
+          "id": 1790,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/4133988/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "门徒",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1382821850.jpg",
+          "othername": "The Great Magician",
+          "rate": 6.6,
+          "showtime": 2012,
+          "district": "China_中国大陆、China_香港",
+          "length": 128,
+          "name": "大魔术师",
+          "language": "汉语普通话、粤语",
+          "id": 1729,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/4913200/"
+        },
+        {
+          "image": "http://img3.douban.com/lpic/s1432481.jpg",
+          "othername": "Drink, Drank, Drunk",
+          "rate": 6.2,
+          "showtime": 2005,
+          "district": "China_中国大陆、China_香港",
+          "length": 110,
+          "name": "千杯不醉",
+          "language": "汉语普通话、粤语",
+          "id": 3331,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1419581/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1277982373.jpg",
+          "othername": "真爱未了情、Cest la vie, mon chéri、Endless Love",
+          "rate": 8.3,
+          "showtime": 1993,
+          "district": "China_香港",
+          "length": 105,
+          "name": "新不了情",
+          "language": "粤语",
+          "id": 1880,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1292950/"
+        }
+      ],
+      writeList:[
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p582577555.jpg",
+          "othername": "Yee do hung gaan、Inner Senses",
+          "rate": 7.4,
+          "showtime": 2002,
+          "district": "China_香港",
+          "length": 100,
+          "name": "异度空间",
+          "language": "粤语",
+          "id": 1859,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1303184/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
+          "othername": "I Am Somebody",
+          "rate": 7.4,
+          "showtime": 2015,
+          "district": "China_中国大陆",
+          "length": 134,
+          "name": "我是路人甲",
+          "language": "汉语普通话、粤语、浙江方言",
+          "id": 0,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25746375/"
+        },
+        {
+          "image": "http://img3.douban.com/lpic/s7049811.jpg",
+          "othername": "One Nite in Mongkok",
+          "rate": 7.2,
+          "showtime": 2004,
+          "district": "China_香港",
+          "length": 110,
+          "name": "旺角黑夜",
+          "language": "普通话、粤语",
+          "id": 1938,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1366853/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2232891520.jpg",
+          "othername": "Insanity",
+          "rate": 5.9,
+          "showtime": 2015,
+          "district": "China_中国大陆、China_香港",
+          "length": 99,
+          "name": "暴疯语",
+          "language": "汉语普通话、粤语",
+          "id": 59,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/25742299/"
+        },
+        {
+          "image": "http://img4.douban.com/view/movie_poster_cover/lpst/public/p499521857.jpg",
+          "othername": "Triple Tap",
+          "rate": 6.6,
+          "showtime": 2010,
+          "district": "China_香港、China_中国大陆",
+          "length": 117,
+          "name": "枪王之王",
+          "language": "粤语、汉语普通话",
+          "id": 1790,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/4133988/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1382821850.jpg",
+          "othername": "The Great Magician",
+          "rate": 6.6,
+          "showtime": 2012,
+          "district": "China_中国大陆、China_香港",
+          "length": 128,
+          "name": "大魔术师",
+          "language": "汉语普通话、粤语",
+          "id": 1729,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/4913200/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1309888084.jpg",
+          "othername": "The Shinjuku Incident",
+          "rate": 7.2,
+          "showtime": 2009,
+          "district": "China_香港",
+          "length": 119,
+          "name": "新宿事件",
+          "language": "汉语普通话、日语、粤语、英语、闽南语、福建话",
+          "id": 1788,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/2209368/"
+        },
+        {
+          "image": "http://img4.douban.com/lpic/s1354369.jpg",
+          "othername": "2 Young",
+          "rate": 6.6,
+          "showtime": 2005,
+          "district": "China_香港",
+          "length": 107,
+          "name": "早熟",
+          "language": "粤语",
+          "id": 3454,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1329962/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
+          "othername": "Protégé",
+          "rate": 7.4,
+          "showtime": 2007,
+          "district": "China_香港",
+          "length": 106,
+          "name": "门徒",
+          "language": "粤语、英语、泰语、汉语普通话",
+          "id": 1701,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1890784/"
+        },
+        {
+          "image": "http://img3.douban.com/lpic/s1432481.jpg",
+          "othername": "Drink, Drank, Drunk",
+          "rate": 6.2,
+          "showtime": 2005,
+          "district": "China_中国大陆、China_香港",
+          "length": 110,
+          "name": "千杯不醉",
+          "language": "汉语普通话、粤语",
+          "id": 3331,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1419581/"
+        },
+        {
+          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1277982373.jpg",
+          "othername": "真爱未了情、Cest la vie, mon chéri、Endless Love",
+          "rate": 8.3,
+          "showtime": 1993,
+          "district": "China_香港",
+          "length": 105,
+          "name": "新不了情",
+          "language": "粤语",
+          "id": 1880,
+          "category": "Movie",
+          "url": "http://movie.douban.com/subject/1292950/"
+        }
+      ],
       uid:0,
       old_value4:1,
       value4:1,
@@ -678,6 +1025,10 @@ export default {
   },
 
   methods: {
+
+    showInfoPic(){
+
+    },
 
     gobackZoom(){
       this.myChart.setOption({
@@ -2359,28 +2710,8 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 }
 
-#node_info{
-  width: 74%;
-  height: 80vh;
-  border: 1px solid rgba(140, 138, 138, 0.25);
-  border-radius: 10px;
-  margin-left: 30px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-}
-
 #recommend{
-  width: 20%;
-  height: 80vh;
-  border: 1px solid rgba(140, 138, 138, 0.25);
-  border-radius: 10px;
-  margin-left: 20px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-}
-
-#node_pic{
-  width: 47%;
+  width: 29%;
   height: 80vh;
   border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
@@ -2390,13 +2721,70 @@ export default {
 }
 
 #user_pic{
-  width: 47%;
+  width: 65%;
   height: 80vh;
   border: 1px solid rgba(140, 138, 138, 0.25);
   border-radius: 10px;
   margin-left: 30px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
+
+#node_info{
+  width: 95.5%;
+  height: 80vh;
+  border: 1px solid rgba(140, 138, 138, 0.25);
+  border-radius: 10px;
+  margin-left: 30px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
+
+#person_info{
+  display: flex;
+  flex-direction: row;
+}
+
+#person_info_box1{
+  width:65%;
+  height:80vh;
+}
+
+#simple_person_info{
+  width: 100%;
+  height:10vh;
+  margin-top: -2vh;
+  /*border:1px solid black;*/
+}
+
+#movie_list{
+  width:100%;
+  height:70vh;
+  margin-top: -2vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.movie_list_item{
+  flex:1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中 */
+}
+
+.movie_list_items{
+  height:80%;
+  width:90%;
+  overflow: auto;
+}
+
+
+#person_info_box2{
+  width:35%;
+  height:80vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .box-item {
