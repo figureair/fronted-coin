@@ -70,7 +70,7 @@ export default{
           contentType: 'application/json; charset=UTF-8',
           success: function(res){
             if(res.success){
-              alert('登录成功! UID: '+res.content)
+              alert('登录成功!')
               _this.$router.push({path:'/KG',query: { uid:res.content }})
             }else{
               alert('登录失败!')
