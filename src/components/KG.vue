@@ -1,5 +1,22 @@
 <template>
   <div>
+    <div id="menu">
+      <el-menu default-active="1-4-1" id="menu-content" :collapse="isCollapse" @select="selectGraph">
+        <el-submenu index="1">
+          <template slot="title">
+            <i class="el-icon-location"></i>
+            <span slot="title">导航一</span>
+          </template>
+          <el-menu-item-group>
+            <span slot="title">用户知识图谱列表</span>
+            <el-menu-item v-for="(item, index) in usr_graph" :key="index" :index="String(index)">
+              {{item}}
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+      </el-menu>
+    </div>
+
   <div class="box">
     <div id="myChart"></div>
 
@@ -87,7 +104,7 @@
         <el-tab-pane label="图元编辑" name="third">
           <div class="block">
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
-                       class="edit-button" @click="startGraphicalEdit">创建删除模式</el-button>
+                       class="edit-button" @click="startGraphicalEdit" :disabled="graph_readOnly">创建删除模式</el-button>
             <el-button-group v-if="editmode!=='none'">
               <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px" class="popover4">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
@@ -185,10 +202,10 @@
 <!--                  </el-table-column>-->
                 </el-table>
                 <el-form-item>
-                  <el-button v-if="!editable" @click="startEdit('edge')">编辑</el-button>
+                  <el-button v-if="!editable" @click="startEdit('edge')" :disabled="graph_readOnly">编辑</el-button>
                   <el-button type="primary" v-if="editable" @click="handleEdit('edge')">确认</el-button>
                   <el-button v-if="editable" @click="editable=false">取消</el-button>
-                  <el-button type="danger" @click="handleDelete('edge')">删除</el-button>
+                  <el-button type="danger" @click="handleDelete('edge')" :disabled="graph_readOnly">删除</el-button>
                 </el-form-item>
               </el-form>
 
@@ -211,84 +228,10 @@
                       </el-form-item>
                     </template>
                   </el-table-column>
-<!--                  <el-table-column width="100" property="id" label="id">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div>{{ scope.row.id }}</div>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                  <el-table-column width="150" property="name" label="name">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div v-if="!editable">{{ scope.row.name }}</div>-->
-<!--                      <el-form-item v-else prop="name">-->
-<!--                        <el-input v-model="input.name"></el-input>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                  <el-table-column width="100" property="category" label="category">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div v-if="!editable">{{ scope.row.category }}</div>-->
-<!--                      <el-form-item v-else prop="category">-->
-<!--                        <el-input v-model="input.category"></el-input>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                    <el-table-column width="150" property="symbol" label="symbol">-->
-<!--                        <template slot-scope="scope">-->
-<!--                            <div v-if="!editable">{{ scope.row.symbol }}</div>-->
-<!--                            <el-form-item v-else prop="symbol">-->
-<!--                                <el-select v-model="input.symbol">-->
-<!--                                    <el-option v-for="(item, index) in ECHARTS_SYMBOLS"-->
-<!--                                               :key="index" :label="item" :value="item"></el-option>-->
-<!--                                </el-select>                            </el-form-item>-->
-<!--                        </template>-->
-<!--                    </el-table-column>-->
-<!--                  <el-table-column width="200" property="symbolSize" label="symbolSize">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div v-if="!editable">{{ scope.row.symbolSize }}</div>-->
-<!--                      <el-form-item v-else prop="symbolSize">-->
-<!--                        <el-input v-model="input.symbolSize"></el-input>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                    <el-table-column width="150" property="value" label="value">-->
-<!--                        <template slot-scope="scope">-->
-<!--                            <div v-if="!editable">{{ scope.row.value }}</div>-->
-<!--                            <el-form-item v-else prop="value">-->
-<!--                                <el-input v-model="input.value"></el-input>-->
-<!--                            </el-form-item>-->
-<!--                        </template>-->
-<!--                    </el-table-column>-->
-<!--                  <el-table-column width="80" property="x" label="x">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div v-if="!editable">{{ scope.row.x }}</div>-->
-<!--                      <el-form-item v-else prop="value">-->
-<!--                        <el-input v-model="input.x"></el-input>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                    <el-table-column width="80" property="y" label="y">-->
-<!--                        <template slot-scope="scope">-->
-<!--                            <div v-if="!editable">{{ scope.row.y }}</div>-->
-<!--                            <el-form-item v-else prop="value">-->
-<!--                                <el-input v-model="input.y"></el-input>-->
-<!--                            </el-form-item>-->
-<!--                        </template>-->
-<!--                    </el-table-column>-->
-
-<!--                  <el-table-column width="250" label="option">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <el-form-item>-->
-<!--                        <el-button v-if="!editable" @click="startEdit(scope.row, 'node')">编辑</el-button>-->
-<!--                        <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'node')">确认</el-button>-->
-<!--                        <el-button v-if="editable" @click="editable=false">取消</el-button>-->
-<!--                        <el-button type="danger" @click="handleDelete(scope.row, 'node')">删除</el-button>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
                 </el-table>
                 <el-form-item>
-                  <el-button v-if="!editable" @click="startEdit('node')">编辑</el-button>
-                  <el-button type="danger" @click="handleDelete('node')">删除</el-button>
+                  <el-button v-if="!editable" @click="startEdit('node')" :disabled="graph_readOnly">编辑</el-button>
+                  <el-button type="danger" @click="handleDelete('node')" :disabled="graph_readOnly">删除</el-button>
                   <el-button type="primary" v-if="editable" @click="handleEdit('node')">确认</el-button>
                   <el-button v-if="editable" @click="editable=false">取消</el-button>
                 </el-form-item>
@@ -1174,8 +1117,13 @@ export default {
 
       searchEdgeForm: {name:'',source:'',target:''},
       searchEdgeHistory: [],
-        searchTab: 'fourth-1',
+      searchTab: 'fourth-1',
 
+      isCollapse: true,
+      user_graphs: [],
+
+      graph_readOnly: false,
+      usr_graph: [],
 
 
       labelComplete: (queryString, cb) => {
@@ -1352,7 +1300,8 @@ export default {
 
   mounted() {
     this.uid=parseInt(this.$route.query.uid)
-
+    console.log('uid: ' + this.uid)
+    this.getUserGraph()
     this.initdata()
     this.showInfoPic()
     this.showUserPic()
@@ -2789,6 +2738,7 @@ export default {
                     prop.target= prop.target+""
                   }
 
+                  that.graph_readOnly = tmpjson.pic_name === 'movie'
                 }
               }
             })
@@ -3025,15 +2975,6 @@ export default {
       this.savedgraph.nodes.splice(index, 1);
       this.selectedType = '';
       this.selectedItem = [];
-      // let that = this;
-      // this.myChart.setOption({
-      //   series: [
-      //     {
-      //       data: that.savedgraph.nodes,
-      //       links: that.savedgraph.links
-      //     }
-      //   ]
-      // })
         this.initpage();
     },
 
@@ -3041,15 +2982,6 @@ export default {
       this.savedgraph.links.splice(index, 1);
       this.selectedType = '';
       this.selectedItem = [];
-      // let that = this;
-      // this.myChart.setOption({
-      //     series: [
-      //         {
-      //             data: that.savedgraph.nodes,
-      //             links: that.savedgraph.links
-      //         }
-      //     ]
-      // })
         this.initpage();
     },
 
@@ -3062,29 +2994,11 @@ export default {
 
     addNodeAt(index, item) {
       this.savedgraph.nodes.splice(index, 0, item);
-      // let that = this;
-      // this.myChart.setOption({
-      //     series: [
-      //         {
-      //             data: that.savedgraph.nodes,
-      //             links: that.savedgraph.links
-      //         }
-      //     ]
-      // })
         this.initpage()
     },
 
     addEdgeAt(index, item) {
       this.savedgraph.links.splice(index, 0, item);
-      // let that = this;
-      // this.myChart.setOption({
-      //   series: [
-      //     {
-      //       data: that.savedgraph.nodes,
-      //       links: that.savedgraph.links
-      //     }
-      //   ]
-      // })
         this.initpage();
     },
 
@@ -3417,7 +3331,64 @@ export default {
         else if(this.nowOption===2)this.myChart.setOption(this.option2);
         else if(this.nowOption===3)this.myChart.setOption(this.option3);
         else if(this.nowOption===4)this.myChart.setOption(this.option4);
+      },
+
+    getUserGraph() {
+      let that = this
+      $.ajax({
+        url: 'http://47.99.190.169:8888/graphName?uid=' + this.uid,
+        type: 'get',
+        // data: {},
+        dataType: 'json',
+        success: function (res) {
+          const graphs = res.content.map((pic) => pic["n.pic_name"]).filter((pic_name) => pic_name !== null);
+          if (graphs != null) {
+            that.usr_graph = graphs;
+          }
+        }
+      })
+    },
+
+    selectGraph(index, indexPath) {
+      if (indexPath[0] === '1') {
+        let that = this;
+        let pic_name = this.usr_graph[Number(index)];
+        // 这个请求这段用了前面一摸一样的 考虑拉出来自成一个方法
+        $.ajax({
+          url: 'http://47.99.190.169:8888/?pic_name=' + pic_name + '&uid=' + this.uid,
+          type: 'get',
+          data: {},
+          dataType: 'json',
+          success: function (res) {
+            console.log(res)
+            if (res.content == null) {
+              //that.uploadJSON()
+            }
+            else{
+
+              that.haveGraphInDatabase=true
+              that.tmpgraph=res.content
+              if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
+                for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
+                  let prop = that.tmpgraph.nodes[i]
+                  prop.x = 100 * Math.random()
+                  prop.y = 100 * Math.random()
+                }
+              }
+
+              for (let i = 0; i < that.tmpgraph.links.length; i++) {
+                let prop = that.tmpgraph.links[i]
+                prop.source = prop.source+""
+                prop.target= prop.target+""
+              }
+
+              that.graph_readOnly = pic_name === 'movie'
+
+            }
+          }
+        })
       }
+    },
   }
 }
 </script>
@@ -3700,5 +3671,18 @@ export default {
 .el-button-group>.el-button {
     float: none;
     position: relative;
+}
+
+#menu {
+  position: fixed;
+  left: 0;
+  top: 100px;
+  opacity: 0.5;
+}
+
+#menu-content:not(.el-menu--collapse)  {
+  width: 200px;
+  min-height: 500px;
+  transition: all ease 0.5s;
 }
 </style>
