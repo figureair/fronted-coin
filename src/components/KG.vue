@@ -352,20 +352,20 @@
         <div class="user_pic_box2_item" id="user_pic4"></div>
       </div>
     </div>
-    <div id="recommend">
+    <div id="recommend" :key="recommendCount">
       <div class="recommend_item" v-if="recommendUser">
         <div class="recommend_title">
           <h4>智能推荐电影</h4>
         </div>
-        <div class="recommend_list_items" :key="movie_like">
+        <div class="recommend_list_items">
         <el-collapse>
           <el-collapse-item v-for="v in recommendByUserShow" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
             <h4>别名: {{v.othername}}</h4>
             <h4>国家: {{v.district}}</h4>
             <h4>时长: {{v.length}}分钟</h4>
             <h4>语言: {{v.language}}</h4>
-            <div class="love_buttom">
-              <vue-clap-button icon="love" :size="10" :initClicked="1" @cancel="handleLoveCancel(v)"
+            <div class="love_button">
+              <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
                                @clap="handleLoveClap(v)"/>
             </div>
           </el-collapse-item>
@@ -386,6 +386,10 @@
               <h4>国家: {{v.district}}</h4>
               <h4>时长: {{v.length}}分钟</h4>
               <h4>语言: {{v.language}}</h4>
+              <div class="love_button">
+                <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                 @clap="handleLoveClap(v)"/>
+              </div>
             </el-collapse-item>
           </el-collapse>
         </div>
@@ -396,7 +400,7 @@
     </div>
   </div>
   <div class="box">
-    <div id="person_info" v-if="true">
+    <div id="person_info" v-show="isPerson">
           <div id="person_info_box1">
             <div id="simple_person_info">
               <h1>姓名: {{person['info'][0]['name']}} 参演电影平均评分: {{person['info'][0]['rate']}}</h1>
@@ -448,7 +452,7 @@
             <div id="person_pic"></div>
           </div>
         </div>
-    <div id="movie_info" v-if="false">
+    <div id="movie_info" v-show="isMovie">
       <div id="movie_info_box1">
         <h2>电影名称: {{movie['info'][0]['name']}} 电影评分: {{movie['info'][0]['rate']}}</h2>
       </div>
@@ -477,7 +481,10 @@ export default {
   name: "KG",
   data() {
     return {
-      movie_like:0,
+
+      isPerson:false,
+      isMovie:false,
+      mids:[1701],
       avgRate:0,
       oldShowtime:2100,
       newShowtime:0,
@@ -485,562 +492,53 @@ export default {
       play:['1'],
       direct:['1'],
       write:['1'],
-      actors:"娜奥米·哈里斯、娜奥米·哈里斯、杰克·吉伦哈尔、瑞塔·奥拉、福里斯特·惠特克、克莱尔·弗利、博·纳普、维克托·奥尔蒂斯、50分、约翰·塞纳迭姆博、米格尔·戈麦斯、瑞秋·麦克亚当斯",
+      actors:"",
       movie:{
-        "actor": [
-          "娜奥米·哈里斯",
-          "娜奥米·哈里斯",
-          "杰克·吉伦哈尔",
-          "瑞塔·奥拉",
-          "福里斯特·惠特克",
-          "克莱尔·弗利",
-          "博·纳普",
-          "维克托·奥尔蒂斯",
-          "50分",
-          "约翰·塞纳迭姆博",
-          "米格尔·戈麦斯",
-          "瑞秋·麦克亚当斯"
-        ],
-        "composer": [
-          "科特·萨特"
-        ],
-        "director": [
-          "安东尼·福奎阿"
-        ],
-        "info": [
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2239723542.jpg",
-            "othername": "左撇子、震撼擂台(台)、再战击情(港)",
-            "rate": 7.1,
-            "showtime": 2015,
-            "district": "United States of America_美国、China_中国大陆",
-            "length": 123,
-            "name": "铁拳",
-            "language": "英语",
-            "id": 1,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/5446197/"
-          }
+        "actor": [],
+        "composer": [],
+        "director": [],
+        "info": [{
+          "othername": "",
+          "rate": 0,
+          "showtime": 0,
+          "district": "",
+          "length": 0,
+          "name": "",
+          "language": ""
+        }
         ]
       },
       person:{
-        "play": [
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-            "othername": "Protégé",
-            "rate": 7.4,
-            "showtime": 2007,
-            "district": "China_香港",
-            "length": 106,
-            "name": "门徒",
-            "language": "粤语、英语、泰语、汉语普通话",
-            "id": 1701,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1890784/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-            "othername": "I Am Somebody",
-            "rate": 7.4,
-            "showtime": 2015,
-            "district": "China_中国大陆",
-            "length": 134,
-            "name": "我是路人甲",
-            "language": "汉语普通话、粤语、浙江方言",
-            "id": 0,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/25746375/"
-          }
-        ],
-        "direct": [
-          {
-            "image": "http://img4.douban.com/lpic/s1354369.jpg",
-            "othername": "2 Young",
-            "rate": 6.6,
-            "showtime": 2005,
-            "district": "China_香港",
-            "length": 107,
-            "name": "早熟",
-            "language": "粤语",
-            "id": 3454,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1329962/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1309888084.jpg",
-            "othername": "The Shinjuku Incident",
-            "rate": 7.2,
-            "showtime": 2009,
-            "district": "China_香港",
-            "length": 119,
-            "name": "新宿事件",
-            "language": "汉语普通话、日语、粤语、英语、闽南语、福建话",
-            "id": 1788,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/2209368/"
-          },
-          {
-            "image": "http://img3.douban.com/lpic/s7049811.jpg",
-            "othername": "One Nite in Mongkok",
-            "rate": 7.2,
-            "showtime": 2004,
-            "district": "China_香港",
-            "length": 110,
-            "name": "旺角黑夜",
-            "language": "普通话、粤语",
-            "id": 1938,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1366853/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-            "othername": "I Am Somebody",
-            "rate": 7.4,
-            "showtime": 2015,
-            "district": "China_中国大陆",
-            "length": 134,
-            "name": "我是路人甲",
-            "language": "汉语普通话、粤语、浙江方言",
-            "id": 0,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/25746375/"
-          },
-          {
-            "image": "http://img4.douban.com/view/movie_poster_cover/lpst/public/p499521857.jpg",
-            "othername": "Triple Tap",
-            "rate": 6.6,
-            "showtime": 2010,
-            "district": "China_香港、China_中国大陆",
-            "length": 117,
-            "name": "枪王之王",
-            "language": "粤语、汉语普通话",
-            "id": 1790,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/4133988/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-            "othername": "Protégé",
-            "rate": 7.4,
-            "showtime": 2007,
-            "district": "China_香港",
-            "length": 106,
-            "name": "门徒",
-            "language": "粤语、英语、泰语、汉语普通话",
-            "id": 1701,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1890784/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1382821850.jpg",
-            "othername": "The Great Magician",
-            "rate": 6.6,
-            "showtime": 2012,
-            "district": "China_中国大陆、China_香港",
-            "length": 128,
-            "name": "大魔术师",
-            "language": "汉语普通话、粤语",
-            "id": 1729,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/4913200/"
-          },
-          {
-            "image": "http://img3.douban.com/lpic/s1432481.jpg",
-            "othername": "Drink, Drank, Drunk",
-            "rate": 6.2,
-            "showtime": 2005,
-            "district": "China_中国大陆、China_香港",
-            "length": 110,
-            "name": "千杯不醉",
-            "language": "汉语普通话、粤语",
-            "id": 3331,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1419581/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1277982373.jpg",
-            "othername": "真爱未了情、Cest la vie, mon chéri、Endless Love",
-            "rate": 8.3,
-            "showtime": 1993,
-            "district": "China_香港",
-            "length": 105,
-            "name": "新不了情",
-            "language": "粤语",
-            "id": 1880,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1292950/"
-          }
-        ],
-        "genre": [
-          {
-            "num": 8,
-            "genre": "犯罪"
-          },
-          {
-            "num": 1,
-            "genre": "恐怖"
-          },
-          {
-            "num": 9,
-            "genre": "惊悚"
-          },
-          {
-            "num": 7,
-            "genre": "喜剧"
-          },
-          {
-            "num": 16,
-            "genre": "剧情"
-          },
-          {
-            "num": 10,
-            "genre": "爱情"
-          },
-          {
-            "num": 4,
-            "genre": "动作"
-          },
-          {
-            "num": 3,
-            "genre": "悬疑"
-          },
-          {
-            "num": 2,
-            "genre": "奇幻"
-          }
-        ],
-        "write": [
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p582577555.jpg",
-            "othername": "Yee do hung gaan、Inner Senses",
-            "rate": 7.4,
-            "showtime": 2002,
-            "district": "China_香港",
-            "length": 100,
-            "name": "异度空间",
-            "language": "粤语",
-            "id": 1859,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1303184/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-            "othername": "I Am Somebody",
-            "rate": 7.4,
-            "showtime": 2015,
-            "district": "China_中国大陆",
-            "length": 134,
-            "name": "我是路人甲",
-            "language": "汉语普通话、粤语、浙江方言",
-            "id": 0,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/25746375/"
-          },
-          {
-            "image": "http://img3.douban.com/lpic/s7049811.jpg",
-            "othername": "One Nite in Mongkok",
-            "rate": 7.2,
-            "showtime": 2004,
-            "district": "China_香港",
-            "length": 110,
-            "name": "旺角黑夜",
-            "language": "普通话、粤语",
-            "id": 1938,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1366853/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2232891520.jpg",
-            "othername": "Insanity",
-            "rate": 5.9,
-            "showtime": 2015,
-            "district": "China_中国大陆、China_香港",
-            "length": 99,
-            "name": "暴疯语",
-            "language": "汉语普通话、粤语",
-            "id": 59,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/25742299/"
-          },
-          {
-            "image": "http://img4.douban.com/view/movie_poster_cover/lpst/public/p499521857.jpg",
-            "othername": "Triple Tap",
-            "rate": 6.6,
-            "showtime": 2010,
-            "district": "China_香港、China_中国大陆",
-            "length": 117,
-            "name": "枪王之王",
-            "language": "粤语、汉语普通话",
-            "id": 1790,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/4133988/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1382821850.jpg",
-            "othername": "The Great Magician",
-            "rate": 6.6,
-            "showtime": 2012,
-            "district": "China_中国大陆、China_香港",
-            "length": 128,
-            "name": "大魔术师",
-            "language": "汉语普通话、粤语",
-            "id": 1729,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/4913200/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1309888084.jpg",
-            "othername": "The Shinjuku Incident",
-            "rate": 7.2,
-            "showtime": 2009,
-            "district": "China_香港",
-            "length": 119,
-            "name": "新宿事件",
-            "language": "汉语普通话、日语、粤语、英语、闽南语、福建话",
-            "id": 1788,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/2209368/"
-          },
-          {
-            "image": "http://img4.douban.com/lpic/s1354369.jpg",
-            "othername": "2 Young",
-            "rate": 6.6,
-            "showtime": 2005,
-            "district": "China_香港",
-            "length": 107,
-            "name": "早熟",
-            "language": "粤语",
-            "id": 3454,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1329962/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-            "othername": "Protégé",
-            "rate": 7.4,
-            "showtime": 2007,
-            "district": "China_香港",
-            "length": 106,
-            "name": "门徒",
-            "language": "粤语、英语、泰语、汉语普通话",
-            "id": 1701,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1890784/"
-          },
-          {
-            "image": "http://img3.douban.com/lpic/s1432481.jpg",
-            "othername": "Drink, Drank, Drunk",
-            "rate": 6.2,
-            "showtime": 2005,
-            "district": "China_中国大陆、China_香港",
-            "length": 110,
-            "name": "千杯不醉",
-            "language": "汉语普通话、粤语",
-            "id": 3331,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1419581/"
-          },
-          {
-            "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1277982373.jpg",
-            "othername": "真爱未了情、Cest la vie, mon chéri、Endless Love",
-            "rate": 8.3,
-            "showtime": 1993,
-            "district": "China_香港",
-            "length": 105,
-            "name": "新不了情",
-            "language": "粤语",
-            "id": 1880,
-            "category": "Movie",
-            "url": "http://movie.douban.com/subject/1292950/"
-          }
-        ],
+        "play": [],
+        "direct": [],
+        "genre": [],
+        "write": [],
         "info": [
           {
-            "rate": 7.1,
-            "name": "尔冬升",
-            "id": 4610,
+            "rate": 0,
+            "name": "",
+            "id": 0,
             "category": "Person"
           }
         ]
       },
-      userinfo: {
-        "movie": [{
-          "rate": 7.4,
-          "showtime": 2015,
-          "length": 135,
-          "name": "123",
-          "id": 2,
-          "category": "Movie"
-        }, {"rate": 4, "showtime": 1998, "name": "321", "length": 100, "id": 3, "category": "Movie"}],
-        "genre": [{"num": 1, "genre": "abc"}, {"num": 1, "genre": "cba"}]
-      },
+      userinfo: {},
 
       // recommend 相关变量
+
+      // 判断是用户推荐和电影推荐
       recommendUser:true,
+      // 当前推荐最后一部电影的index
       recommendByUserIndex:0,
       recommendByMovieIndex:0,
+      // 展示的推荐列表
       recommendByUserShow:[],
       recommendByMovieShow:[],
-      recommendByUser:[
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-          "othername": "Protégé",
-          "rate": 7.4,
-          "showtime": 2007,
-          "district": "China_香港",
-          "length": 106,
-          "name": "门徒",
-          "language": "粤语、英语、泰语、汉语普通话",
-          "id": 1701,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/1890784/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-          "othername": "I Am Somebody",
-          "rate": 7.4,
-          "showtime": 2015,
-          "district": "China_中国大陆",
-          "length": 134,
-          "name": "我是路人甲",
-          "language": "汉语普通话、粤语、浙江方言",
-          "id": 0,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/25746375/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-          "othername": "Protégé",
-          "rate": 7.4,
-          "showtime": 2007,
-          "district": "China_香港",
-          "length": 106,
-          "name": "123",
-          "language": "粤语、英语、泰语、汉语普通话",
-          "id": 1701,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/1890784/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-          "othername": "I Am Somebody",
-          "rate": 7.4,
-          "showtime": 2015,
-          "district": "China_中国大陆",
-          "length": 134,
-          "name": "456",
-          "language": "汉语普通话、粤语、浙江方言",
-          "id": 0,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/25746375/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-          "othername": "Protégé",
-          "rate": 7.4,
-          "showtime": 2007,
-          "district": "China_香港",
-          "length": 106,
-          "name": "789",
-          "language": "粤语、英语、泰语、汉语普通话",
-          "id": 1701,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/1890784/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-          "othername": "I Am Somebody",
-          "rate": 7.4,
-          "showtime": 2015,
-          "district": "China_中国大陆",
-          "length": 134,
-          "name": "qwe",
-          "language": "汉语普通话、粤语、浙江方言",
-          "id": 0,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/25746375/"
-        }
-      ],
-      recommendByMovie:[
-        {
-        "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-        "othername": "Protégé",
-        "rate": 7.4,
-        "showtime": 2007,
-        "district": "China_香港",
-        "length": 106,
-        "name": "门徒",
-        "language": "粤语、英语、泰语、汉语普通话",
-        "id": 1701,
-        "category": "Movie",
-        "url": "http://movie.douban.com/subject/1890784/"
-      },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-          "othername": "I Am Somebody",
-          "rate": 7.4,
-          "showtime": 2015,
-          "district": "China_中国大陆",
-          "length": 134,
-          "name": "我是路人甲",
-          "language": "汉语普通话、粤语、浙江方言",
-          "id": 0,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/25746375/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-          "othername": "Protégé",
-          "rate": 7.4,
-          "showtime": 2007,
-          "district": "China_香港",
-          "length": 106,
-          "name": "123",
-          "language": "粤语、英语、泰语、汉语普通话",
-          "id": 1701,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/1890784/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-          "othername": "I Am Somebody",
-          "rate": 7.4,
-          "showtime": 2015,
-          "district": "China_中国大陆",
-          "length": 134,
-          "name": "456",
-          "language": "汉语普通话、粤语、浙江方言",
-          "id": 0,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/25746375/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p1181944920.jpg",
-          "othername": "Protégé",
-          "rate": 7.4,
-          "showtime": 2007,
-          "district": "China_香港",
-          "length": 106,
-          "name": "789",
-          "language": "粤语、英语、泰语、汉语普通话",
-          "id": 1701,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/1890784/"
-        },
-        {
-          "image": "http://img3.douban.com/view/movie_poster_cover/lpst/public/p2252471054.jpg",
-          "othername": "I Am Somebody",
-          "rate": 7.4,
-          "showtime": 2015,
-          "district": "China_中国大陆",
-          "length": 134,
-          "name": "qwe",
-          "language": "汉语普通话、粤语、浙江方言",
-          "id": 0,
-          "category": "Movie",
-          "url": "http://movie.douban.com/subject/25746375/"
-        }
-        ],
+      // 所有推荐列表
+      recommendByUser:[],
+      recommendByMovie:[],
+
+      recommendCount:0,
 
       uid:0,
       old_value4:1,
@@ -1303,39 +801,174 @@ export default {
     console.log('uid: ' + this.uid)
     this.getUserGraph()
     this.initdata()
-    this.showInfoPic()
+
     this.showUserPic()
-    this.recommendPush()
+    this.recommendGet(this.uid)
+
+
   },
 
   methods: {
 
+    // 获取电影知识图谱
+    getMovie(){
+
+      let that=this
+
+      // 调用接口获取图谱
+      $.ajax({
+        url: 'http://47.99.190.169:8888/?pic_name=movie' + '&uid='+that.uid,
+        type: 'get',
+        success: function (res) {
+          that.tmpgraph=res.content
+
+          if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
+            for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
+              let prop = that.tmpgraph.nodes[i]
+              prop.x = 100 * Math.random()
+              prop.y = 100 * Math.random()
+            }
+          }
+          for (let i = 0; i < that.tmpgraph.links.length; i++) {
+            let prop = that.tmpgraph.links[i]
+            prop.source = prop.source+""
+            prop.target= prop.target+""
+          }
+
+          that.savedgraph = that.tmpgraph
+          console.log(that.tmpgraph)
+
+          // 存储已喜欢的电影ID
+          that.mids=[]
+          for(let i=0;i<that.tmpgraph.nodes.length;i++){
+            let prop = that.tmpgraph.nodes[i]
+            if(prop.category==='movie'){that.mids.push(prop.mid)}
+          }
+
+          that.initpage()
+        }
+      })
+    },
+
     // 取消喜欢
     handleLoveCancel(movie){
-      console.log(movie)
-      console.log('取消')
+      let that=this
+
+      // 调用接口返回该电影id
+      $.ajax({
+        url: 'http://47.99.190.169:8888/movie/unlike?id='+movie.id+'&uid='+that.uid,
+        type: 'get',
+        success: function (res) {
+          if(res.success){
+            console.log('取消喜欢成功!')
+
+            // 设置对应电影like属性
+            movie.like=0
+
+            // 调用接口重新获取电影知识图谱
+            that.getMovie()
+          }
+          else{
+            console.log('取消喜欢失败!')
+          }
+        }
+      })
     },
 
     // 点击喜欢
     handleLoveClap(movie){
-      console.log(movie)
-      console.log('喜欢')
+
+      let that=this
+
+      // 调用接口返回该电影id
+      $.ajax({
+        url: 'http://47.99.190.169:8888/movie/like?id='+movie.id+'&uid='+that.uid,
+        type: 'get',
+        success: function (res) {
+          if(res.success){
+            console.log('喜欢成功!')
+
+            // 设置对应电影like属性
+            movie.like=1
+
+            // 调用接口重新获取电影知识图谱
+            that.getMovie()
+          }
+          else{
+            console.log('喜欢失败!')
+          }
+        }
+      })
+
     },
 
-    // 推荐电影列表生成
-    recommendPush(){
-      for(let i=0;i<3;i++){
-        this.recommendByUserIndex=i
-        this.recommendByMovieIndex=i
-        this.recommendByUserShow.push(this.recommendByUser[i])
-        this.recommendByMovieShow.push(this.recommendByMovie[i])
+    // 获取推荐列表
+    recommendGet(id){
+      let that=this
+      if(this.recommendUser) {
+        // 调用接口
+        $.ajax({
+          url: 'http://47.99.190.169:8888/movie/recommend/u?uid='+id,
+          type: 'get',
+          success: function (res) {
+            // 添加like属性,判断电影是否在知识图谱中
+            that.recommendByUser=res.content.rec
+            for(let i=0;i<that.recommendByUser.length;i++){
+              if(that.recommendByUser[i]['id'] in that.mids){
+                that.recommendByUser[i]['like']=1
+              }
+              else{
+                that.recommendByUser[i]['like']=0
+              }
+            }
+
+            // 添加前三个到推荐列表中
+            for(let i=0;i<3;i++){
+              that.recommendByUserIndex=i
+              that.recommendByUserShow.push(that.recommendByUser[i])
+            }
+          }
+        })
+
+
       }
+      else{
+        // 调用接口
+        $.ajax({
+          url: 'http://47.99.190.169:8888/movie/recommend/m?id='+id,
+          type: 'get',
+          success: function (res) {
+
+            // 添加like属性,判断电影是否在知识图谱中
+            that.recommendByMovie=res.content.rec
+            console.log(that.recommendByMovie)
+            for(let i=0;i<that.recommendByMovie.length;i++){
+              if(that.recommendByMovie[i]['id'] in that.mids){
+                that.recommendByMovie[i]['like']=1
+              }
+              else{
+                that.recommendByMovie[i]['like']=0
+              }
+            }
+
+            // 添加前三个到推荐列表中
+            for(let i=0;i<3;i++){
+              that.recommendByMovieIndex=i
+              that.recommendByMovieShow.push(that.recommendByMovie[i])
+            }
+          }
+        })
+      }
+
+      // 重新渲染
+      that.recommendCount++
+
     },
 
     // 点击换一换，切换推荐
     recommendChange(){
-      console.log(1)
       if(this.recommendUser){
+        // 切换下三条推荐电影
         for(let i=0;i<3;i++) {
           let j=this.recommendByUserIndex+1
           if(j>=this.recommendByUser.length){
@@ -1345,9 +978,9 @@ export default {
           this.recommendByUserIndex=j
           j++
         }
-        console.log(this.recommendByUserShow)
       }
       else{
+        // 切换下三条推荐电影
         for(let i=0;i<3;i++) {
           let j=this.recommendByMovieIndex+1
           if(j>=this.recommendByMovie.length){
@@ -1358,11 +991,11 @@ export default {
           j++
         }
       }
-      // this.$forceUpdate()
-      this.movie_like++
+      /// 重新渲染
+      this.recommendCount++
     },
 
-
+    // 用户画像生成
     showUserPic(){
 
       let that=this
@@ -1637,84 +1270,134 @@ export default {
 
       }
 
+      // 调用接口获取数据并生成
+      this.userinfo={
+        "movie": [{
+          "rate": 7.4,
+          "showtime": 2015,
+          "length": 135,
+          "name": "123",
+          "id": 2,
+          "category": "Movie"
+        }, {"rate": 4, "showtime": 1998, "name": "321", "length": 100, "id": 3, "category": "Movie"}],
+            "genre": [{"num": 1, "genre": "abc"}, {"num": 1, "genre": "cba"}]
+      }
+
       rateShow()
       lengthShow()
       showtimeShow()
       genreShow()
     },
 
-    showInfoPic(){
-      let personData=[]
-      for (let i=0;i<this.person['genre'].length;i++)
-      {
-        personData.push({'name':this.person['genre'][i].genre,'value':parseInt(this.person['genre'][i].num)})
+    // 演员图表生成
+    showInfoPic(name){
+      let that=this
+
+      // 生成图表方法
+      function createPic() {
+        let personData = []
+        for (let i = 0; i < that.person['genre'].length; i++) {
+          personData.push({'name': that.person['genre'][i].genre, 'value': parseInt(that.person['genre'][i].num)})
+        }
+
+        let echarts = require('echarts');
+        let chartDom = document.getElementById('person_pic');
+        let personPic = echarts.init(chartDom);
+
+        let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF', '#1aff00', '#ff0000']
+
+        let option = {
+          title: {
+            text: '类型比',
+            x: 'center',
+            y: 'center',
+            textStyle: {
+              fontSize: 20
+            }
+          },
+
+          tooltip: {
+            trigger: 'item'
+          },
+          series: [
+            {
+              type: 'pie',
+              center: ['50%', '50%'],
+              radius: ['24%', '45%'],
+              clockwise: true,
+              avoidLabelOverlap: true,
+              hoverOffset: 15,
+              itemStyle: {
+                normal: {
+                  color: function (params) {
+                    return colorList[params.dataIndex]
+                  }
+                }
+              },
+              label: {
+                show: true,
+                position: 'outside',
+                formatter: '{a|{b}：{d}%}\n{hr|}',
+                rich: {
+                  hr: {
+                    backgroundColor: 't',
+                    borderRadius: 3,
+                    width: 3,
+                    height: 3,
+                    padding: [3, 3, 0, -12]
+                  },
+                  a: {
+                    padding: [-30, 15, -20, 15]
+                  }
+                }
+              },
+              labelLine: {
+                normal: {
+                  length: 10,
+                  length2: 20,
+                  lineStyle: {
+                    width: 1
+                  }
+                }
+              },
+              data: personData
+            }
+          ]
+        };
+        personPic.setOption(option)
       }
 
-      let echarts = require('echarts');
-      let chartDom = document.getElementById('person_pic');
-      let personPic = echarts.init(chartDom);
+      // 调用接口获取人员数据
+      $.ajax({
+        url: 'http://47.99.190.169:8888/movie/person?name='+name,
+        type: 'get',
+        success: function (res) {
+          that.person=res.content
+          that.isPerson=true
+          createPic()
+        }
+      })
 
-      let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF','#1aff00','#ff0000']
 
-      let option = {
-        title: {
-          text: '类型比',
-          x: 'center',
-          y: 'center',
-          textStyle: {
-            fontSize: 20
+    },
+
+    // 电影信息展示
+    showMovieInfo(id){
+      let that=this
+      $.ajax({
+        url: 'http://47.99.190.169:8888/movie/info?id='+id,
+        type: 'get',
+        success: function (res) {
+          that.movie=res.content
+
+          // 生成主演字符串
+          for(let i=0;i<that.movie.actor.length-1;i++){
+            that.actors=that.actors+that.movie.actor[i]+'、'
           }
-        },
-
-        tooltip: {
-          trigger: 'item'
-        },
-        series: [
-          {
-            type: 'pie',
-            center: ['50%', '50%'],
-            radius: ['24%', '45%'],
-            clockwise: true,
-            avoidLabelOverlap: true,
-            hoverOffset: 15,
-            itemStyle: {
-              normal: {
-                color: function(params) {
-                  return colorList[params.dataIndex]
-                }
-              }
-            },
-            label: {
-              show: true,
-              position: 'outside',
-              formatter: '{a|{b}：{d}%}\n{hr|}',
-              rich: {
-                hr: {
-                  backgroundColor: 't',
-                  borderRadius: 3,
-                  width: 3,
-                  height: 3,
-                  padding: [3, 3, 0, -12]
-                },
-                a: {
-                  padding: [-30, 15, -20, 15]
-                }
-              }
-            },
-            labelLine: {
-              normal: {
-                length: 20,
-                length2: 30,
-                lineStyle: {
-                  width: 1
-                }
-              }
-            },
-            data: personData
-          }
-        ]
-      };
-      personPic.setOption(option)
+          that.actors=that.actors+that.movie.actor[that.movie.actor.length-1]
+          that.isMovie=true
+        }
+      })
     },
 
     gobackZoom(){
@@ -2718,7 +2401,7 @@ export default {
               success: function (res) {
                 console.log(res)
                 if (res.content == null) {
-                  //that.uploadJSON()
+                  that.uploadJSON()
                 }
                 else{
 
@@ -3549,7 +3232,7 @@ export default {
 }
 
 #person_pic{
-  width: 100%;
+  width: 80vh;
   height: 80vh;
 }
 
@@ -3581,7 +3264,7 @@ export default {
   flex: 1;
 }
 
-.love_buttom{
+.love_button{
   display: flex;
   flex-direction: row;
   justify-content: center; /* 水平居中 */
