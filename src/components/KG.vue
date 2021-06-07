@@ -414,13 +414,17 @@
         <div class="recommend_title">
           <h4>智能推荐电影</h4>
         </div>
-        <div class="recommend_list_items">
+        <div class="recommend_list_items" :key="movie_like">
         <el-collapse>
           <el-collapse-item v-for="v in recommendByUserShow" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
             <h4>别名: {{v.othername}}</h4>
             <h4>国家: {{v.district}}</h4>
             <h4>时长: {{v.length}}分钟</h4>
             <h4>语言: {{v.language}}</h4>
+            <div class="love_buttom">
+              <vue-clap-button icon="love" :size="10" :initClicked="1" @cancel="handleLoveCancel(v)"
+                               @clap="handleLoveClap(v)"/>
+            </div>
           </el-collapse-item>
         </el-collapse>
         </div>
@@ -522,16 +526,15 @@
   </div>
 </template>
 
-
 <script>
 import $ from 'jquery'
-
 const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
 
 export default {
   name: "KG",
   data() {
     return {
+      movie_like:0,
       avgRate:0,
       oldShowtime:2100,
       newShowtime:0,
@@ -928,6 +931,8 @@ export default {
         }, {"rate": 4, "showtime": 1998, "name": "321", "length": 100, "id": 3, "category": "Movie"}],
         "genre": [{"num": 1, "genre": "abc"}, {"num": 1, "genre": "cba"}]
       },
+
+      // recommend 相关变量
       recommendUser:true,
       recommendByUserIndex:0,
       recommendByMovieIndex:0,
@@ -1093,6 +1098,7 @@ export default {
           "url": "http://movie.douban.com/subject/25746375/"
         }
         ],
+
       uid:0,
       old_value4:1,
       value4:1,
@@ -1346,16 +1352,28 @@ export default {
 
   mounted() {
     this.uid=parseInt(this.$route.query.uid)
-    console.log(this.uid)
 
     this.initdata()
     this.showInfoPic()
     this.showUserPic()
     this.recommendPush()
-    console.log("????")
   },
 
   methods: {
+
+    // 取消喜欢
+    handleLoveCancel(movie){
+      console.log(movie)
+      console.log('取消')
+    },
+
+    // 点击喜欢
+    handleLoveClap(movie){
+      console.log(movie)
+      console.log('喜欢')
+    },
+
+    // 推荐电影列表生成
     recommendPush(){
       for(let i=0;i<3;i++){
         this.recommendByUserIndex=i
@@ -1365,6 +1383,7 @@ export default {
       }
     },
 
+    // 点击换一换，切换推荐
     recommendChange(){
       console.log(1)
       if(this.recommendUser){
@@ -1390,6 +1409,8 @@ export default {
           j++
         }
       }
+      // this.$forceUpdate()
+      this.movie_like++
     },
 
 
@@ -3587,6 +3608,13 @@ export default {
 
 .movie_info_item{
   flex: 1;
+}
+
+.love_buttom{
+  display: flex;
+  flex-direction: row;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中 */
 }
 
 .box-item {
