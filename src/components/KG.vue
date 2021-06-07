@@ -415,6 +415,10 @@
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
                       <h4>语言: {{v.language}}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
                     </el-collapse-item>
                   </el-collapse>
                 </div>
@@ -428,6 +432,10 @@
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
                       <h4>语言: {{v.language}}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
                     </el-collapse-item>
                   </el-collapse>
                 </div>
@@ -441,6 +449,10 @@
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
                       <h4>语言: {{v.language}}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
                     </el-collapse-item>
                   </el-collapse>
                 </div>
@@ -522,7 +534,14 @@ export default {
           }
         ]
       },
-      userinfo: {},
+      userinfo: {"movie": [{
+        "rate": 0,
+        "showtime": 0,
+        "length": 0,
+        "name": "",
+        "id": 0,
+        "category": ""
+      }], "genre": []},
 
       // recommend 相关变量
 
@@ -852,27 +871,41 @@ export default {
 
     // 取消喜欢
     handleLoveCancel(movie){
+
       let that=this
 
-      // 调用接口返回该电影id
-      $.ajax({
-        url: 'http://47.99.190.169:8888/movie/unlike?id='+movie.id+'&uid='+that.uid,
-        type: 'get',
-        success: function (res) {
-          if(res.success){
-            console.log('取消喜欢成功!')
+      let unlike_id=-1
 
-            // 设置对应电影like属性
-            movie.like=0
-
-            // 调用接口重新获取电影知识图谱
-            that.getMovie()
-          }
-          else{
-            console.log('取消喜欢失败!')
+      for(let i=0;i<that.savedgraph.nodes.length;i++){
+        if(that.savedgraph.nodes[i].category==='movie'){
+          if(that.savedgraph.nodes[i].mid===movie.id){
+            unlike_id=that.savedgraph.nodes[i].id
+            break
           }
         }
-      })
+      }
+
+      if(unlike_id>0) {
+
+        // 调用接口返回该电影id
+        $.ajax({
+          url: 'http://47.99.190.169:8888/movie/unlike?id=' + unlike_id + '&uid=' + that.uid,
+          type: 'get',
+          success: function (res) {
+            if (res.success) {
+              console.log('取消喜欢成功!')
+
+              // 设置对应电影like属性
+              movie.like = 0
+
+              // 调用接口重新获取电影知识图谱
+              that.getMovie()
+            } else {
+              console.log('取消喜欢失败!')
+            }
+          }
+        })
+      }
     },
 
     // 点击喜欢
@@ -1020,7 +1053,7 @@ export default {
           }
 
         }
-        that.avgRate=totalRate/that.userinfo['movie'].length
+        that.avgRate=(totalRate/that.userinfo['movie'].length).toFixed(2)
         let ratesData = [{name: '8分以上', value: rates['8分以上']}, {name: '6~8分', value: rates['6~8分']}, {
           name: '4~6分', value: rates['4~6分']}, {name: '4分以下', value: rates['4分以下']}]
 
@@ -1271,22 +1304,17 @@ export default {
       }
 
       // 调用接口获取数据并生成
-      this.userinfo={
-        "movie": [{
-          "rate": 7.4,
-          "showtime": 2015,
-          "length": 135,
-          "name": "123",
-          "id": 2,
-          "category": "Movie"
-        }, {"rate": 4, "showtime": 1998, "name": "321", "length": 100, "id": 3, "category": "Movie"}],
-            "genre": [{"num": 1, "genre": "abc"}, {"num": 1, "genre": "cba"}]
-      }
-
-      rateShow()
-      lengthShow()
-      showtimeShow()
-      genreShow()
+      $.ajax({
+        url: 'http://47.99.190.169:8888/movie/userdata?uid='+that.uid,
+        type: 'get',
+        success: function (res) {
+          that.userinfo=res.content
+          rateShow()
+          lengthShow()
+          showtimeShow()
+          genreShow()
+        }
+      })
     },
 
     // 演员图表生成
