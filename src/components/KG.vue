@@ -16,6 +16,7 @@
         </el-submenu>
       </el-menu>
     </div>
+
     <el-dialog
             title="已存在"
             :visible.sync="haveGraphInDatabase"
@@ -26,6 +27,23 @@
             <el-button type="primary" @click="ifimportfromDatabase(true)">确 定</el-button>
           </span>
     </el-dialog>
+
+    <div id="chat">
+      <template>
+        <el-popover
+            placement="bottom"
+            width="400"
+            trigger="hover"
+            >
+            <ul>
+              <li v-for="item in message_array" :key="item">{{item}}</li>
+            </ul>
+          <input type="text" v-model="message" float="left">
+          <button v-on:click="dealMessage">发送</button>
+          <el-button slot="reference">智能问答</el-button>
+        </el-popover>
+      </template>
+    </div>
   <div class="box">
     <div id="myChart"></div>
 
@@ -476,7 +494,8 @@ export default {
   name: "KG",
   data() {
     return {
-
+      message_array:[],
+      message:'',
       isPerson:false,
       isMovie:false,
       mids:[1701],
@@ -906,9 +925,9 @@ export default {
     this.uid=parseInt(this.$route.params.uid)
 
       // 方便刷新暂用
-      // if (!this.uid) {
-      //     this.uid = 7;
-      // }
+      if (!this.uid) {
+          this.uid = 5;
+      }
 
     console.log('uid: ' + this.uid)
     this.getUserGraph()
@@ -3204,7 +3223,7 @@ export default {
     },
 
     selectGraph(index, indexPath) {
-      if (indexPath[0] === 'first') {
+      if (indexPath[0] === '1') {
         let that = this;
         let pic_name = this.usr_graph[Number(index)];
         // 这个请求这段用了前面一摸一样的 考虑拉出来自成一个方法
@@ -3263,6 +3282,34 @@ export default {
             that.getMovie()
           } else {
             console.log('取消喜欢失败!')
+          }
+        }
+      })
+    },
+
+    //滚动条到底部
+    scrollBottm() {
+      let el = this.$refs["chat-box"];
+      el.scrollTop = el.scrollHeight;
+    },
+
+    //发送询问信息
+    dealMessage() {
+      this.message_array.push("Question: "+this.message);
+      let params={'message':this.message}
+      $.ajax({
+        url:'',
+        type:'POST',
+        dataType:'json',
+        data:JSON.stringify(params),
+        contentType:'application/json; charset=UTF-8',
+        success: function (params){
+          if(params.success){
+            console.log("Answer: "+params.content)
+            this.message_array.push("Answer: "+params.content);
+          }else{
+            console.log("Answer: Not found")
+            this.message_array.push("Answer: Not found");
           }
         }
       })
@@ -3581,5 +3628,13 @@ export default {
 
 .heart {
   margin: 17px;
+}
+
+#chat {
+  position: fixed;
+  right: 0;
+  top: 100px;
+  opacity: 0.65;
+  z-index: 10;
 }
 </style>
