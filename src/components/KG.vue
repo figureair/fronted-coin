@@ -1,11 +1,11 @@
 <template>
   <div>
     <div id="menu">
-      <el-menu default-active="1-4-1" id="menu-content" :collapse="isCollapse" @select="selectGraph">
-        <el-submenu index="1">
+      <el-menu id="menu-content" :collapse="true" @select="selectGraph">
+        <el-submenu index="first">
           <template slot="title">
             <i class="el-icon-location"></i>
-            <span slot="title">导航一</span>
+            <span slot="title">用户知识图谱列表</span>
           </template>
           <el-menu-item-group>
             <span slot="title">用户知识图谱列表</span>
@@ -69,7 +69,7 @@
           <div class="box-item">
             <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
             <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
-            <el-button type="primary" plain @click="saveLayout" :disabled="graph_readOnly">保存布局</el-button>
+            <el-button type="primary" plain @click="saveLayout" :disabled="true">保存布局</el-button>
           </div>
 
           <div class="box-item">
@@ -906,9 +906,9 @@ export default {
     this.uid=parseInt(this.$route.params.uid)
 
       // 方便刷新暂用
-      if (!this.uid) {
-          this.uid = 5;
-      }
+      // if (!this.uid) {
+      //     this.uid = 7;
+      // }
 
     console.log('uid: ' + this.uid)
     this.getUserGraph()
@@ -3204,7 +3204,7 @@ export default {
     },
 
     selectGraph(index, indexPath) {
-      if (indexPath[0] === '1') {
+      if (indexPath[0] === 'first') {
         let that = this;
         let pic_name = this.usr_graph[Number(index)];
         // 这个请求这段用了前面一摸一样的 考虑拉出来自成一个方法
@@ -3560,7 +3560,8 @@ export default {
   position: fixed;
   left: 0;
   top: 100px;
-  opacity: 0.5;
+  opacity: 0.65;
+  z-index: 10;
 }
 
 #menu-content:not(.el-menu--collapse)  {
