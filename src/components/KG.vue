@@ -16,7 +16,16 @@
         </el-submenu>
       </el-menu>
     </div>
-
+    <el-dialog
+            title="已存在"
+            :visible.sync="haveGraphInDatabase"
+            width="30%">
+      <span>查询到数据库已存在同名知识图谱，是否导入？（之后的操作将对同名知识图谱造成影响，如有必要，请重命名pic_name）</span>
+      <span slot="footer" class="dialog-footer">
+            <el-button @click="ifimportfromDatabase(false)">取 消</el-button>
+            <el-button type="primary" @click="ifimportfromDatabase(true)">确 定</el-button>
+          </span>
+    </el-dialog>
   <div class="box">
     <div id="myChart"></div>
 
@@ -54,27 +63,27 @@
             <el-button type="primary" id="tipclose" @click="dialogVisible=false">确 定</el-button>
           </span>
             </el-dialog>
-            <el-dialog
-                title="已存在"
-                :visible.sync="haveGraphInDatabase"
-                width="30%">
-              <span>查询到数据库已存在同名知识图谱，是否导入？（之后的操作将对同名知识图谱造成影响，如有必要，请重命名pic_name）</span>
-              <span slot="footer" class="dialog-footer">
-            <el-button @click="ifimportfromDatabase(false)">取 消</el-button>
-            <el-button type="primary" @click="ifimportfromDatabase(true)">确 定</el-button>
-          </span>
-            </el-dialog>
+
           </div>
 
           <div class="box-item">
             <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
             <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
-            <el-button type="primary" plain @click="saveLayout">保存布局</el-button>
+            <el-button type="primary" plain @click="saveLayout" :disabled="graph_readOnly">保存布局</el-button>
           </div>
 
           <div class="box-item">
             <span style="font-size: 12px">{{ info }}</span>
           </div>
+
+            <div class="box-item" v-if="selectedItem[0].category === 'movie'">
+                <span>喜欢这部电影？</span>
+                <div class="love_button">
+                    <vue-clap-button icon="love" :size="20" :initClicked="1"
+                                     @cancel="cancelLLoveNode"/>
+                </div>
+            </div>
+
         </el-tab-pane>
 
         <el-tab-pane label="展示效果" name="second">
@@ -174,32 +183,6 @@
                       </el-form-item>
                     </template>
                   </el-table-column>
-<!--                  <el-table-column width="100" property="source" label="source">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div v-if="!editable">{{ scope.row.source }}</div>-->
-<!--                      <el-form-item v-else prop="source">-->
-<!--                        <el-input v-model="input.source"></el-input>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                  <el-table-column width="100" property="target" label="target">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <div v-if="!editable">{{ scope.row.target }}</div>-->
-<!--                      <el-form-item v-else prop="source">-->
-<!--                        <el-input v-model="input.target"></el-input>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
-<!--                  <el-table-column width="250" label="option">-->
-<!--                    <template slot-scope="scope">-->
-<!--                      <el-form-item>-->
-<!--                        <el-button v-if="!editable" @click="startEdit(scope.row, 'edge')">编辑</el-button>-->
-<!--                        <el-button type="primary" v-if="editable" @click="handleEdit(scope.row, 'edge')">确认</el-button>-->
-<!--                        <el-button v-if="editable" @click="editable=false">取消</el-button>-->
-<!--                        <el-button type="danger" @click="handleDelete(scope.row, 'edge')">删除</el-button>-->
-<!--                      </el-form-item>-->
-<!--                    </template>-->
-<!--                  </el-table-column>-->
                 </el-table>
                 <el-form-item>
                   <el-button v-if="!editable" @click="startEdit('edge')" :disabled="graph_readOnly">编辑</el-button>
@@ -359,7 +342,7 @@
         </div>
         <div class="recommend_list_items">
         <el-collapse>
-          <el-collapse-item v-for="v in recommendByUserShow" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+          <el-collapse-item v-for="(v, index) in recommendByUserShow" :key="index" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
             <h4>别名: {{v.othername}}</h4>
             <h4>国家: {{v.district}}</h4>
             <h4>时长: {{v.length}}分钟</h4>
@@ -381,7 +364,7 @@
         </div>
         <div class="recommend_list_items">
           <el-collapse>
-            <el-collapse-item v-for="v in recommendByMovieShow" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+            <el-collapse-item v-for="(v, index) in recommendByMovieShow" :key="index" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
               <h4>别名: {{v.othername}}</h4>
               <h4>国家: {{v.district}}</h4>
               <h4>时长: {{v.length}}分钟</h4>
@@ -410,7 +393,7 @@
                 <h2>出演电影</h2>
                 <div class="movie_list_items">
                   <el-collapse v-model="play">
-                    <el-collapse-item v-for="v in person['play']" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                    <el-collapse-item v-for="(v, idx) in person['play']" :key="idx" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
                       <h4>别名: {{v.othername}}</h4>
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
@@ -427,7 +410,7 @@
                 <h2>担任导演</h2>
                 <div class="movie_list_items">
                   <el-collapse v-model="direct">
-                    <el-collapse-item v-for="v in person['direct']" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                    <el-collapse-item v-for="(v, idx) in person['direct']" :key="idx" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
                       <h4>别名: {{v.othername}}</h4>
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
@@ -444,7 +427,7 @@
                 <h2>担任编剧</h2>
                 <div class="movie_list_items">
                   <el-collapse v-model="write">
-                    <el-collapse-item v-for="v in person['write']" :key="v.value" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                    <el-collapse-item v-for="(v, index) in person['write']" :key="index" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
                       <h4>别名: {{v.othername}}</h4>
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
@@ -816,7 +799,13 @@ export default {
   },
 
   mounted() {
-    this.uid=parseInt(this.$route.query.uid)
+    this.uid=parseInt(this.$route.params.uid)
+
+      // 方便刷新暂用
+      if (!this.uid) {
+          this.uid = 5;
+      }
+
     console.log('uid: ' + this.uid)
     this.getUserGraph()
     this.initdata()
@@ -1674,14 +1663,12 @@ export default {
           // console.log(event);
           let id = event.data.index;
           let item;
-          console.log(event);
-          console.log(that.savedgraph)
             switch (event.dataType) {
               case 'node':
                   item = that.savedgraph.nodes[id];
-                  console.log(item);
+                  // console.log(item);
                   if (that.editmode === 'delete') {
-                      const op = {
+                        const op = {
                           option: 'delete',
                           type: 'node',
                           dataIndex: id,
@@ -1693,7 +1680,6 @@ export default {
                   else if (that.editmode === 'addEdge') {
                       console.log("addEdge");
                       if (that.selectedItem.length < 2) {
-                          console.log(that.selectedItem);
                           if (that.selectedType === 'edge') {
                             that.selectedItem = [];
                             that.selectedType = '';
@@ -1710,19 +1696,57 @@ export default {
                                   that.selectedItem = [];
                               }
                           }
-
                       }
                       else {
                           // 防bug，测试完没问题后删
                           console.log("出错了")
                       }
+                    that.selectedType = 'node';
                   }
                   else {
-                      that.selectedItem.length = 0;
-                      that.selectedItem.push(item);
-                      that.selectedItem[0].index = id;
+                    if (that.savedgraph.pic_name === 'movie') {
+                      if (that.selectedItem.length !== 0) {
+                        let before = that.selectedItem[0];
+                        switch (before.category) {
+                          case 'movie':
+                            that.isMovie = false;
+                            that.recommendUser = true;
+                            break;
+                          case 'person':
+                            that.isPerson = false;
+                            break;
+                          default:
+                            break;
+                        }
+                        if (item.id === before.id) {
+                          that.clearSelection();
+                          break;
+                        }
+                      }
+                      that.resetSelectedItem(item, id, 'node');
+                      console.log(item);
+                      switch (item.category) {
+                        case 'movie':
+                          that.showMovieInfo(item.mid);
+                          that.recommendUser = false;
+                          that.recommendGet(item.mid);
+                          break;
+                        case 'person':
+                          that.showInfoPic(item.name);
+                          break;
+                        default:
+                          break;
+                      }
+                    }
+                    else {
+                      if (that.selectedItem.length !== 0 && that.selectedItem[0].id === item.id) {
+                        that.clearSelection();
+                      }
+                      else {
+                        that.resetSelectedItem(item, id, 'node');
+                      }
+                    }
                   }
-                that.selectedType = 'node';
                 break;
               case 'edge':
                   item = that.savedgraph.links[id];
@@ -1738,11 +1762,13 @@ export default {
                       that.deleteEdge(id);
                   }
                   else {
-                      that.selectedItem.length = 0;
-                      that.selectedItem.push(item);
-                      that.selectedItem[0].index = id;
+                    if (that.selectedItem.length !== 0 && that.selectedItem[0].source === item.source && that.selectedItem[0].target === item.target) {
+                      that.clearSelection();
+                    }
+                    else {
+                      that.resetSelectedItem(item, id, 'edge');
+                    }
                   }
-                that.selectedType = 'edge';
                 break;
 
             default:
@@ -1750,6 +1776,18 @@ export default {
           }
         })
       })
+    },
+
+    resetSelectedItem(item, id, type) {
+      this.selectedItem.length = 0;
+      this.selectedItem.push(item);
+      this.selectedItem[0].index = id;
+      this.selectedType = type;
+    },
+
+    clearSelection() {
+      this.selectedItem = [];
+      this.selectedType = '';
     },
 
     initpage() {
@@ -2686,7 +2724,7 @@ export default {
       this.savedgraph.nodes.splice(index, 1);
       this.selectedType = '';
       this.selectedItem = [];
-        this.initpage();
+      this.initpage();
     },
 
     deleteEdge(index) {
@@ -3028,7 +3066,6 @@ export default {
       resetSearchForm() {
         this.$refs['searchNodeForm'].resetFields();
         this.$refs['searchEdgeForm'].resetFields();
-        // console.log("????????")
       },
 
       setEditMode(mode) {
@@ -3094,11 +3131,40 @@ export default {
               }
 
               that.graph_readOnly = pic_name === 'movie'
-
+              if (pic_name === 'movie') {
+                // 很多变量要重置，到时改
+              }
             }
           }
         })
       }
+    },
+
+    // 点电影节点取消喜欢
+    cancelLLoveNode() {
+      let that = this;
+      $.ajax({
+        url: 'http://47.99.190.169:8888/movie/unlike?id=' + that.selectedItem[0].mid + '&uid=' + that.uid,
+        type: 'get',
+        success: function (res) {
+          if (res.success) {
+            console.log('取消喜欢成功!')
+            //
+            // // 设置对应电影like属性
+            // movie.like = 0
+            //
+            // // 调用接口重新获取电影知识图谱
+            that.getMovie()
+          } else {
+            console.log('取消喜欢失败!')
+          }
+        }
+      })
+    },
+
+    // 暂时没用
+    clapLoveNode() {
+
     },
   }
 }
