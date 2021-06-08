@@ -76,10 +76,10 @@
             <span style="font-size: 12px">{{ info }}</span>
           </div>
 
-            <div class="box-item" v-if="selectedItem[0].category === 'movie'">
-                <span>喜欢这部电影？</span>
-                <div class="love_button">
-                    <vue-clap-button icon="love" :size="20" :initClicked="1"
+            <div class="box-item like" v-if="selectedItem[0].category === 'movie'">
+                <span class="like-text">喜欢这部电影请点亮爱心</span>
+                <div class="love_button heart">
+                    <vue-clap-button icon="love" :size="45" :initClicked="1"
                                      @cancel="cancelLLoveNode"/>
                 </div>
             </div>
@@ -3568,5 +3568,18 @@ export default {
   width: 200px;
   min-height: 500px;
   transition: all ease 0.5s;
+}
+
+.like-text {
+  font-size: 20px;
+  width: 100%;
+}
+
+.like {
+  flex-wrap: wrap;
+}
+
+.heart {
+  margin: 17px;
 }
 </style>
