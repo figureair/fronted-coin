@@ -534,11 +534,115 @@ export default {
       recommendByUserIndex:0,
       recommendByMovieIndex:0,
       // 展示的推荐列表
-      recommendByUserShow:[],
-      recommendByMovieShow:[],
+      recommendByUserShow:[{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      },{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      },{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      }],
+      recommendByMovieShow:[{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      },{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      },{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      }],
       // 所有推荐列表
-      recommendByUser:[],
-      recommendByMovie:[],
+      recommendByUser:[{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      }],
+      recommendByMovie:[{
+        "image": "",
+        "othername": "",
+        "rate": 0,
+        "showtime": 0,
+        "district": "",
+        "name": "",
+        "genre": "",
+        "length": 0,
+        "language": "",
+        "id": 0,
+        "category": "",
+        "url": ""
+      }],
 
       recommendCount:0,
 
@@ -933,21 +1037,23 @@ export default {
           url: 'http://47.99.190.169:8888/movie/recommend/u?uid='+id,
           type: 'get',
           success: function (res) {
-            // 添加like属性,判断电影是否在知识图谱中
-            that.recommendByUser=res.content.rec
-            for(let i=0;i<that.recommendByUser.length;i++){
-              if(that.recommendByUser[i]['id'] in that.mids){
-                that.recommendByUser[i]['like']=1
+            if(res.content.rec.length!==0) {
+              // 添加like属性,判断电影是否在知识图谱中
+              that.recommendByUser = res.content.rec
+              for (let i = 0; i < that.recommendByUser.length; i++) {
+                if (that.recommendByUser[i]['id'] in that.mids) {
+                  that.recommendByUser[i]['like'] = 1
+                } else {
+                  that.recommendByUser[i]['like'] = 0
+                }
               }
-              else{
-                that.recommendByUser[i]['like']=0
-              }
-            }
 
-            // 添加前三个到推荐列表中
-            for(let i=0;i<3;i++){
-              that.recommendByUserIndex=i
-              that.recommendByUserShow.push(that.recommendByUser[i])
+              that.recommendByUserShow=[]
+              // 添加前三个到推荐列表中
+              for (let i = 0; i < 3; i++) {
+                that.recommendByUserIndex = i
+                that.recommendByUserShow.push(that.recommendByUser[i])
+              }
             }
           }
         })
@@ -960,23 +1066,23 @@ export default {
           url: 'http://47.99.190.169:8888/movie/recommend/m?id='+id,
           type: 'get',
           success: function (res) {
-
-            // 添加like属性,判断电影是否在知识图谱中
-            that.recommendByMovie=res.content.rec
-            console.log(that.recommendByMovie)
-            for(let i=0;i<that.recommendByMovie.length;i++){
-              if(that.recommendByMovie[i]['id'] in that.mids){
-                that.recommendByMovie[i]['like']=1
+            if (res.content.rec.length !== 0) {
+              // 添加like属性,判断电影是否在知识图谱中
+              that.recommendByMovie = res.content.rec
+              console.log(that.recommendByMovie)
+              for (let i = 0; i < that.recommendByMovie.length; i++) {
+                if (that.recommendByMovie[i]['id'] in that.mids) {
+                  that.recommendByMovie[i]['like'] = 1
+                } else {
+                  that.recommendByMovie[i]['like'] = 0
+                }
               }
-              else{
-                that.recommendByMovie[i]['like']=0
+              that.recommendByMovieShow=[]
+              // 添加前三个到推荐列表中
+              for (let i = 0; i < 3; i++) {
+                that.recommendByMovieIndex = i
+                that.recommendByMovieShow.push(that.recommendByMovie[i])
               }
-            }
-
-            // 添加前三个到推荐列表中
-            for(let i=0;i<3;i++){
-              that.recommendByMovieIndex=i
-              that.recommendByMovieShow.push(that.recommendByMovie[i])
             }
           }
         })
