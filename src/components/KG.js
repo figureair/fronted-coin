@@ -473,9 +473,9 @@ export default {
         this.uid=parseInt(this.$route.params.uid)
 
         // 方便刷新暂用
-        if (!this.uid) {
-            this.uid = 5;
-        }
+        // if (!this.uid) {
+        //     this.uid = 5;
+        // }
 
         console.log('uid: ' + this.uid)
         this.getUserGraph()
@@ -1332,6 +1332,7 @@ export default {
                     that.initpage()
                 });
 
+                // 触发点击（点或边）事件
                 that.myChart.on('click', 'series.graph', function (event) {
                     // console.log(event);
                     let id = event.data.index;
@@ -1339,7 +1340,6 @@ export default {
                     switch (event.dataType) {
                         case 'node':
                             item = that.savedgraph.nodes[id];
-                            // console.log(item);
                             if (that.editmode === 'delete') {
                                 const op = {
                                     option: 'delete',
@@ -1354,8 +1354,7 @@ export default {
                                 console.log("addEdge");
                                 if (that.selectedItem.length < 2) {
                                     if (that.selectedType === 'edge') {
-                                        that.selectedItem = [];
-                                        that.selectedType = '';
+                                        that.clearSelection();
                                     }
                                     if (that.selectedItem.find((element) =>
                                         element.id === item.id)) {
@@ -1378,7 +1377,9 @@ export default {
                             }
                             else {
                                 if (that.savedgraph.pic_name === 'movie') {
-                                    if (that.selectedItem.length !== 0) {
+                                    // 对电影知识图谱单独处理
+                                    // 先根据上一次选中的节点对应的类型进行相应操作
+                                    if (that.selectedItem.length !== 0 && that.selectedType === 'node') {
                                         let before = that.selectedItem[0];
                                         switch (before.category) {
                                             case 'movie':
@@ -1397,7 +1398,7 @@ export default {
                                         }
                                     }
                                     that.resetSelectedItem(item, id, 'node');
-                                    console.log(item);
+                                    // 再根据当下选中的节点类型进行操作
                                     switch (item.category) {
                                         case 'movie':
                                             that.showMovieInfo(item.mid);
@@ -1423,7 +1424,6 @@ export default {
                             break;
                         case 'edge':
                             item = that.savedgraph.links[id];
-                            // console.log(that.savedgraph)
                             if (that.editmode === 'delete') {
                                 const op = {
                                     option: 'delete',
@@ -1451,6 +1451,7 @@ export default {
             })
         },
 
+        // 重新设置选中对象
         resetSelectedItem(item, id, type) {
             this.selectedItem.length = 0;
             this.selectedItem.push(item);
@@ -1458,6 +1459,7 @@ export default {
             this.selectedType = type;
         },
 
+        // 清空选中
         clearSelection() {
             this.selectedItem = [];
             this.selectedType = '';
@@ -2186,7 +2188,6 @@ export default {
                 'zoom':tmpOption.zoom,'itemStyle':tmpOption.itemStyle,
                 'lineStyle':tmpOption.lineStyle,'label':tmpOption.label,'tooltip':tmpOption.tooltip,
                 'categories':tmpOption.categories,'nodes':tmpOption.data,'links':tmpOption.links}
-            console.log(res)
 
             $.ajax({
                 url: 'http://47.99.190.169:8888/save',
@@ -2395,15 +2396,13 @@ export default {
 
         deleteNode(index) {
             this.savedgraph.nodes.splice(index, 1);
-            this.selectedType = '';
-            this.selectedItem = [];
+            this.clearSelection()
             this.initpage();
         },
 
         deleteEdge(index) {
             this.savedgraph.links.splice(index, 1);
-            this.selectedType = '';
-            this.selectedItem = [];
+            this.clearSelection()
             this.initpage();
         },
 
@@ -2479,14 +2478,8 @@ export default {
             }
         },
 
-        deleteHistory(e) {
-            console.log(e);
-        },
-
         // 在线编辑撤回
         backtrack() {
-            console.log(this.editions)
-            console.log(this.savedgraph)
             let op = this.editions[this.editions.length - 1];
             if (!op) {
                 this.$message.info("已撤销到底!")
@@ -2498,8 +2491,7 @@ export default {
                     this.addNodeAt(op.dataIndex, op.data);
                 }
                 else if (type === 'edge') {
-                    // console.log(op);
-                    this.addEdgeAt(op.dataIndex, op.data);
+                     this.addEdgeAt(op.dataIndex, op.data);
                 }
             }
             else if (op.option === 'add') {
@@ -2513,26 +2505,22 @@ export default {
             }
             console.log(this.savedgraph);
             this.editions.splice(this.editions.length - 1, 1);
-            // this.initpage();
         },
 
         // 开启在线编辑
         startGraphicalEdit() {
             this.editmode = 'beginning';
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
-            this.selectedItem = [];
-            this.selectedType = '';
+            this.clearSelection()
         },
 
         addEdgeOfSelectedNodes() {
             let that = this;
-            // source跟target是id？
             const newEdge = {
                 source: that.selectedItem[0].id,
                 target: that.selectedItem[1].id,
                 name: this.source + '->' + this.target,
             }
-            console.log("line 1703")
             that.savedgraph.links.push(newEdge);
             that.initpage();
             const op = {
@@ -2545,13 +2533,11 @@ export default {
         },
 
         endGraphicalEdit(e) {
-            console.log(e);
             this.savedgraph = JSON.parse(JSON.stringify(this.copiedgraph));
             this.copiedgraph = '';
             this.editmode = 'none';
             console.log(this.savedgraph)
-            this.selectedItem = [];
-            this.selectedType = '';
+            this.clearSelection()
             this.initpage();
             console.log('end edit');
         },
@@ -2562,12 +2548,6 @@ export default {
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
             this.uploadJSON();
             if (this.editions.length === 0) this.$message.info('毫无变化');
-            console.log("save and upload")
-        },
-
-        addTypeCheck(type) {
-            this.editmode = 'add';
-            console.log(type);
         },
 
         // 添加新节点
@@ -2576,12 +2556,10 @@ export default {
             this.$refs['graphicalAddNodeForm'].validate((valid) => {
                 if (valid) {
                     alert('submit!')
-                    // console.log(that.graphicalAddNodeForm)
                     that.checkFormAndAdd();
                 }
                 else {
                     alert("error!")
-                    console.log('error!!!!!!!');
                     return false;
                 }
             })
@@ -2610,17 +2588,18 @@ export default {
             if (that.graphicalAddNodeForm.value !== '') {
                 newNode.value = that.graphicalAddNodeForm.value;
             }
-            console.log(newNode)
             that.savedgraph.nodes.push(newNode);
             that.initpage();
-            that.resetGraphicalAddNodeForm();
+            this.$refs['graphicalAddNodeForm'].resetFields();
             that.editmode = 'addNode';
         },
 
-        resetGraphicalAddNodeForm() {
-            this.$refs['graphicalAddNodeForm'].resetFields();
-        },
 
+        // resetGraphicalAddNodeForm() {
+        //     this.$refs['graphicalAddNodeForm'].resetFields();
+        // },
+
+        // 节点搜索
         handleNodeSearch() {
             let that = this;
             this.$refs['searchNodeForm'].validate((valid) => {
@@ -2633,7 +2612,6 @@ export default {
                     if(that.searchNodeForm.label!=="") {res['label']= that.searchNodeForm.label}
                     if(that.searchNodeForm.lowerbound!=="") {res['lowerBound']=that.searchNodeForm.lowerbound}
                     if(that.searchNodeForm.upperbound!=="") {res['upperBound']=that.searchNodeForm.upperbound}
-                    console.log(res);
                     $.ajax({
                         url: 'http://47.99.190.169:8888/node/find',
                         type: 'post',
@@ -2652,7 +2630,7 @@ export default {
                                 console.log('11111')
                                 opt.series[0].data.forEach((node) => {
                                     if (nodes.findIndex((item) => item.id === parseInt(node.id)) !== -1) {
-                                        console.log(node)
+                                        // 高亮符合搜索结果的节点，修改边框颜色为rgba(0,0,0,1)黑色
                                         if (node.itemStyle == null) {
                                             node.itemStyle = {
                                                 borderWidth: 10,
@@ -2666,17 +2644,17 @@ export default {
                                     }
                                 })
                                 that.myChart.setOption(opt);
-                                // that.resetSearchForm();
                             }
                         }
                     })
                 }
                 else {
-                    console.log('error??!!')
+                    console.log('error!!')
                 }
             })
         },
 
+        // 边搜索
         handleEdgeSearch() {
             let that = this;
             console.log(this.myChart.getOption().series[0])
@@ -2693,8 +2671,6 @@ export default {
                     if(that.searchEdgeForm.source!==""){res['source']=that.searchEdgeForm.source}
                     if(that.searchEdgeForm.target!==""){res['target']=that.searchEdgeForm.target}
 
-                    console.log(res);
-
                     $.ajax({
                         url: 'http://47.99.190.169:8888/relationship/find',
                         type: 'post',
@@ -2702,15 +2678,13 @@ export default {
                         dataType: 'json',
                         contentType: 'application/json; charset=UTF-8',
                         success: function (r) {
-                            console.log(r)
                             if (r.success) {
                                 that.searchEdgeHistory.push(res);
                                 const edges = r.content;
-                                console.log(edges)
                                 let opt = that.myChart.getOption();
                                 opt.series[0].links.forEach((edge) => {
                                     if (edges.findIndex((item) => item.id === parseInt(edge.id)) !== -1) {
-                                        console.log(edge)
+                                        // 高亮符合搜索结果的边，修改边框颜色为rgba(0,0,0,1)黑色
                                         if (edge.lineStyle == null) {
                                             edge.lineStyle = {
                                                 width: 10,
@@ -2725,22 +2699,23 @@ export default {
                                 })
 
                                 that.myChart.setOption(opt);
-                                // that.resetSearchForm();
                             }
                         }
                     })
                 }
                 else {
-                    console.log('error??!!')
+                    console.log('error!!')
                 }
             })
         },
 
+        // 重置两个搜索表单
         resetSearchForm() {
             this.$refs['searchNodeForm'].resetFields();
             this.$refs['searchEdgeForm'].resetFields();
         },
 
+        // 设置编辑模式，目前有addNode, addEdge, delete, none(默认)
         setEditMode(mode) {
             this.$message.info('Now in ' + mode + ' mode');
             this.editmode = mode;
@@ -2754,6 +2729,7 @@ export default {
             else if(this.nowOption===4)this.myChart.setOption(this.option4);
         },
 
+        // 获取用户所有的知识图谱
         getUserGraph() {
             let that = this
             $.ajax({
@@ -2762,18 +2738,25 @@ export default {
                 // data: {},
                 dataType: 'json',
                 success: function (res) {
+                    // 过滤掉名字为空的数据，同时只保留名称
                     const graphs = res.content.map((pic) => pic["n.pic_name"]).filter((pic_name) => pic_name !== null);
                     if (graphs != null) {
                         that.usr_graph = graphs;
+                    }
+                    // 对于没有movie知识图谱的，自动生成一个空的知识图谱（）
+                    if (!that.usr_graph.find((pic_name) => pic_name === 'movie')) {
+                        graphs.unshift('movie');
                     }
                 }
             })
         },
 
+        // 选中对应知识图谱时调用冰
         selectGraph(index, indexPath) {
-            if (indexPath[0] === '1') {
+            if (indexPath[0] === 'first') {
                 let that = this;
                 let pic_name = this.usr_graph[Number(index)];
+
                 // 这个请求这段用了前面一摸一样的 考虑拉出来自成一个方法
                 $.ajax({
                     url: 'http://47.99.190.169:8888/?pic_name=' + pic_name + '&uid=' + this.uid,
@@ -2781,12 +2764,10 @@ export default {
                     data: {},
                     dataType: 'json',
                     success: function (res) {
-                        console.log(res)
-                        if (res.content == null) {
-                            //that.uploadJSON()
+                        if (!res.success) {
+                            console.log(res)
                         }
                         else{
-
                             that.haveGraphInDatabase=true
                             that.tmpgraph=res.content
                             if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
@@ -2816,16 +2797,13 @@ export default {
         // 点电影节点取消喜欢
         cancelLLoveNode() {
             let that = this;
+            // 调后端接口取消喜欢
             $.ajax({
                 url: 'http://47.99.190.169:8888/movie/unlike?id=' + that.selectedItem[0].mid + '&uid=' + that.uid,
                 type: 'get',
                 success: function (res) {
                     if (res.success) {
                         console.log('取消喜欢成功!')
-                        //
-                        // // 设置对应电影like属性
-                        // movie.like = 0
-                        //
                         // // 调用接口重新获取电影知识图谱
                         that.getMovie()
                     } else {
@@ -2863,9 +2841,6 @@ export default {
             })
         },
 
-        // 暂时没用
-        clapLoveNode() {
 
-        },
     }
 }
