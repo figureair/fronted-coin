@@ -1,34 +1,40 @@
 <template>
   <div>
-      <div class="login-wrap" v-show="showLogin">
-        <h3>登录</h3>
+      <div class="login-box" v-show="showLogin">
+        <h2>知识图谱可视化系统</h2>
         <p v-show="showTishi">{{tishi}}</p>
-        <input type="text" placeholder="请输入用户名" v-model="username">
-        <input type="password" placeholder="请输入密码" v-model="password">
-        <button v-on:click="login">登录</button>
-        <span v-on:click="ToRegister">没有账号？马上注册</span>
+        <div class="form">
+          <div class="item">
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+            <input type="text" placeholder="请输入用户名" v-model="username">
+          </div>
+          <div class="item">
+            <i class="fa fa-key" aria-hidden="true"></i>
+            <input type="password" placeholder="请输入密码" v-model="password">
+          </div>
+            <button v-on:click="login">登录</button>
+            <button v-on:click="ToRegister">注册</button>
+        </div>
       </div>
 
-      <div class="register-wrap" v-show="showRegister">
-        <h3>注册</h3>
+      <div class="login-box" v-show="showRegister">
+        <h2>知识图谱可视化系统</h2>
         <p v-show="showTishi">{{tishi}}</p>
-        <input type="text" placeholder="请输入用户名" v-model="newUsername">
-        <input type="password" placeholder="请输入密码" v-model="newPassword">
-        <button v-on:click="register">注册</button>
-        <span v-on:click="ToLogin">已有账号？马上登录</span>
+        <div class="form">
+          <div class="item">
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+            <input type="text" placeholder="请输入用户名" v-model="newUsername">
+          </div>
+          <div class="item">
+            <i class="fa fa-key" aria-hidden="true"></i>
+            <input type="password" placeholder="请输入密码" v-model="newPassword">
+          </div>
+          <button v-on:click="register">提交注册</button>
+          <button v-on:click="ToLogin">去登录</button>
+        </div>
     </div>
   </div>
 </template>
-
-<style>
-.login-wrap{text-align:center;}
-input{display:block; width:250px; height:40px; line-height:40px; margin:0 auto; margin-bottom: 10px; outline:none; border:1px solid #888; padding:10px; box-sizing:border-box;}
-p{color:red;}
-button{display:block; width:250px; height:40px; line-height: 40px; margin:0 auto; border:none; background-color:#41b883; color:#fff; font-size:16px; margin-bottom:5px;}
-span{cursor:pointer;}
-span:hover{color:#41b883;}
-</style>
-
 
 <script>
 import $ from 'jquery'
@@ -80,6 +86,7 @@ export default{
       }
     },
     register() {
+      let _this = this;
       if(this.newUsername === "" || this.newPassword === ""){
         alert("请输入用户名或密码")
       }else{
@@ -95,6 +102,7 @@ export default{
             console.log(res)
             if(res.success){
               alert('注册成功!')
+              _this.$router.push({name:'KG', params: { uid:res.content }})
             }else{
               alert('注册失败! '+res.message)
             }
@@ -106,3 +114,55 @@ export default{
 }
 </script>
 
+
+<style>
+body {
+  background: url('../img/04.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+.login-box {
+  width: 30%;
+  height: auto;
+  margin: 0 auto;
+  margin-top: 15%;
+  text-align: center;
+  background: rgba(255,255,255,0.8);
+  padding: 20px 50px;
+  border-radius: 30px;
+}
+.login-box h1 {
+  color: #fff;
+}
+.login-box .form .item {
+  margin-top:15px;
+}
+.login-box .form .item i {
+  font-size: 18px;
+  color: #fff;
+}
+.login-box .form .item input {
+  width: 180px;
+  font-size: 18px;
+  border: 0;
+  border-bottom: 2px solid #fff;
+  padding: 5px 10px;
+  background: #ffffff00;
+  color: rgba(0,0,0,1);
+}
+.login-box button {
+  margin-top: 15px;
+  margin-left: 15px;
+  margin-right: 15px;
+  width: 150px;
+  height: 30px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  background: #4a8bcf;
+  border: 0;
+  border-radius: 12px;
+}
+
+
+</style>
