@@ -23,8 +23,8 @@
             width="30%">
       <span>查询到数据库已存在同名知识图谱，是否导入？（之后的操作将对同名知识图谱造成影响，如有必要，请重命名pic_name）</span>
       <span slot="footer" class="dialog-footer">
-            <el-button @click="ifimportfromDatabase(false)">取 消</el-button>
-            <el-button type="primary" @click="ifimportfromDatabase(true)">确 定</el-button>
+            <el-button @click="importFromDatabase(false)">取 消</el-button>
+            <el-button type="primary" @click="importFromDatabase(true)">确 定</el-button>
           </span>
     </el-dialog>
 
@@ -87,7 +87,7 @@
 
           <div class="box-item">
             <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
-            <el-button type="primary" plain @click="chexiao" v-if="changeLayout && nowOption===1">撤销</el-button>
+            <el-button type="primary" plain @click="revokeAction" v-if="changeLayout && nowOption===1">撤销</el-button>
             <el-button type="primary" plain @click="saveLayout" :disabled="true">保存布局</el-button>
           </div>
 
@@ -108,20 +108,20 @@
         <el-tab-pane label="展示效果" name="second">
             <div class="style-box-item">
               <span class="demonstration">调整线条曲度(长度)</span>
-              <el-slider v-model="value1" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
+              <el-slider v-model="changedCurveness" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
             </div>
             <div class="style-box-item">
               <span class="demonstration">调整节点图标大小</span>
-              <el-slider v-model="value2" @change="changeSymbolSize" :min=0.1 :max=2 :step=0.1></el-slider>
+              <el-slider v-model="changedSymbolSize" @change="changeSymbolSize" :min=0.1 :max=2 :step=0.1></el-slider>
             </div>
             <div class="style-box-item">
               <span class="demonstration">调整节点文字大小</span>
-              <el-slider v-model="value3" :min=5 :max=30 @change="changeFontSize"></el-slider>
+              <el-slider v-model="changedFontSize" :min=5 :max=30 @change="changeFontSize"></el-slider>
             </div>
             <div class="style-box-item">
               <span class="demonstration">缩放等级</span>
-              <i class="el-icon-refresh-left" @click="gobackZoom" style="margin-left: 10px"></i>
-              <el-slider v-model="value4" :min=0.1 :max=3 :step="0.1" @change="changeZoom"></el-slider>
+              <i class="el-icon-refresh-left" @click="goBackZoom" style="margin-left: 10px"></i>
+              <el-slider v-model="zoom_value" :min=0.1 :max=3 :step="0.1" @change="changeZoom"></el-slider>
             </div>
             <div class="style-box-item">
               <el-checkbox v-model="showTooltip" @change="changeTooltip">是否显示标签</el-checkbox>

@@ -214,17 +214,18 @@ export default {
             recommendCount:0,
 
             uid:0,
-            old_value4:1,
-            value4:1,
-            last_value2:1,
+            // 最初的缩放程度
+            zoom_old_value:1,
+            zoom_value:1,
+            lastSymbolSize:1,
             tmpgraph: {},
             haveGraphInDatabase:false,
             showTooltip:true,
             activeName:"first",
             changeStyle:false,
-            value1:0,
-            value2:1,
-            value3:12,
+            changedCurveness:0,
+            changedSymbolSize:1,
+            changedFontSize:12,
             nowOption:1,
             previouschangeLayout:[],
             changeLayout:false,
@@ -489,9 +490,8 @@ export default {
 
     methods: {
 
-        // 获取电影知识图谱
+        // 功能:获取电影知识图谱
         getMovie(){
-
             let that=this
 
             // 调用接口获取图谱
@@ -499,8 +499,10 @@ export default {
                 url: 'http://47.99.190.169:8888/?pic_name=movie' + '&uid='+that.uid,
                 type: 'get',
                 success: function (res) {
+                    // 暂存返回的图谱
                     that.tmpgraph=res.content
 
+                    // 如果没有位置参数，则自动分配
                     if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
                         for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
                             let prop = that.tmpgraph.nodes[i]
@@ -514,8 +516,8 @@ export default {
                         prop.target= prop.target+""
                     }
 
+                    // 存入savedgraph
                     that.savedgraph = that.tmpgraph
-                    console.log(that.tmpgraph)
 
                     // 存储已喜欢的电影ID
                     that.mids=[]
@@ -529,13 +531,14 @@ export default {
             })
         },
 
-        // 取消喜欢
+        // 功能:取消喜欢
         handleLoveCancel(movie){
-
             let that=this
 
+            // 不喜欢电影的知识图谱里的id
             let unlike_id=-1
 
+            // 在喜欢电影的知识图谱里寻找对应的id
             for(let i=0;i<that.savedgraph.nodes.length;i++){
                 if(that.savedgraph.nodes[i].category==='movie'){
                     if(that.savedgraph.nodes[i].mid===movie.id){
@@ -545,6 +548,7 @@ export default {
                 }
             }
 
+            // 如果找到就调用接口，找不到不做处理
             if(unlike_id>0) {
 
                 // 调用接口返回该电影id
@@ -568,7 +572,7 @@ export default {
             }
         },
 
-        // 点击喜欢
+        // 功能:点击喜欢
         handleLoveClap(movie){
 
             let that=this
@@ -595,17 +599,19 @@ export default {
 
         },
 
-        // 获取推荐列表
+        // 功能:获取推荐列表
         recommendGet(id){
             let that=this
+
+            // 判断当前是用户推荐
             if(this.recommendUser) {
-                // 调用接口
+                // 调用接口获取用户推荐列表
                 $.ajax({
                     url: 'http://47.99.190.169:8888/movie/recommend/u?uid='+id,
                     type: 'get',
                     success: function (res) {
                         if(res.content.rec.length!==0) {
-                            // 添加like属性,判断电影是否在知识图谱中
+                            // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                             that.recommendByUser = res.content.rec
                             for (let i = 0; i < that.recommendByUser.length; i++) {
                                 if (that.recommendByUser[i]['id'] in that.mids) {
@@ -614,7 +620,6 @@ export default {
                                     that.recommendByUser[i]['like'] = 0
                                 }
                             }
-
                             that.recommendByUserShow=[]
                             // 添加前三个到推荐列表中
                             for (let i = 0; i < 3; i++) {
@@ -624,9 +629,8 @@ export default {
                         }
                     }
                 })
-
-
             }
+            // 判断当前是电影推荐
             else{
                 // 调用接口
                 $.ajax({
@@ -655,13 +659,14 @@ export default {
                 })
             }
 
-            // 重新渲染
+            // 利用key值重新渲染
             that.recommendCount++
 
         },
 
-        // 点击换一换，切换推荐
+        // 功能:点击换一换，切换推荐
         recommendChange(){
+            // 判断是用户推荐
             if(this.recommendUser){
                 // 切换下三条推荐电影
                 for(let i=0;i<3;i++) {
@@ -674,6 +679,7 @@ export default {
                     j++
                 }
             }
+            // 判断是电影推荐
             else{
                 // 切换下三条推荐电影
                 for(let i=0;i<3;i++) {
@@ -686,15 +692,15 @@ export default {
                     j++
                 }
             }
-            /// 重新渲染
+            // 利用key值重新渲染
             this.recommendCount++
         },
 
-        // 用户画像生成
+        // 功能:用户画像生成
         showUserPic(){
-
             let that=this
 
+            // 展示评分区间比
             function rateShow(){
                 // 统计各个评分区间的数量并计算平均评分
                 let rates={'8分以上':0,'6~8分':0,'4~6分':0,'4分以下':0}
@@ -767,6 +773,7 @@ export default {
 
             }
 
+            // 展示时长区间比
             function lengthShow(){
                 // 统计各个时长区间的数量并计算平均时长
                 let lengths={'100分钟以下':0,'100~110分钟':0,'110~120分钟':0,'120分钟以上':0}
@@ -839,6 +846,7 @@ export default {
 
             }
 
+            // 展示年代区间比
             function showtimeShow(){
                 // 统计各个年代区间的数量并计算最新最老电影
                 let showtimes={'2000年以前':0,'2000~2010年':0,'2010~2020年':0,'2020年以后':0}
@@ -911,6 +919,7 @@ export default {
 
             }
 
+            // 展示类型比
             function genreShow(){
                 let genreData=[]
                 for (let i=0;i<that.userinfo['genre'].length;i++)
@@ -979,13 +988,14 @@ export default {
             })
         },
 
-        // 演员图表生成
+        // 功能:演员图表生成
         showInfoPic(name){
             let that=this
 
             // 生成图表方法
             function createPic() {
                 let personData = []
+                // 将各个类型的数据存入personData
                 for (let i = 0; i < that.person['genre'].length; i++) {
                     personData.push({'name': that.person['genre'][i].genre, 'value': parseInt(that.person['genre'][i].num)})
                 }
@@ -994,6 +1004,7 @@ export default {
                 let chartDom = document.getElementById('person_pic');
                 let personPic = echarts.init(chartDom);
 
+                // 调色盘
                 let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF', '#1aff00', '#ff0000']
 
                 let option = {
@@ -1062,7 +1073,10 @@ export default {
                 url: 'http://47.99.190.169:8888/movie/person?name='+name,
                 type: 'get',
                 success: function (res) {
+                    // 接收数据
                     that.person=res.content
+
+                    // 切换为演员详细信息板块
                     that.isPerson=true
                     createPic()
                 }
@@ -1071,7 +1085,7 @@ export default {
 
         },
 
-        // 电影信息展示
+        // 功能:电影信息展示
         showMovieInfo(id){
             let that=this
             $.ajax({
@@ -1085,81 +1099,108 @@ export default {
                         that.actors=that.actors+that.movie.actor[i]+'、'
                     }
                     that.actors=that.actors+that.movie.actor[that.movie.actor.length-1]
+
+                    // 切换为演员详细信息板块
                     that.isMovie=true
                 }
             })
         },
 
-        gobackZoom(){
+        // 功能:切换为原先的缩放程度
+        goBackZoom(){
+            // 重设zoom值
             this.myChart.setOption({
                 series:{
                     center:null,
-                    zoom:this.old_value4
+                    zoom:this.zoom_old_value
                 }
             })
-            this.value4=this.old_value4
+            // 切换滑动条值为原先的zoom值
+            this.zoom_value=this.zoom_old_value
         },
 
+        // 功能:调节缩放程度
         changeZoom(){
             this.myChart.setOption({
                 series: {
-                    zoom: this.value4
+                    zoom: this.zoom_value
                 }
             })
         },
 
+        // 功能:切换是否显示标签
         changeTooltip(){
-            let tmptooltip=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
+            // 深拷贝links数组
+            let tmpTooltip=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
+
+            // 设置每个link的tooltip为对应状态
             for (let i=0;i<this.option1.series[0].links.length;i++)
             {
-                tmptooltip[i].tooltip.show=this.showTooltip;
+                tmpTooltip[i].tooltip.show=this.showTooltip;
             }
 
+            // 启用变更
             this.myChart.setOption({
                 series:[{
-                    links:tmptooltip
+                    links:tmpTooltip
                 }]
             })
         },
 
+        // 功能:调节曲度
         changeCurveness(){
-            let tmpcurveness=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
+            // 深拷贝links数组
+            let tmpCurveness=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].links))
+
+            // 设置每个link的curveness
             for (let i=0;i<this.option1.series[0].links.length;i++) {
-                if(tmpcurveness[i].lineStyle==null)tmpcurveness[i].lineStyle={curveness:this.value1}
-                else tmpcurveness[i].lineStyle.curveness = this.value1;
+                if(tmpCurveness[i].lineStyle==null)tmpCurveness[i].lineStyle={curveness:this.changedCurveness}
+                else tmpCurveness[i].lineStyle.curveness = this.changedCurveness;
             }
+
+            // 启用变更
             this.myChart.setOption({
                 series:[{
-                    links:tmpcurveness
+                    links:tmpCurveness
                 }]
             })
         },
 
+        // 功能:调节文字大小
         changeFontSize(){
-            let tmpfontsize=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].data))
+            // 深拷贝data数组
+            let tmpFontSize=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].data))
+
+            // 设置每个node的文字大小
             for (let i=0;i<this.option1.series[0].data.length;i++)
             {
-                tmpfontsize[i].label.fontSize=this.value3;
+                tmpFontSize[i].label.fontSize=this.changedFontSize;
             }
 
+            // 启用变更
             this.myChart.setOption({
                 series:[{
-                    data:tmpfontsize
+                    data:tmpFontSize
                 }]
             })
         },
 
+        // 功能:调节节点倍率
         changeSymbolSize(){
-            let tmpcurveness=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].data))
+            // 深拷贝data数组
+            let tmpSymbolSize=JSON.parse(JSON.stringify(this.myChart.getOption().series[0].data))
+
+            // 设置每个node的节点倍率
             for (let i=0;i<this.option1.series[0].data.length;i++)
             {
-                tmpcurveness[i].symbolSize=tmpcurveness[i].symbolSize/this.last_value2*this.value2;
+                tmpSymbolSize[i].symbolSize=tmpSymbolSize[i].symbolSize/this.lastSymbolSize*this.changedSymbolSize;
             }
-            this.last_value2=this.value2
+            this.lastSymbolSize=this.changedSymbolSize
 
+            // 启用变更
             this.myChart.setOption({
                 series:[{
-                    data:tmpcurveness
+                    data:tmpSymbolSize
                 }]
             })
         },
@@ -1316,19 +1357,26 @@ export default {
             callback();
         },
 
+        // 功能:初始化知识图谱echarts实例并获取数据
         initdata() {
             // 初始化echarts实例
             let that = this
             $(document).ready(function () {
-
+                // 获取DOM并初始化
                 let echarts = require('echarts');
-
                 that.myChart = echarts.init(document.getElementById('myChart'))
+
+                // 显示等待
                 that.myChart.showLoading();
+                // 获取JSON数据
                 $.getJSON(ROOT_PATH, function (graph) {
+                    // 关闭等待
                     that.myChart.hideLoading();
+
                     //保存原始数据
                     that.savedgraph = JSON.parse(JSON.stringify(graph))
+
+                    // 初始化页面
                     that.initpage()
                 });
 
@@ -1465,447 +1513,516 @@ export default {
             this.selectedType = '';
         },
 
+        // 功能:初始化各个配置并加载配置一
         initpage() {
+            // 设置选项框为关系图
             $("#selector").val('关系图');
 
             let that = this
 
+            // 如果传过来的link的source和target为数字，转化为对应的字符串(字符串对应ID，数字对应位置)
             for (let i = 0; i < that.savedgraph.links.length; i++) {
                 let prop = that.savedgraph.links[i]
                 prop.source = prop.source+""
                 prop.target= prop.target+""
             }
 
+            // 初始化index(索引)
             let index=0
-            //初始设置为option1
-            let graph = JSON.parse(JSON.stringify(that.savedgraph))
-            if(graph.zoom==null){
-                graph.zoom=1
-            }
-            console.log(graph)
-            graph.nodes.forEach(function (node) {
-                node.label = {
-                    show: node.symbolSize >= 30
-                };
-                node.index = index++;
-                if(typeof(node.category)!='number'){
-                    for(let i=0;i<graph.categories.length;i++){
-                        if(graph.categories[i].name===node.category){
-                            node.category=i;
-                            break;
+
+            // 预存option1
+            function setOption1(){
+                let graph = JSON.parse(JSON.stringify(that.savedgraph))
+
+                // 如果确实zoom，添加zoom
+                if(graph.zoom==null){
+                    graph.zoom=1
+                }
+
+                // 为每个node添加相关属性
+                graph.nodes.forEach(function (node) {
+                    node.label = {
+                        show: node.symbolSize >= 30
+                    };
+                    node.index = index++;
+                    if(typeof(node.category)!='number'){
+                        for(let i=0;i<graph.categories.length;i++){
+                            if(graph.categories[i].name===node.category){
+                                node.category=i;
+                                break;
+                            }
                         }
                     }
-                }
-                if(node.value==null)node.value=null
-                if(node.symbol==null)node.symbol=null
-                if(node.itemStyle==null)node.itemStyle={color:null}
-                else if (node.itemStyle.color==null)node.itemStyle.color=null
-                if(node.tooltip==null)node.tooltip={show:true}
-                else if(node.tooltip.show==null)node.tooltip.show=true
-                if(node.label.fontSize==null)node.label.fontSize=12
-            });
-            index = 0;
-            graph.links.forEach(function (link) {
-                if (link.name === "dot") {
-                    link.lineStyle = {type: 'dotted'}
-                }
-                if (link.id == null){
-                    link.id=index+''
-                }
-                link.index = index++
-                if(link.lineStyle==null)link.lineStyle={color:null,width:2,type:'solid',curveness:1}
-                else {
-                    if (link.lineStyle.color== null) link.lineStyle.color = null
-                    if (link.lineStyle.width== null) link.lineStyle.width = 2
-                    if (link.lineStyle.type== null) link.lineStyle.type = 'solid'
-                    if (link.lineStyle.curveness== null) link.lineStyle.curveness = 1
-                }
+                    if(node.value==null)node.value=null
+                    if(node.symbol==null)node.symbol=null
+                    if(node.itemStyle==null)node.itemStyle={color:null}
+                    else if (node.itemStyle.color==null)node.itemStyle.color=null
+                    if(node.tooltip==null)node.tooltip={show:true}
+                    else if(node.tooltip.show==null)node.tooltip.show=true
+                    if(node.label.fontSize==null)node.label.fontSize=12
+                });
 
-                if(link.tooltip==null)link.tooltip={show:true}
-                else if(link.tooltip.show==null)link.tooltip.show=true
+                // 重置index
+                index = 0;
 
-                if(link.label==null)link.label={show:false,fontSize:12}
-                else {
-                    if (link.label.show == null) link.label.show = false
-                    if (link.label.fontSize == null) link.label.fontSize = false
-                }
-            });
-            that.info = '统计:共有' + graph.nodes.length + '个节点,' + graph.links.length + '条边';
-            that.option1 = {
-                tooltip: {
-                    position: 'right',
-                    extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
-                    formatter: '{b}'
-                },
-                //图例
-                legend: [{
-                    data: graph.categories.map(function (a) {
-                        return a.name;
-                    })
-                }],
-                animationDuration: 1500,
-                animationEasingUpdate: 'quadraticIn',
-                series: [
-                    {
-                        center:null,
-                        zoom:graph.zoom,
-                        selectedMode:'single',
-                        select: {
-                            itemStyle: {
-                                borderWidth: 10
+                // 为每个link添加相关属性
+                graph.links.forEach(function (link) {
+                    if (link.name === "dot") {
+                        link.lineStyle = {type: 'dotted'}
+                    }
+                    if (link.id == null){
+                        link.id=index+''
+                    }
+                    link.index = index++
+                    if(link.lineStyle==null)link.lineStyle={color:null,width:2,type:'solid',curveness:1}
+                    else {
+                        if (link.lineStyle.color== null) link.lineStyle.color = null
+                        if (link.lineStyle.width== null) link.lineStyle.width = 2
+                        if (link.lineStyle.type== null) link.lineStyle.type = 'solid'
+                        if (link.lineStyle.curveness== null) link.lineStyle.curveness = 1
+                    }
+
+                    if(link.tooltip==null)link.tooltip={show:true}
+                    else if(link.tooltip.show==null)link.tooltip.show=true
+
+                    if(link.label==null)link.label={show:false,fontSize:12}
+                    else {
+                        if (link.label.show == null) link.label.show = false
+                        if (link.label.fontSize == null) link.label.fontSize = false
+                    }
+                });
+
+                // 统计相关信息
+                that.info = '统计:共有' + graph.nodes.length + '个节点,' + graph.links.length + '条边';
+
+                // 配置option1
+                that.option1 = {
+                    tooltip: {
+                        position: 'right',
+                        extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+                        formatter: '{b}'
+                    },
+                    //图例
+                    legend: [{
+                        data: graph.categories.map(function (a) {
+                            return a.name;
+                        })
+                    }],
+                    animationDuration: 1500,
+                    animationEasingUpdate: 'quadraticIn',
+                    series: [
+                        {
+                            center:null,
+                            zoom:graph.zoom,
+                            selectedMode:'single',
+                            select: {
+                                itemStyle: {
+                                    borderWidth: 10
+                                },
+                                lineStyle: {
+                                    width: 5,
+                                    color: "rgba(0, 0, 0, 1)"
+                                }
                             },
-                            lineStyle: {
-                                width: 5,
-                                color: "rgba(0, 0, 0, 1)"
-                            }
-                        },
-                        type: 'graph',
-                        //不采用任何布局
-                        layout: 'none',
-                        //关闭悬停图例高亮
-                        legendHoverLink: false,
-                        //节点大小不随鼠标缩放而缩放
-                        nodeScaleRatio: 1,
-                        //开启鼠标缩放和漫游
-                        roam: true,
-                        draggable: false,
-                        //边两端的标记
-                        edgeSymbol: ['none', 'arrow'],
-                        //边两端的标记大小
-                        edgeSymbolSize: 5,
-                        //悬停时鼠标样式
-                        cursor: 'pointer',
+                            type: 'graph',
+                            //不采用任何布局
+                            layout: 'none',
+                            //关闭悬停图例高亮
+                            legendHoverLink: false,
+                            //节点大小不随鼠标缩放而缩放
+                            nodeScaleRatio: 1,
+                            //开启鼠标缩放和漫游
+                            roam: true,
+                            draggable: false,
+                            //边两端的标记
+                            edgeSymbol: ['none', 'arrow'],
+                            //边两端的标记大小
+                            edgeSymbolSize: 5,
+                            //悬停时鼠标样式
+                            cursor: 'pointer',
 
-                        data: graph.nodes,
-                        links: graph.links,
-                        categories: graph.categories,
+                            data: graph.nodes,
+                            links: graph.links,
+                            categories: graph.categories,
 
-                        itemStyle:{
-                            color:null
-                        },
-
-                        label: {
-                            fontsize:12,
-                            position: 'right',
-                            formatter: '{b}'
-                        },
-
-                        lineStyle: {
-                            color: 'source',
-                            curveness: 1,
-                            width: 2,
-                            type:'solid'
-                        },
-
-                        emphasis: {
-                            scale: true,
-                            focus: 'adjacency',
-                            lineStyle: {
-                                width: 10
-                            }
-                        },
-                        tooltip:{
-                            show:true
-                        }
-                    }
-                ],
-            };
-
-
-            //预存option2
-            graph = JSON.parse(JSON.stringify(that.savedgraph))
-            if(graph.nodes.length>=15 || graph.links.length>=30){
-                graph.zoom=3
-            }
-            else{
-                graph.zoom=0.6
-            }
-            graph.nodes.forEach(function (node) {
-                node.label = {
-                    show: node.symbolSize >= 30
-                };
-                node.index = index++;
-            });
-            index = 0;
-            graph.links.forEach(function (link) {
-                if (link.name === "dot") {
-                    link.lineStyle = {type: 'dotted', width: '2'}
-                }
-                if (link.id == null){
-                    link.id=index+''
-                }
-                link.index = index++;
-            });
-            that.option2 = {
-                tooltip: {
-                    position: 'right',
-                    extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
-                    formatter: '{b}'
-                },
-                //图例
-                legend: [{
-                    data: graph.categories.map(function (a) {
-                        return a.name;
-                    })
-                }],
-                series: [
-                    {
-                        selectedMode:'single',
-                        select: {
-                            itemStyle: {
-                                borderWidth: 10
+                            itemStyle:{
+                                color:null
                             },
-                            lineStyle: {
-                                width: 5,
-                                color: "rgba(0, 0, 0, 1)"
-                            }
-                        },
 
-                        //当前视角的缩放比例
-                        zoom: graph.zoom,
-                        //是否可拖动
-                        draggable: true,
-                        type: 'graph',
-                        //类型为力引导图
-                        layout: 'force',
-
-                        data: graph.nodes,
-                        links: graph.links,
-                        categories: graph.categories,
-
-                        //开启鼠标缩放和漫游
-                        roam: true,
-                        nodeScaleRatio: 0.1,
-                        label: {
-                            position: 'right',
-                            fontSize:12
-                        },
-                        lineStyle: {
-                            curveness: 0
-                        },
-                        force: {
-                            //斥力
-                            repulsion: 100
-                        }
-                    }
-                ]
-            };
-
-            //预存option3
-            graph = JSON.parse(JSON.stringify(that.savedgraph))
-            graph.nodes.forEach(function (node) {
-                node.label = {
-                    show: node.symbolSize >= 30
-                };
-                node.index = index++;
-            });
-            index = 0;
-            graph.links.forEach(function (link) {
-                if (link.name === "dot") {
-                    link.lineStyle = {type: 'dotted', width: '2'}
-                }
-                if (link.id == null){
-                    link.id=index+''
-                }
-                link.index = index++;
-            });
-            that.option3 = {
-                tooltip: {
-                    position: 'right',
-                    extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
-                    formatter: '{b}'
-                },
-                //图例
-                legend: [{
-                    data: graph.categories.map(function (a) {
-                        return a.name;
-                    })
-                }],
-                animationDurationUpdate: 1500,
-                animationEasingUpdate: 'quinticInOut',
-                series: [
-                    {
-                        zoom:1,
-                        selectedMode:'single',
-                        select: {
-                            itemStyle: {
-                                borderWidth: 10
+                            label: {
+                                fontsize:12,
+                                position: 'right',
+                                formatter: '{b}'
                             },
+
                             lineStyle: {
-                                width: 5,
-                                color: "rgba(0, 0, 0, 1)"
-                            }
-                        },
+                                color: 'source',
+                                curveness: 1,
+                                width: 2,
+                                type:'solid'
+                            },
 
-                        type: 'graph',
-                        layout: 'circular',
-                        circular: {
-                            rotateLabel: true
-                        },
-
-                        data: graph.nodes,
-                        links: graph.links,
-                        categories: graph.categories,
-
-                        roam: true,
-
-                        label: {
-                            position: 'right',
-                            formatter: '{b}',
-                            fontSize:12
-                        },
-                        lineStyle: {
-                            color: 'source',
-                            curveness: 0.3
-                        },
-                        emphasis: {
-                            focus: 'adjacency',
-                            lineStyle: {
-                                width: 10
+                            emphasis: {
+                                scale: true,
+                                focus: 'adjacency',
+                                lineStyle: {
+                                    width: 10
+                                }
+                            },
+                            tooltip:{
+                                show:true
                             }
                         }
-                    }
-                ]
-            };
-
-            graph = JSON.parse(JSON.stringify(that.savedgraph))
-            if(graph.nodes.length>=15 || graph.links.length>=30){
-                graph.zoom=1
-            }
-            else{
-                graph.zoom=0.6
-            }
-            graph.nodes.forEach(function (node) {
-                node.label = {
-                    show: node.symbolSize >= 30
+                    ],
                 };
-                node.index = index++;
-            });
-            index = 0;
-            graph.links.forEach(function (link) {
-                if (link.name === "dot") {
-                    link.lineStyle = {type: 'dotted', width: '2'}
-                }
-                if (link.id == null){
-                    link.id=index+''
-                }
-                link.index = index++;
-            });
-            let whichy=[]
-            for(let i=0;i<graph.categories.length;i++){
-                whichy.push(0)
             }
-            for(let i=0;i<graph.nodes.length;i++){
-                let myx=0;
-                if(typeof(graph.nodes[i].category)=='number') {
-                    myx=graph.nodes[i].category
+
+            // 预存option2
+            function setOption2(){
+                let graph = JSON.parse(JSON.stringify(that.savedgraph))
+
+                // 设置较合适的zoom
+                if(graph.nodes.length>=15 || graph.links.length>=30){
+                    graph.zoom=3
                 }
                 else{
-                    for(let j=0;j<graph.categories.length;j++){
-
-                        if(graph.categories[j].name===graph.nodes[i].category){
-                            myx=j;
-                            break;
-                        }
-                    }
+                    graph.zoom=0.6
                 }
-                graph.nodes[i].x = myx * 50
-                graph.nodes[i].y = whichy[myx]
-                whichy[myx] += 50
-            }
-            that.option4 = {
-                tooltip: {
-                    position: 'right',
-                    extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
-                    formatter: '{b}'
-                },
-                //图例
-                legend: [{
-                    data: graph.categories.map(function (a) {
-                        return a.name;
-                    })
-                }],
-                animationDuration: 1500,
-                animationEasingUpdate: 'quadraticIn',
-                series: [
-                    {
-                        zoom:graph.zoom,
-                        selectedMode:'single',
-                        select: {
-                            itemStyle: {
-                                borderWidth: 10
+
+                // 为每个node添加相关属性
+                graph.nodes.forEach(function (node) {
+                    node.label = {
+                        show: node.symbolSize >= 30
+                    };
+                    node.index = index++;
+                });
+
+                // 重置index
+                index = 0;
+
+                // 为每个link添加相关属性
+                graph.links.forEach(function (link) {
+                    if (link.name === "dot") {
+                        link.lineStyle = {type: 'dotted', width: '2'}
+                    }
+                    if (link.id == null){
+                        link.id=index+''
+                    }
+                    link.index = index++;
+                });
+
+                // 配置option2
+                that.option2 = {
+                    tooltip: {
+                        position: 'right',
+                        extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+                        formatter: '{b}'
+                    },
+                    //图例
+                    legend: [{
+                        data: graph.categories.map(function (a) {
+                            return a.name;
+                        })
+                    }],
+                    series: [
+                        {
+                            selectedMode:'single',
+                            select: {
+                                itemStyle: {
+                                    borderWidth: 10
+                                },
+                                lineStyle: {
+                                    width: 5,
+                                    color: "rgba(0, 0, 0, 1)"
+                                }
+                            },
+
+                            //当前视角的缩放比例
+                            zoom: graph.zoom,
+                            //是否可拖动
+                            draggable: true,
+                            type: 'graph',
+                            //类型为力引导图
+                            layout: 'force',
+
+                            data: graph.nodes,
+                            links: graph.links,
+                            categories: graph.categories,
+
+                            //开启鼠标缩放和漫游
+                            roam: true,
+                            nodeScaleRatio: 0.1,
+                            label: {
+                                position: 'right',
+                                fontSize:12
                             },
                             lineStyle: {
-                                width: 5,
-                                color: "rgba(0, 0, 0, 1)"
+                                curveness: 0
+                            },
+                            force: {
+                                //斥力
+                                repulsion: 100
                             }
-                        },
-                        type: 'graph',
-                        //不采用任何布局
-                        layout: 'none',
-                        //关闭悬停图例高亮
-                        legendHoverLink: false,
-                        //节点大小不随鼠标缩放而缩放
-                        nodeScaleRatio: 0,
-                        //开启鼠标缩放和漫游
-                        roam: true,
-                        draggable:false,
-                        //边两端的标记
-                        edgeSymbol: ['none', 'arrow'],
-                        //边两端的标记大小
-                        edgeSymbolSize: 5,
-                        //悬停时鼠标样式
-                        cursor: 'pointer',
+                        }
+                    ]
+                };
+            }
 
-                        data: graph.nodes,
-                        links: graph.links,
-                        categories: graph.categories,
+            // 预存option3
+            function setOption3(){
+                let graph = JSON.parse(JSON.stringify(that.savedgraph))
 
+                // 为每个node添加相关属性
+                graph.nodes.forEach(function (node) {
+                    node.label = {
+                        show: node.symbolSize >= 30
+                    };
+                    node.index = index++;
+                });
 
-                        label: {
-                            position: 'right',
-                            formatter: '{b}',
-                            fontSize:12
-                        },
+                // 重置index
+                index = 0;
 
-                        lineStyle: {
-                            color: 'source',
-                            curveness: 0.2,
-                            width: 2,
-                        },
+                // 为每个link添加相关属性
+                graph.links.forEach(function (link) {
+                    if (link.name === "dot") {
+                        link.lineStyle = {type: 'dotted', width: '2'}
+                    }
+                    if (link.id == null){
+                        link.id=index+''
+                    }
+                    link.index = index++;
+                });
 
-                        emphasis: {
-                            scale: true,
-                            focus: 'adjacency',
+                // 配置option3
+                that.option3 = {
+                    tooltip: {
+                        position: 'right',
+                        extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+                        formatter: '{b}'
+                    },
+                    //图例
+                    legend: [{
+                        data: graph.categories.map(function (a) {
+                            return a.name;
+                        })
+                    }],
+                    animationDurationUpdate: 1500,
+                    animationEasingUpdate: 'quinticInOut',
+                    series: [
+                        {
+                            zoom:1,
+                            selectedMode:'single',
+                            select: {
+                                itemStyle: {
+                                    borderWidth: 10
+                                },
+                                lineStyle: {
+                                    width: 5,
+                                    color: "rgba(0, 0, 0, 1)"
+                                }
+                            },
+
+                            type: 'graph',
+                            layout: 'circular',
+                            circular: {
+                                rotateLabel: true
+                            },
+
+                            data: graph.nodes,
+                            links: graph.links,
+                            categories: graph.categories,
+
+                            roam: true,
+
+                            label: {
+                                position: 'right',
+                                formatter: '{b}',
+                                fontSize:12
+                            },
                             lineStyle: {
-                                width: 10
+                                color: 'source',
+                                curveness: 0.3
+                            },
+                            emphasis: {
+                                focus: 'adjacency',
+                                lineStyle: {
+                                    width: 10
+                                }
+                            }
+                        }
+                    ]
+                };
+            }
+
+            // 预存option4
+            function setOption4(){
+                let graph = JSON.parse(JSON.stringify(that.savedgraph))
+
+                // 设置较合适的zoom
+                if(graph.nodes.length>=15 || graph.links.length>=30){
+                    graph.zoom=1
+                }
+                else{
+                    graph.zoom=0.6
+                }
+
+                // 为每个node添加相关属性
+                graph.nodes.forEach(function (node) {
+                    node.label = {
+                        show: node.symbolSize >= 30
+                    };
+                    node.index = index++;
+                });
+
+                // 重置index
+                index = 0;
+
+                // 为每个link添加相关属性
+                graph.links.forEach(function (link) {
+                    if (link.name === "dot") {
+                        link.lineStyle = {type: 'dotted', width: '2'}
+                    }
+                    if (link.id == null){
+                        link.id=index+''
+                    }
+                    link.index = index++;
+                });
+
+                // 按照类别进行y值的分配
+                let whichy=[]
+                for(let i=0;i<graph.categories.length;i++){
+                    whichy.push(0)
+                }
+                for(let i=0;i<graph.nodes.length;i++){
+                    let myx=0;
+                    if(typeof(graph.nodes[i].category)=='number') {
+                        myx=graph.nodes[i].category
+                    }
+                    else{
+                        for(let j=0;j<graph.categories.length;j++){
+
+                            if(graph.categories[j].name===graph.nodes[i].category){
+                                myx=j;
+                                break;
                             }
                         }
                     }
-                ]
-            };
+                    graph.nodes[i].x = myx * 50
+                    graph.nodes[i].y = whichy[myx]
+                    whichy[myx] += 50
+                }
 
+                // 配置option4
+                that.option4 = {
+                    tooltip: {
+                        position: 'right',
+                        extraCssText: 'box-shadow: 0 0 3px rgba(0, 0, 0, 0.3)',
+                        formatter: '{b}'
+                    },
+                    //图例
+                    legend: [{
+                        data: graph.categories.map(function (a) {
+                            return a.name;
+                        })
+                    }],
+                    animationDuration: 1500,
+                    animationEasingUpdate: 'quadraticIn',
+                    series: [
+                        {
+                            zoom:graph.zoom,
+                            selectedMode:'single',
+                            select: {
+                                itemStyle: {
+                                    borderWidth: 10
+                                },
+                                lineStyle: {
+                                    width: 5,
+                                    color: "rgba(0, 0, 0, 1)"
+                                }
+                            },
+                            type: 'graph',
+                            //不采用任何布局
+                            layout: 'none',
+                            //关闭悬停图例高亮
+                            legendHoverLink: false,
+                            //节点大小不随鼠标缩放而缩放
+                            nodeScaleRatio: 0,
+                            //开启鼠标缩放和漫游
+                            roam: true,
+                            draggable:false,
+                            //边两端的标记
+                            edgeSymbol: ['none', 'arrow'],
+                            //边两端的标记大小
+                            edgeSymbolSize: 5,
+                            //悬停时鼠标样式
+                            cursor: 'pointer',
+
+                            data: graph.nodes,
+                            links: graph.links,
+                            categories: graph.categories,
+
+
+                            label: {
+                                position: 'right',
+                                formatter: '{b}',
+                                fontSize:12
+                            },
+
+                            lineStyle: {
+                                color: 'source',
+                                curveness: 0.2,
+                                width: 2,
+                            },
+
+                            emphasis: {
+                                scale: true,
+                                focus: 'adjacency',
+                                lineStyle: {
+                                    width: 10
+                                }
+                            }
+                        }
+                    ]
+                };
+            }
+
+            setOption1()
+            setOption2()
+            setOption3()
+            setOption4()
+
+            // 启用配置一
             that.value=1;
             that.changeTo(1)
-
-            console.log(that.option1)
         },
 
-        chexiao(){
+        // 功能:撤销改变布局中的操作
+        revokeAction(){
+            // len为已经操作的步骤数
             let len=this.previouschangeLayout.length
+
+            // 如果有操作
             if(len>0) {
+                // 记录index和上一步骤此点位置
                 let dataIndex = this.previouschangeLayout[len - 1][0]
                 let position = this.previouschangeLayout[len - 1][1]
 
+                // 重设位置
                 this.option1.series[0].data[dataIndex].x = position[0];
                 this.option1.series[0].data[dataIndex].y = position[1];
-                let tmpg=this.option1.series[0]
-                this.savedgraph={uid:tmpg.uid,nodes:tmpg.data,links:tmpg.links,categories:tmpg.categories,
-                    itemStyle:tmpg.itemStyle,lineStyle:tmpg.lineStyle,pic_name:tmpg.pic_name,
-                    label:tmpg.label,tooltip:tmpg.tooltip}
+                let tmpSeries=this.option1.series[0]
 
+                // 更改savedgraph
+                this.savedgraph={uid:tmpSeries.uid,nodes:tmpSeries.data,links:tmpSeries.links,categories:tmpSeries.categories,
+                    itemStyle:tmpSeries.itemStyle,lineStyle:tmpSeries.lineStyle,pic_name:tmpSeries.pic_name,
+                    label:tmpSeries.label,tooltip:tmpSeries.tooltip}
+
+                // 启用变更，并重新绘制可拖拽圆点
                 this.myChart.setOption(this.option1);
                 this.updatePosition()
+
+                // 删除此数组中最后一个
                 this.previouschangeLayout.splice(len - 1)
             }
             else{
@@ -1982,10 +2099,12 @@ export default {
             }
         },
 
-        //在每个节点上覆盖一个圆形节点
+        // 功能:在每个节点上覆盖一个圆形节点
         initInvisibleGraphic() {
             let that = this
             let echarts = require('echarts');
+
+            // 绘制可拖拽圆点
             this.myChart.setOption({
                 graphic: echarts.util.map(that.option1.series[0].data, function (item, dataIndex) {
 
@@ -2012,10 +2131,12 @@ export default {
 
         },
 
-        //更新节点定位的函数
+        // 功能:更新节点定位的函数
         updatePosition() {
             let that=this
             let echarts = require('echarts');
+
+            // 将圆点去除并关闭roam方便拖拽
             this.myChart.setOption({
                 graphic:[],
                 series:[
@@ -2026,6 +2147,8 @@ export default {
             },{
                 replaceMerge: ['graphic']
             });
+
+            // 以下实现基本与"在每个节点上覆盖一个圆形节点"类似
             this.myChart.setOption({
                 graphic: echarts.util.map(that.option1.series[0].data, function (item,dataIndex) {
                     let tmpPos=that.myChart.convertToPixel({seriesIndex: 0},[item.x,item.y]);
@@ -2051,71 +2174,79 @@ export default {
 
         },
 
-        //节点上图层拖拽执行的函数
+        // 功能:节点上图层拖拽执行的函数
         onPointDragging(dataIndex) {
             let that=this
 
             let position=that.myChart.convertFromPixel({seriesIndex: 0},this.myChart.getOption().graphic[0].elements[dataIndex].position);
 
+            // 将拖拽的节点index和之前位置存入响应数组
             this.previouschangeLayout.push([dataIndex,[this.option1.series[0].data[dataIndex].x,this.option1.series[0].data[dataIndex].y]]);
 
-
+            // 更新位置
             this.option1.series[0].data[dataIndex].x = position[0];
             this.option1.series[0].data[dataIndex].y = position[1];
 
-            let tmpg=this.option1.series[0]
-            this.savedgraph={uid:tmpg.uid,nodes:tmpg.data,links:tmpg.links,categories:tmpg.categories,
-                itemStyle:tmpg.itemStyle,lineStyle:tmpg.lineStyle,pic_name:tmpg.pic_name,
-                label:tmpg.label,tooltip:tmpg.tooltip}
+            // 拖拽结果存入savedgraph中
+            let tmpSeries=this.option1.series[0]
+            this.savedgraph={uid:tmpSeries.uid,nodes:tmpSeries.data,links:tmpSeries.links,categories:tmpSeries.categories,
+                itemStyle:tmpSeries.itemStyle,lineStyle:tmpSeries.lineStyle,pic_name:tmpSeries.pic_name,
+                label:tmpSeries.label,tooltip:tmpSeries.tooltip}
 
+            // 启用变更
             this.myChart.setOption(that.option1)
-
             this.updatePosition()
         },
 
-        changeOption(option){
-            this.myChart.setOption(option);
-            this.value2=1;
-            this.last_value2=1;
-            if(option.series[0].lineStyle.curveness!=null)
-                this.value1=option.series[0].lineStyle.curveness;
-            else
-                this.value1=option.series[0].links[0].lineStyle.curveness;
-            if(option.series[0].label.fontSize!=null)
-                this.value3=option.series[0].label.fontSize;
-            else
-                this.value3=option.series[0].data[0].label.fontSize;
-            this.value4=option.series[0].zoom
-            this.old_value4=option.series[0].zoom
-            return true
-        },
-
+        // 功能:下拉框选择样式进行改变
         changeTo(value) {
             let that = this
+
+            // 改变关系图样式
+            function changeOption(option){
+                // 启用变更
+                that.myChart.setOption(option);
+
+                // 设置展示效果中的相关属性
+                that.changedSymbolSize=1;
+                that.lastSymbolSize=1;
+                if(option.series[0].lineStyle.curveness!=null)
+                    that.changedCurveness=option.series[0].lineStyle.curveness;
+                else
+                    that.changedCurveness=option.series[0].links[0].lineStyle.curveness;
+                if(option.series[0].label.fontSize!=null)
+                    that.changedFontSize=option.series[0].label.fontSize;
+                else
+                    that.changedFontSize=option.series[0].data[0].label.fontSize;
+                that.zoom_value=option.series[0].zoom
+                that.zoom_old_value=option.series[0].zoom
+                return true
+            }
 
             that.myChart.clear();
             switch (value) {
                 case 1:
                     that.nowOption=1
-                    that.changeOption(that.option1);
+                    changeOption(that.option1);
                     return 1
                 case 2:
                     that.nowOption=2
-                    that.changeOption(that.option2);
+                    changeOption(that.option2);
                     return 2
                 case 3:
                     that.nowOption=3
-                    that.changeOption(that.option3);
+                    changeOption(that.option3);
                     return 3
                 case 4:
                     that.nowOption=4
-                    that.changeOption(that.option4);
+                    changeOption(that.option4);
                     return 4
             }
 
 
         },
 
+        // 功能:检测并上传JSON
         beforeJSONUpload(file) {
             //判断是否为json文件
             const isJSON = file.type === 'application/json';
@@ -2129,11 +2260,11 @@ export default {
                 reader.readAsText(file);
                 reader.onload = () => {
                     tmpjson = JSON.parse(reader.result)
-                    console.log(tmpjson)
-                    if (this.checkjson(tmpjson)) {
+
+                    // 如果检测通过就上传
+                    if (this.checkJson(tmpjson)) {
                         this.initpage()
                         let that=this
-
                         $.ajax({
                             url: 'http://47.99.190.169:8888/?pic_name=' + tmpjson.pic_name + '&uid='+this.uid,
                             type: 'get',
@@ -2172,7 +2303,8 @@ export default {
             return true
         },
 
-        ifimportfromDatabase(bool){
+        // 功能:判断是否导入数据库中的知识图谱
+        importFromDatabase(bool){
             this.haveGraphInDatabase=false
             if(bool) {
                 this.myChart.hideLoading();
@@ -2181,6 +2313,7 @@ export default {
             }
         },
 
+        // 功能:保存布局，上传数据和样式
         uploadJSON(){
             let tmpOption=this.myChart.getOption().series[0]
 
@@ -2189,6 +2322,7 @@ export default {
                 'lineStyle':tmpOption.lineStyle,'label':tmpOption.label,'tooltip':tmpOption.tooltip,
                 'categories':tmpOption.categories,'nodes':tmpOption.data,'links':tmpOption.links}
 
+            // 上传数据
             $.ajax({
                 url: 'http://47.99.190.169:8888/save',
                 type: 'post',
@@ -2199,6 +2333,7 @@ export default {
                 else console.log("数据上传失败")}
             })
 
+            // 上传样式
             $.ajax({
                 url: 'http://47.99.190.169:8888/saveLayout',
                 type: 'post',
@@ -2211,7 +2346,8 @@ export default {
 
         },
 
-        checkjson(tmpjson) {
+        // 功能:校验JSON格式
+        checkJson(tmpjson) {
             //判断是否为符合格式的json对象
             if (!('pic_name' in tmpjson)) {
                 this.$message.error('内容格式错误!(无pic_name属性)');
@@ -2229,11 +2365,11 @@ export default {
                 this.$message.error('内容格式错误!(无categories属性)');
                 return false
             }
-
             if (tmpjson.links.length === 0 || tmpjson.nodes.length === 0 || tmpjson.categories.length === 0) {
                 return false
             }
-            //links是否都包含了source和target
+
+            // links是否都包含了source和target
             for (let i = 0; i < tmpjson.links.length; i++) {
                 let prop = tmpjson.links[i]
                 if (!('source' in prop) || !('target' in prop)) {
@@ -2241,7 +2377,8 @@ export default {
                     return false
                 }
             }
-            //nodes是否都包含了name/symbolSize/category
+
+            // nodes是否都包含了name/symbolSize/category
             for (let i = 0; i < tmpjson.nodes.length; i++) {
                 let prop = tmpjson.nodes[i]
                 if (!('name' in prop) || !('symbolSize' in prop) || !('category' in prop)) {
@@ -2249,6 +2386,8 @@ export default {
                     return false
                 }
             }
+
+            // categories是否都包含了name属性
             for (let i = 0; i < tmpjson.categories.length; i++) {
                 let prop = tmpjson.categories[i]
                 if (!('name' in prop)) {
@@ -2256,7 +2395,8 @@ export default {
                     return false
                 }
             }
-            //判断nodes是否有x,y值,否则随机
+
+            // 判断nodes是否有x,y值,否则随机
             if (!('x' in tmpjson.nodes[0]) || !('y' in tmpjson.nodes[0])) {
                 this.$message.info('检查到nodes中未包含x/y值,正在随机设置')
                 for (let i = 0; i < tmpjson.nodes.length; i++) {
@@ -2532,7 +2672,7 @@ export default {
             that.editions.push(op)
         },
 
-        endGraphicalEdit(e) {
+        endGraphicalEdit() {
             this.savedgraph = JSON.parse(JSON.stringify(this.copiedgraph));
             this.copiedgraph = '';
             this.editmode = 'none';
@@ -2542,7 +2682,7 @@ export default {
         },
 
         // 保存编辑结果
-        saveGraphicalEdit(e) {
+        saveGraphicalEdit() {
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
             this.uploadJSON();
             if (this.editions.length === 0) this.$message.info('毫无变化');

@@ -2899,13 +2899,13 @@ export default {
 <span class="fstat-no" title="function not covered" >        reader.onload = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          tmpjson = JSON.parse(reader.result)</span>
 <span class="cstat-no" title="statement not covered" >          console.log(tmpjson)</span>
-<span class="cstat-no" title="statement not covered" >          this.checkjson(tmpjson)</span>
+<span class="cstat-no" title="statement not covered" >          this.checkJson(tmpjson)</span>
         }
       }
       return true
     },
 &nbsp;
-    checkjson(tmpjson) {
+    checkJson(tmpjson) {
       //判断是否为符合格式的json对象
       if (!('nodes' in tmpjson)) {
         this.$message.error('内容格式错误!(无nodes属性)');
