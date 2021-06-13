@@ -2536,7 +2536,6 @@ export default {
             this.savedgraph = JSON.parse(JSON.stringify(this.copiedgraph));
             this.copiedgraph = '';
             this.editmode = 'none';
-            console.log(this.savedgraph)
             this.clearSelection()
             this.initpage();
             console.log('end edit');
@@ -2544,7 +2543,6 @@ export default {
 
         // 保存编辑结果
         saveGraphicalEdit(e) {
-            console.log(e);
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
             this.uploadJSON();
             if (this.editions.length === 0) this.$message.info('毫无变化');
@@ -2624,10 +2622,6 @@ export default {
                                 that.searchNodeHistory.push(res);
                                 const nodes = r.content;
                                 let opt = that.myChart.getOption();
-                                console.log('11111')
-                                console.log(opt)
-                                console.log(nodes)
-                                console.log('11111')
                                 opt.series[0].data.forEach((node) => {
                                     if (nodes.findIndex((item) => item.id === parseInt(node.id)) !== -1) {
                                         // 高亮符合搜索结果的节点，修改边框颜色为rgba(0,0,0,1)黑色
