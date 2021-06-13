@@ -35,15 +35,16 @@
             width="400"
             trigger="hover"
             >
-            <ul>
-              <li v-for="item in message_array" :key="item">{{item}}</li>
-            </ul>
+          <ul>
+            <li v-for="item in message_array" v-bind:key="item">{{item}}</li>
+          </ul>
           <input type="text" v-model="message" float="left">
           <button v-on:click="dealMessage">发送</button>
           <el-button slot="reference">智能问答</el-button>
         </el-popover>
       </template>
     </div>
+
   <div class="box">
     <div id="myChart"></div>
 
