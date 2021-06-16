@@ -745,6 +745,11 @@ export default {
 
         },
 
+        // 功能:重新获取推荐
+        recommendAgain(){
+            this.recommendGet(this.uid);
+        },
+
         // 功能:点击换一换，切换推荐
         recommendChange(){
             // 判断是用户推荐

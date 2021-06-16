@@ -384,6 +384,7 @@
         </div>
         <div class="recommend_bottom">
           <el-button type="text" @click="recommendChange">换一换</el-button>
+          <el-button type="text" @click="recommendAgain">重新获取</el-button>
         </div>
       </div>
         <div class="recommend_item" v-if="recommendUser && recommendOther">
