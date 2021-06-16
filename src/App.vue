@@ -1,23 +1,24 @@
 <template>
   <div id="app">
-    <h1>知识图谱可视化系统</h1>
-    <KG/>
-    <h6 id="tools">KG666小组呈现</h6>
+    <router-view></router-view>
   </div>
 </template>
 
-<script>
-import KG from './components/KG.vue'
 
+<script>
 export default {
   name: 'App',
   components: {
-    KG
-  }
+  },
 }
 </script>
 
 <style>
+body{
+  border:0;
+  margin:0;
+  padding:0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
