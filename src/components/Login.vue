@@ -110,7 +110,11 @@ export default{
           }
         })
       }
-    }
+    },
+    logout(){
+      let _this = this;
+      _this.$router.push('/')
+    },
   }
 }
 </script>

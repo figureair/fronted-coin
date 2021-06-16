@@ -1,5 +1,6 @@
 <template>
   <div id="main">
+    <h2>知识图谱可视化系统</h2>
     <div id="menu">
       <el-menu id="menu-content" :collapse="true" @select="selectGraph">
         <el-submenu index="first">
@@ -488,6 +489,7 @@
   </div>
 </template>
 
+import {logout} from "Login.vue";
 <script src="./KG.js"></script>
 
 <style scoped src="./KG.css">
