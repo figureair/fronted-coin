@@ -324,3 +324,6 @@
     display: block;
     margin: auto;
 }
+#bottom{
+    max-height: 40vh;
+}
