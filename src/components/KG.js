@@ -1,11 +1,13 @@
 import $ from 'jquery'
-const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
+// const ROOT_PATH = 'https://figureair.github.io/data/les-miserables.json';
 
 export default {
     name: "KG",
     data() {
         return {
             isRoam:false,
+            cancelLoveButton: false,
+            initialDialog:false,
             message_array:[],
             Message:{
                 message:'',
@@ -488,6 +490,8 @@ export default {
 
         console.log('uid: ' + this.uid)
         this.getUserGraph()
+        this.initialDialog = true;
+
         this.initdata()
 
         this.showUserPic()
@@ -1485,18 +1489,18 @@ export default {
                 that.myChart = echarts.init(document.getElementById('myChart'))
 
                 // 显示等待
-                that.myChart.showLoading();
-                // 获取JSON数据
-                $.getJSON(ROOT_PATH, function (graph) {
-                    // 关闭等待
-                    that.myChart.hideLoading();
-
-                    //保存原始数据
-                    that.savedgraph = JSON.parse(JSON.stringify(graph))
-
-                    // 初始化页面
-                    that.initpage()
-                });
+                // that.myChart.showLoading();
+                // // 获取JSON数据
+                // $.getJSON(ROOT_PATH, function (graph) {
+                //     // 关闭等待
+                //     that.myChart.hideLoading();
+                //
+                //     //保存原始数据
+                //     that.savedgraph = JSON.parse(JSON.stringify(graph))
+                //
+                //     // 初始化页面
+                //     that.initpage()
+                // });
 
                 // 触发点击（点或边）事件
                 that.myChart.on('click', 'series.graph', function (event) {
@@ -1507,6 +1511,7 @@ export default {
                         case 'node':
                             item = that.savedgraph.nodes[id];
                             if (that.editmode === 'delete') {
+                                // 记录操作
                                 const op = {
                                     option: 'delete',
                                     type: 'node',
@@ -1570,6 +1575,7 @@ export default {
                                             that.showMovieInfo(item.mid);
                                             that.recommendUser = false;
                                             that.recommendGet(item.mid);
+                                            that.cancelLoveButton = true;
                                             break;
                                         case 'person':
                                             that.showInfoPic(item.name);
@@ -2111,6 +2117,8 @@ export default {
             setOption2()
             setOption3()
             setOption4()
+
+            that.cancelLoveButton = false;
 
             // 启用配置一
             that.value=1;
@@ -2986,6 +2994,7 @@ export default {
             this.editmode = mode;
         },
 
+        // 取消搜索表
         cancelSearch() {
             this.resetSearchForm();
             if(this.nowOption===1)this.myChart.setOption(this.option1);
@@ -3005,13 +3014,14 @@ export default {
                 success: function (res) {
                     // 过滤掉名字为空的数据，同时只保留名称
                     const graphs = res.content.map((pic) => pic["n.pic_name"]).filter((pic_name) => pic_name !== null);
-                    if (graphs != null) {
-                        that.usr_graph = graphs;
+                    let idx = that.usr_graph.findIndex((pic_name) => pic_name === 'moive');
+                    if (idx === -1) {
+                        // 对于没有movie知识图谱的，自动生成一个空的电影知识图谱
+                        graphs.push('movie')
                     }
-                    // 对于没有movie知识图谱的，自动生成一个空的知识图谱（）
-                    if (!that.usr_graph.find((pic_name) => pic_name === 'movie')) {
-                        graphs.unshift('movie');
-                    }
+                    // else if (idx !== 0) {
+                    //    graphs.unshift('movie');
+                    // }
                 }
             })
         },
@@ -3104,6 +3114,11 @@ export default {
                 this.message_array.push({message:"Answer: Not found",from:1});
             },500);
             //仅为了效果
+        },
+
+        initialJSONUpload(file) {
+            this.beforeJSONUpload(file);
+            this.initialDialog = false;
         },
     },
 
