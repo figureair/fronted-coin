@@ -8,7 +8,7 @@
             <i class="el-icon-location"></i>
             <span slot="title">用户知识图谱列表</span>
           </template>
-          <el-menu-item-group>
+          <el-menu-item-group >
             <span slot="title">用户知识图谱列表</span>
             <el-menu-item v-for="(item, index) in usr_graph" :key="index" :index="String(index)">
               {{item}}
@@ -28,6 +28,23 @@
             <el-button type="primary" @click="importFromDatabase(true)">确 定</el-button>
           </span>
     </el-dialog>
+
+<!--    <el-dialog-->
+<!--            @close="selectGraph('0', ['first', '0'])"-->
+<!--            title="显示图谱"-->
+<!--            :visible.sync="initialDialog"-->
+<!--            width="30%">-->
+<!--      <span>请选择是否导入并显示本地知识图谱或显示已有知识图谱（若没有则系统会自动生成空白电影知识图谱）</span>-->
+<!--      <span>默认显示电影知识图谱</span>-->
+<!--      <span slot="footer" class="dialog-footer">-->
+<!--        <el-upload-->
+<!--                action=""-->
+<!--                :before-upload="initialJSONUpload">-->
+<!--          <el-button type="primary" plain icon="el-icon-upload">导入知识图谱</el-button>-->
+<!--        </el-upload>-->
+<!--        <el-select></el-select>-->
+<!--      </span>-->
+<!--    </el-dialog>-->
 
     <div id="chat">
       <template>

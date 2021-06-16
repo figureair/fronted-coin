@@ -13,6 +13,7 @@ export default {
                 message:'',
                 from: Number, //0:Question 1:Answer
             },
+            graphChange: 0,
             isPerson:false,
             isMovie:false,
             mids:[1701],
@@ -2418,6 +2419,9 @@ export default {
                 else console.log("样式上传失败")}
             })
 
+            // 更新
+
+            setTimeout(this.getUserGraph, 5000);
         },
 
         // 功能:校验JSON格式
@@ -2958,15 +2962,20 @@ export default {
                 success: function (res) {
                     // 过滤掉名字为空的数据，同时只保留名称
                     const graphs = res.content.map((pic) => pic["n.pic_name"]).filter((pic_name) => pic_name !== null);
-                    if (graphs != null) {
-                        that.usr_graph = graphs;
+                    let idx = graphs.findIndex((pic_name) => pic_name === 'movie')
+                    console.log(graphs)
+                    if (idx === -1) {
+                        // 对于没有movie知识图谱的，自动生成一个空的知识图谱（）
+                        graphs.push('movie')
                     }
-                    // 对于没有movie知识图谱的，自动生成一个空的知识图谱（）
-                    if (!that.usr_graph.find((pic_name) => pic_name === 'movie')) {
-                        graphs.unshift('movie');
+                    else if (idx !== 0) {
+                        graphs.splice(idx, 1)
+                        graphs.unshift('movie')
                     }
+                    that.usr_graph = graphs;
                 }
             })
+            that.graphChange++;
         },
 
         // 功能:选中对应知识图谱时调用冰
