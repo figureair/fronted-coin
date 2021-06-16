@@ -442,17 +442,6 @@ export default {
         this.showUserPic()
         this.recommendGet(this.uid)
 
-        //在mounted 声明周期中创建定时器
-        const timer = setInterval(()=>{
-            let msg = document.getElementById('bottom') // 获取对象
-            msg.scrollTop = msg.scrollHeight // 滚动高度
-        }, 100) // 每0.1秒执行1次
-        // 通过$once来监听定时器，在beforeDestroy钩子可以被清除
-        this.$once('hook:beforeDestroy',()=>{
-            // 在页面销毁时，销毁定时器
-            clearInterval(timer)
-        })
-
 
     },
 
@@ -3056,9 +3045,17 @@ export default {
                     if(params.success){
                         console.log("Answer: "+params.content)
                         this.message_array.push({message:"Answer: "+params.content,from:1});
+                        this.$nextTick(() => {
+                            let msg = document.getElementById('bottom') // 获取对象
+                            msg.scrollTop = msg.scrollHeight // 滚动高度
+                        })
                     }else{
                         console.log("Answer: Not found")
                         this.message_array.push({message:"Answer: Not found",from:1});
+                        this.$nextTick(() => {
+                            let msg = document.getElementById('bottom') // 获取对象
+                            msg.scrollTop = msg.scrollHeight // 滚动高度
+                        })
                     }
                 }
             })
@@ -3066,8 +3063,15 @@ export default {
             clearTimeout(this.timer);  //清除延迟执行
             this.timer = setTimeout(()=>{   //设置延迟执行
                 this.message_array.push({message:"Answer: Not found",from:1});
+                this.$nextTick(() => {
+                    let msg = document.getElementById('bottom') // 获取对象
+                    msg.scrollTop = msg.scrollHeight // 滚动高度
+                })
             },500);
-            //仅为了效果
+            this.$nextTick(() => {
+                let msg = document.getElementById('bottom') // 获取对象
+                msg.scrollTop = msg.scrollHeight // 滚动高度
+            })
         },
 
         initialJSONUpload(file) {
