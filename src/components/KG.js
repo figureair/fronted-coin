@@ -99,7 +99,7 @@ export default {
             // 判断是用户推荐和电影推荐
             recommendUser:true,
             // 判断是用户推荐还是协同过滤推荐
-            recommendOther:true,
+            recommendOther:false,
             // 当前推荐最后一部电影的index
             recommendByUserIndex:0,
             recommendByMovieIndex:0,
@@ -199,46 +199,7 @@ export default {
                 "category": "",
                 "url": ""
             }],
-            recommendByOther:[{
-                "image": "",
-                "othername": "",
-                "rate": 0,
-                "showtime": 0,
-                "district": "",
-                "name": "",
-                "genre": "",
-                "length": 0,
-                "language": "",
-                "id": 0,
-                "category": "",
-                "url": ""
-            },{
-                "image": "",
-                "othername": "",
-                "rate": 0,
-                "showtime": 0,
-                "district": "",
-                "name": "",
-                "genre": "",
-                "length": 0,
-                "language": "",
-                "id": 0,
-                "category": "",
-                "url": ""
-            },{
-                "image": "",
-                "othername": "",
-                "rate": 0,
-                "showtime": 0,
-                "district": "",
-                "name": "",
-                "genre": "",
-                "length": 0,
-                "language": "",
-                "id": 0,
-                "category": "",
-                "url": ""
-            }],
+            recommendByOther:[],
             recommendByMovie:[{
                 "image": "",
                 "othername": "",
@@ -533,8 +494,6 @@ export default {
     },
 
     methods: {
-        // 判断:若uid为NAN自动跳回
-
 
         // 功能:锁定缩放
         fixRoam(){
@@ -737,8 +696,6 @@ export default {
                     url: 'http://47.99.190.169:8888/movie/recommend/o?uid='+id,
                     type: 'get',
                     success: function (res) {
-                        console.log(1)
-                        console.log(res)
                         if(res.content.rec.length!==0) {
                             // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                             that.recommendByOther = res.content.rec
