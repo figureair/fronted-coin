@@ -493,6 +493,18 @@ export default {
         this.showUserPic()
         this.recommendGet(this.uid)
 
+        //在mounted 声明周期中创建定时器
+        const timer = setInterval(()=>{
+            let msg = document.getElementById('bottom') // 获取对象
+            msg.scrollTop = msg.scrollHeight // 滚动高度
+        }, 100) // 每两秒执行1次
+        // 通过$once来监听定时器，在beforeDestroy钩子可以被清除
+        this.$once('hook:beforeDestroy',()=>{
+            // 在页面销毁时，销毁定时器
+            clearInterval(timer)
+        })
+
+
     },
 
     methods: {
@@ -3092,10 +3104,6 @@ export default {
                 this.message_array.push({message:"Answer: Not found",from:1});
             },500);
             //仅为了效果
-            this.$nextTick(() => {
-                let msg = document.getElementById('bottom') // 获取对象
-                msg.scrollTop = msg.scrollHeight // 滚动高度
-            })
         },
     },
 
