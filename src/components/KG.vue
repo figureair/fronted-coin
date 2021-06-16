@@ -353,7 +353,7 @@
 
   </div>
     <div class="box">
-      <div id="user_pic" :key="user_pic_count">
+      <div id="user_pic" :key="'user_pic_count'+user_pic_count">
       <div id="user_pic_box1">
         <div id="user_pic_box1_item1">
           <h2>用户画像</h2>
@@ -384,7 +384,7 @@
         </div>
       </div>
     </div>
-      <div id="recommend" :key="recommendCount">
+      <div id="recommend" :key="'recommendCount'+recommendCount">
         <div class="recommend_item" v-if="recommendUser && (!recommendOther)">
         <div class="recommend_title">
           <h4 @click="changeUserAndOther">智能推荐电影</h4>

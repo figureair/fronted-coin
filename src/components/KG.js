@@ -148,20 +148,7 @@ export default {
                 "url": ""
             }],
             // 所有推荐列表
-            recommendByUser:[{
-                "image": "",
-                "othername": "",
-                "rate": 0,
-                "showtime": 0,
-                "district": "",
-                "name": "",
-                "genre": "",
-                "length": 0,
-                "language": "",
-                "id": 0,
-                "category": "",
-                "url": ""
-            }],
+            recommendByUser:[],
             recommendByOther:[],
             recommendByMovie:[{
                 "image": "",
@@ -864,7 +851,7 @@ export default {
                     }
 
                 }
-                that.avgLength=totalLength/that.userinfo['movie'].length
+                that.avgLength=(totalLength/that.userinfo['movie'].length).toFixed(2)
                 let lengthsData = [{name: '100分钟以下', value: lengths['100分钟以下']}, {name: '100~110分钟', value: lengths['100~110分钟']}, {
                     name: '110~120分钟', value: lengths['110~120分钟']}, {name: '120分钟以上', value: lengths['120分钟以上']}]
 
@@ -919,27 +906,27 @@ export default {
             // 展示年代区间比
             function showtimeShow(){
                 // 统计各个年代区间的数量并计算最新最老电影
-                let showtimes={'2000年以前':0,'2000~2010年':0,'2010~2020年':0,'2020年以后':0}
+                let showtimes={'2000年以前':0,'2000~2005年':0,'2005~2010年':0,'2010年以后':0}
                 for(let i=0;i<that.userinfo['movie'].length;i++){
                     that.oldShowtime=Math.min(that.oldShowtime,that.userinfo['movie'][i]['showtime'])
                     that.newShowtime=Math.max(that.newShowtime,that.userinfo['movie'][i]['showtime'])
                     if(that.userinfo['movie'][i]['showtime']<2000){
                         showtimes['2000年以前']=showtimes['2000年以前']+1
                     }
-                    else if(that.userinfo['movie'][i]['showtime']<2010){
-                        showtimes['2000~2010年']=showtimes['2000~2010年']+1
+                    else if(that.userinfo['movie'][i]['showtime']<2005){
+                        showtimes['2000~2005年']=showtimes['2000~2005年']+1
                     }
-                    else if(that.userinfo['movie'][i]['showtime']<2020){
-                        showtimes['2010~2020年']=showtimes['2010~2020年']+1
+                    else if(that.userinfo['movie'][i]['showtime']<2010){
+                        showtimes['2005~2010年']=showtimes['2005~2010年']+1
                     }
                     else{
-                        showtimes['2020年以后']=showtimes['2020年以后']+1
+                        showtimes['2010年以后']=showtimes['2010年以后']+1
                     }
 
                 }
 
-                let showtimesData = [{name: '2000年以前', value: showtimes['2000年以前']}, {name: '2000~2010年', value: showtimes['2000~2010年']}, {
-                    name: '2010~2020年', value: showtimes['2010~2020年']}, {name: '2020年以后', value: showtimes['2020年以后']}]
+                let showtimesData = [{name: '2000年以前', value: showtimes['2000年以前']}, {name: '2000~2005年', value: showtimes['2000~2005年']}, {
+                    name: '2005~2010年', value: showtimes['2005~2010年']}, {name: '2010年以后', value: showtimes['2010年以后']}]
 
                 //生成年代饼图
                 let echarts = require('echarts');
