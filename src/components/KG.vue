@@ -110,7 +110,7 @@
             <span style="font-size: 12px">{{ info }}</span>
           </div>
 
-            <div class="box-item like" v-if="selectedItem[0].category === 'movie'">
+            <div class="box-item like" v-if="cancelLoveButton">
                 <span class="like-text">喜欢这部电影请点亮爱心</span>
                 <div class="love_button heart">
                     <vue-clap-button icon="love" :size="45" :initClicked="1"
@@ -353,23 +353,35 @@
 
   </div>
     <div class="box">
-      <div id="user_pic">
+      <div id="user_pic" :key="user_pic_count">
       <div id="user_pic_box1">
         <div id="user_pic_box1_item1">
           <h2>用户画像</h2>
         </div>
-        <div id="user_pic_box1_item2">
+        <div class="user_pic_box1_item2" v-if="ifUserPic">
           <h3>喜欢电影平均评分: {{avgRate}}</h3>
           <h3>喜欢电影最老年代: {{oldShowtime}}年</h3>
           <h3>喜欢电影最新年代: {{newShowtime}}年</h3>
           <h3>喜欢电影平均时长: {{avgLength}}分钟</h3>
         </div>
+        <div class="user_pic_box1_item2" v-if="!ifUserPic">
+          <div style="color:#5b9bde;">请点击右侧推荐区域来喜欢新的电影!</div>
+          <img class="recommendImg" src="../img/KG-02.jpeg"/>
+        </div>
       </div>
       <div id="user_pic_box2">
-        <div class="user_pic_box2_item" id="user_pic1"></div>
-        <div class="user_pic_box2_item" id="user_pic2"></div>
-        <div class="user_pic_box2_item" id="user_pic3"></div>
-        <div class="user_pic_box2_item" id="user_pic4"></div>
+        <div class="user_pic_box2_item" id="user_pic1">
+          <img class="recommendImg" src="../img/KG-03.png"/>
+        </div>
+        <div class="user_pic_box2_item" id="user_pic2">
+          <img class="recommendImg" src="../img/KG-04.png"/>
+        </div>
+        <div class="user_pic_box2_item" id="user_pic3">
+          <img class="recommendImg" src="../img/KG-05.png"/>
+        </div>
+        <div class="user_pic_box2_item" id="user_pic4">
+          <img class="recommendImg" src="../img/KG-06.png"/>
+        </div>
       </div>
     </div>
       <div id="recommend" :key="recommendCount">
@@ -508,8 +520,12 @@
                 <h2>担任编剧</h2>
                 <div class="movie_list_items">
                   <el-collapse v-model="write">
-                    <el-collapse-item v-for="(v, index) in person['write']" :key="index" :title="v.name+' 评分:'+v.rate+' 年代:'+v.showtime">
+                    <el-collapse-item v-for="(v, index) in person['write']" :key="index">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#0e5727;">{{v.name+' 评分:'+v.rate+' 年代:'+v.showtime}}</div>
+                      </template>
                       <h4>别名: {{v.othername}}</h4>
+                      <h4>年代：{{v.showtime}}</h4>
                       <h4>国家: {{v.district}}</h4>
                       <h4>时长: {{v.length}}分钟</h4>
                       <h4>语言: {{v.language}}</h4>

@@ -53,51 +53,9 @@ export default {
                     }
                 ]
             },
-            userinfo: {"movie": [{
-                    "rate": 0,
-                    "showtime": 0,
-                    "length": 0,
-                    "name": "",
-                    "id": 0,
-                    "category": ""
-                }], "genre": [
-                    {
-                        "num": 0,
-                        "genre": "犯罪"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "恐怖"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "惊悚"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "喜剧"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "剧情"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "爱情"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "动作"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "悬疑"
-                    },
-                    {
-                        "num": 0,
-                        "genre": "奇幻"
-                    }
-                ]},
+            userinfo: {},
+            ifUserPic:true,
+            user_pic_count:0,
 
             // recommend 相关变量
 
@@ -512,7 +470,6 @@ export default {
     },
 
     methods: {
-
         // 功能:锁定缩放
         fixRoam(){
             if(this.isRoam) {
@@ -549,34 +506,43 @@ export default {
                 url: 'http://47.99.190.169:8888/?pic_name=movie' + '&uid='+that.uid,
                 type: 'get',
                 success: function (res) {
-                    // 暂存返回的图谱
-                    that.tmpgraph=res.content
+                    if(res.content!==null) {
+                        // 暂存返回的图谱
+                        that.tmpgraph = res.content
 
-                    // 如果没有位置参数，则自动分配
-                    if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
+                        // 如果没有位置参数，则自动分配
+                        if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
+                            for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
+                                let prop = that.tmpgraph.nodes[i]
+                                prop.x = 100 * Math.random()
+                                prop.y = 100 * Math.random()
+                            }
+                        }
+                        for (let i = 0; i < that.tmpgraph.links.length; i++) {
+                            let prop = that.tmpgraph.links[i]
+                            prop.source = prop.source + ""
+                            prop.target = prop.target + ""
+                        }
+
+                        // 存入savedgraph
+                        that.savedgraph = that.tmpgraph
+
+                        // 存储已喜欢的电影ID
+                        that.mids = []
                         for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
                             let prop = that.tmpgraph.nodes[i]
-                            prop.x = 100 * Math.random()
-                            prop.y = 100 * Math.random()
+                            if (prop.category === 'movie') {
+                                that.mids.push(prop.mid)
+                            }
                         }
-                    }
-                    for (let i = 0; i < that.tmpgraph.links.length; i++) {
-                        let prop = that.tmpgraph.links[i]
-                        prop.source = prop.source+""
-                        prop.target= prop.target+""
-                    }
 
-                    // 存入savedgraph
-                    that.savedgraph = that.tmpgraph
-
-                    // 存储已喜欢的电影ID
-                    that.mids=[]
-                    for(let i=0;i<that.tmpgraph.nodes.length;i++){
-                        let prop = that.tmpgraph.nodes[i]
-                        if(prop.category==='movie'){that.mids.push(prop.mid)}
+                        that.initpage()
                     }
+                    else{
+                        that.myChart.clear()
 
-                    that.initpage()
+                    }
+                    that.showUserPic()
                 }
             })
         },
@@ -1087,11 +1053,20 @@ export default {
                 url: 'http://47.99.190.169:8888/movie/userdata?uid='+that.uid,
                 type: 'get',
                 success: function (res) {
-                    that.userinfo=res.content
-                    rateShow()
-                    lengthShow()
-                    showtimeShow()
-                    genreShow()
+                    if(res.content.movie.length!==0){
+                        that.ifUserPic=true
+                        that.userinfo=res.content
+                        rateShow()
+                        lengthShow()
+                        showtimeShow()
+                        genreShow()
+                    }
+                    else{
+                        that.ifUserPic=false
+
+                        // 利用key值更新DOM
+                        that.user_pic_count++
+                    }
                 }
             })
         },
@@ -1206,6 +1181,7 @@ export default {
                 success: function (res) {
                     that.movie=res.content
 
+                    that.actors=''
                     // 生成主演字符串
                     for(let i=0;i<that.movie.actor.length-1;i++){
                         that.actors=that.actors+that.movie.actor[i]+'、'
@@ -1637,6 +1613,7 @@ export default {
         clearSelection() {
             this.selectedItem = [];
             this.selectedType = '';
+            this.cancelLoveButton = false;
         },
 
         // 功能:初始化各个配置并加载配置一
@@ -2159,7 +2136,7 @@ export default {
         },
 
         saveLayout(){
-            this.$message.info("将下载本地json，并上传至服务器")
+            this.$message.info("将上传至服务器")
             let tmpOption=this.myChart.getOption().series[0]
 
             let res={'pic_name':this.savedgraph.pic_name,'uid':this.uid,'center':tmpOption.center,
@@ -2187,15 +2164,6 @@ export default {
                 success: function (res) {if(res.success)console.log("数据上传成功!")
                 else console.log("数据上传失败")}
             })
-
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res));
-            let downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "knowledge-graph" + ".json");
-            document.body.appendChild(downloadAnchorNode); // required for firefox
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-
         },
 
         fixLayoutChange(){
@@ -3014,14 +2982,13 @@ export default {
                 success: function (res) {
                     // 过滤掉名字为空的数据，同时只保留名称
                     const graphs = res.content.map((pic) => pic["n.pic_name"]).filter((pic_name) => pic_name !== null);
-                    let idx = that.usr_graph.findIndex((pic_name) => pic_name === 'moive');
-                    if (idx === -1) {
-                        // 对于没有movie知识图谱的，自动生成一个空的电影知识图谱
-                        graphs.push('movie')
+                    if (graphs != null) {
+                        that.usr_graph = graphs;
                     }
-                    // else if (idx !== 0) {
-                    //    graphs.unshift('movie');
-                    // }
+                    // 对于没有movie知识图谱的，自动生成一个空的知识图谱（）
+                    if (!that.usr_graph.find((pic_name) => pic_name === 'movie')) {
+                        graphs.unshift('movie');
+                    }
                 }
             })
         },
