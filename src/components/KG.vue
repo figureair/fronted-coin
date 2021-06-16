@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="main">
     <div id="menu">
       <el-menu id="menu-content" :collapse="true" @select="selectGraph">
         <el-submenu index="first">
@@ -484,6 +484,7 @@
       </div>
     </div>
   </div>
+    <h6 id="tools">KG666小组呈现</h6>
   </div>
 </template>
 

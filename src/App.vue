@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <h6 id="tools">KG666小组呈现</h6>
   </div>
 </template>
 
@@ -15,6 +14,11 @@ export default {
 </script>
 
 <style>
+body{
+  border:0;
+  margin:0;
+  padding:0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

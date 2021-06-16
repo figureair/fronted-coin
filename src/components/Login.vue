@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="first">
       <div class="login-box" v-show="showLogin">
         <h2>知识图谱可视化系统</h2>
         <p v-show="showTishi">{{tishi}}</p>
@@ -33,6 +33,7 @@
           <button v-on:click="ToLogin">去登录</button>
         </div>
     </div>
+    <h6 id="tools">KG666小组呈现</h6>
   </div>
 </template>
 
@@ -116,10 +117,13 @@ export default{
 
 
 <style>
-body {
+#first {
   background: url('../img/04.jpg');
   background-repeat: no-repeat;
   background-size: 100% auto;
+  height: 100%;
+  position: fixed;
+  width: 100%;
 }
 .login-box {
   width: 30%;
