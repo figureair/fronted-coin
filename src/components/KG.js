@@ -497,7 +497,7 @@ export default {
         const timer = setInterval(()=>{
             let msg = document.getElementById('bottom') // 获取对象
             msg.scrollTop = msg.scrollHeight // 滚动高度
-        }, 100) // 每两秒执行1次
+        }, 100) // 每0.1秒执行1次
         // 通过$once来监听定时器，在beforeDestroy钩子可以被清除
         this.$once('hook:beforeDestroy',()=>{
             // 在页面销毁时，销毁定时器
