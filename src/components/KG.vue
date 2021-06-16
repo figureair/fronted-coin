@@ -37,13 +37,18 @@
             trigger="hover"
             >
             <el-form id="bottom">
-              <el-form-item style="border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-for="item in message_array" v-bind:key="item">
-                {{item}}
-              </el-form-item>
+              <div v-for="item in message_array" v-bind:key="item">
+                <el-form-item style="border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===0">
+                  {{item.message}}
+                </el-form-item>
+                <el-form-item style="border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===1">
+                  {{item.message}}
+                </el-form-item>
+              </div>
             </el-form>
           <el-form :inline="true">
             <el-form-item>
-              <el-input v-model="message" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
+              <el-input v-model="Message.message" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="dealMessage">发送</el-button>

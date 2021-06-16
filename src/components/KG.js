@@ -7,7 +7,10 @@ export default {
         return {
             isRoam:false,
             message_array:[],
-            message:'',
+            Message:{
+                message:'',
+                from: Number, //0:Question 1:Answer
+            },
             isPerson:false,
             isMovie:false,
             mids:[1701],
@@ -3063,16 +3066,10 @@ export default {
             })
         },
 
-        // 功能:滚动条到底部
-        scrollBottm() {
-            let el = this.$refs["chat-box"];
-            el.scrollTop = el.scrollHeight;
-        },
-
         // 功能:发送询问信息
         dealMessage() {
-            this.message_array.push("Question: "+this.message);
-            let params={'message':this.message}
+            this.message_array.push({message:"Question: "+this.Message.message,from:0});
+            let params={'message':this.Message.message,'from':this.Message.from}
             $.ajax({
                 url:'',
                 type:'POST',
@@ -3082,14 +3079,19 @@ export default {
                 success: function (params){
                     if(params.success){
                         console.log("Answer: "+params.content)
-                        this.message_array.push("Answer: "+params.content);
+                        this.message_array.push({message:"Answer: "+params.content,from:1});
                     }else{
                         console.log("Answer: Not found")
-                        this.message_array.push("Answer: Not found");
+                        this.message_array.push({message:"Answer: Not found",from:1});
                     }
                 }
             })
-            this.message='';
+            this.Message.message='';
+            clearTimeout(this.timer);  //清除延迟执行
+            this.timer = setTimeout(()=>{   //设置延迟执行
+                this.message_array.push({message:"Answer: Not found",from:1});
+            },500);
+            //仅为了效果
             this.$nextTick(() => {
                 let msg = document.getElementById('bottom') // 获取对象
                 msg.scrollTop = msg.scrollHeight // 滚动高度
