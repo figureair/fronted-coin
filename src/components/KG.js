@@ -3081,7 +3081,6 @@ export default {
                     msg.scrollTop = msg.scrollHeight // 滚动高度
                 })
             },500);
-            //仅为了效果
             this.$nextTick(() => {
                 let msg = document.getElementById('bottom') // 获取对象
                 msg.scrollTop = msg.scrollHeight // 滚动高度
