@@ -533,6 +533,9 @@ export default {
     },
 
     methods: {
+        // 判断:若uid为NAN自动跳回
+
+
         // 功能:锁定缩放
         fixRoam(){
             if(this.isRoam) {
@@ -2356,6 +2359,9 @@ export default {
                     that.changedFontSize=option.series[0].data[0].label.fontSize;
                 that.zoom_value=option.series[0].zoom
                 that.zoom_old_value=option.series[0].zoom
+
+                that.isRoam=false
+
                 return true
             }
 

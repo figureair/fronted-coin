@@ -91,9 +91,7 @@
             <el-button type="primary" plain @click="revokeAction" v-if="changeLayout && nowOption===1">撤销</el-button>
             <el-button type="primary" plain @click="saveLayout" :disabled="true">保存布局</el-button>
           </div>
-          <div class="box-item">
-            <el-checkbox v-model="isRoam" @change="fixRoam" border>ROAM关闭</el-checkbox>
-          </div>
+
 
           <div class="box-item">
             <span style="font-size: 12px">{{ info }}</span>
@@ -129,6 +127,9 @@
             </div>
             <div class="style-box-item">
               <el-checkbox v-model="showTooltip" @change="changeTooltip">是否显示标签</el-checkbox>
+            </div>
+            <div class="style-box-item">
+              <el-checkbox v-model="isRoam" @change="fixRoam" border>ROAM关闭</el-checkbox>
             </div>
 
         </el-tab-pane>
