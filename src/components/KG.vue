@@ -37,7 +37,7 @@
             trigger="hover"
             >
             <el-form id="bottom">
-              <el-form-item style="border-radius: 30px;background: #8cc5ff; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-for="item in message_array" v-bind:key="item">
+              <el-form-item style="border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-for="item in message_array" v-bind:key="item">
                 {{item}}
               </el-form-item>
             </el-form>
