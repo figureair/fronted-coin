@@ -485,7 +485,6 @@ export default {
         this.showUserPic()
         this.recommendGet(this.uid)
 
-
     },
 
     methods: {
@@ -2973,8 +2972,12 @@ export default {
                     }
                 }
             })
+            this.message='';
+            this.$nextTick(() => {
+                let msg = document.getElementById('bottom') // 获取对象
+                msg.scrollTop = msg.scrollHeight // 滚动高度
+            })
         },
+    },
 
-
-    }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div>
     <h2>知识图谱可视化系统</h2>
     <div id="menu">
       <el-menu id="menu-content" :collapse="true" @select="selectGraph">
@@ -36,11 +36,19 @@
             width="400"
             trigger="hover"
             >
-          <ul>
-            <li v-for="item in message_array" v-bind:key="item">{{item}}</li>
-          </ul>
-          <input type="text" v-model="message" float="left">
-          <button v-on:click="dealMessage">发送</button>
+            <el-form id="bottom">
+              <el-form-item style="border-radius: 30px;background: #8cc5ff; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-for="item in message_array" v-bind:key="item">
+                {{item}}
+              </el-form-item>
+            </el-form>
+          <el-form :inline="true">
+            <el-form-item>
+              <el-input v-model="message" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="dealMessage">发送</el-button>
+            </el-form-item>
+          </el-form>
           <el-button slot="reference">智能问答</el-button>
         </el-popover>
       </template>
@@ -489,9 +497,7 @@
   </div>
 </template>
 
-import {logout} from "Login.vue";
 <script src="./KG.js"></script>
-
 <style scoped src="./KG.css">
 
 </style>

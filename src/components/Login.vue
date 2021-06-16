@@ -87,7 +87,6 @@ export default{
       }
     },
     register() {
-      let _this = this;
       if(this.newUsername === "" || this.newPassword === ""){
         alert("请输入用户名或密码")
       }else{
@@ -103,7 +102,6 @@ export default{
             console.log(res)
             if(res.success){
               alert('注册成功!')
-              _this.$router.push({name:'KG', params: { uid:res.content }})
             }else{
               alert('注册失败! '+res.message)
             }
