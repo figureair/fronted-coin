@@ -297,7 +297,6 @@ export default {
             graph_readOnly: false,
             usr_graph: [],
 
-
             labelComplete: (queryString, cb) => {
                 let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.label }))
                 let results = queryString? labels.filter((his) =>
@@ -1234,6 +1233,7 @@ export default {
 
         },
 
+        // 表单验证: 节点相关表单的category项
         checkCategory (rule, value, callback) {
             let that = this;
             if (value === '') {
@@ -1254,18 +1254,21 @@ export default {
             }
         },
 
+        // 表单验证: 搜索边表单source项
         checkSource(rule, value, callback){
             if (value === '') {
                 return callback(new Error('起点不能为空'))
             }
         },
 
+        // 表单验证: 搜索边表单source项
         checkTarget(rule, value, callback) {
             if (value === '') {
                 return callback(new Error('终点不能为空'))
             }
         },
 
+        // 表单验证: 添加节点表单symbolSize项
         checkSymbolSize(rule, value, callback) {
             if (value === '') {
                 return callback(new Error('图形大小不能为空'));
@@ -1281,6 +1284,7 @@ export default {
             }
         },
 
+        // 表单验证: 添加节点表单name项
         checkName (rule, value, callback) {
             let that = this;
             if (value === '') {
@@ -1296,6 +1300,7 @@ export default {
             }
         },
 
+        // 表单验证: 在线编辑边表单source项
         checkEditSource (rule, value, callback) {
             if (value === '') {
                 return callback(new Error('起点不能为空'))
@@ -1311,6 +1316,7 @@ export default {
             }
         },
 
+        // 表单验证: 在线编辑边表单target项
         checkEditTarget (rule, value, callback) {
             if (value === '') {
                 return callback(new Error('终点不能为空'))
@@ -1326,6 +1332,7 @@ export default {
             }
         },
 
+        // 表单验证: 添加节点表单name项
         checkEditName (rule, value, callback) {
             if (value === '') {
                 return callback(new Error('名称不能为空'))
@@ -1342,11 +1349,13 @@ export default {
             }
         },
 
+        // 表单验证: 添加节点表单label项
         checkLabel (rule, value, callback) {
             console.log(value);
             callback();
         },
 
+        // 表单验证: 添加节点表单x, y项
         checkPosition (rule, value, callback) {
             if (value === '') {
                 callback();
@@ -1461,6 +1470,7 @@ export default {
                                     }
                                 }
                                 else {
+                                    // 此时取消选中的条件是点到上次选中的那个节点
                                     if (that.selectedItem.length !== 0 && that.selectedItem[0].id === item.id) {
                                         that.clearSelection();
                                     }
@@ -1483,6 +1493,7 @@ export default {
                                 that.deleteEdge(id);
                             }
                             else {
+                                // 此时取消选中的条件是点到上次选中的那条边
                                 if (that.selectedItem.length !== 0 && that.selectedItem[0].source === item.source && that.selectedItem[0].target === item.target) {
                                     that.clearSelection();
                                 }
@@ -2450,9 +2461,9 @@ export default {
             pom.click();
         },
 
+        // 提交在线编辑表单时的验证
         handleEdit(mode) {
             let that = this;
-            // console.log(this.input)
             if (mode === 'edge') {
                 that.$refs['input'].validate((valid) => {
                     that.checkValidEdit(valid, mode)
@@ -2494,8 +2505,10 @@ export default {
             }
         },
 
+        // 开启通过查看数据进行在线编辑
         startEdit(mode) {
             let that = this;
+            // input是被编辑的表单，节点或边通用
             that.input = {};
             let data = that.selectedItem[0];
 
@@ -2523,6 +2536,7 @@ export default {
             that.editable = true;
         },
 
+        // 通过查看数据进行节点/边的删除
         handleDelete(type) {
             let index = this.selectedItem[0].index
             if (type === 'node') {
@@ -2534,18 +2548,21 @@ export default {
             this.editable = false;
         },
 
+        // 通过查看数据进行的删除节点
         deleteNode(index) {
             this.savedgraph.nodes.splice(index, 1);
             this.clearSelection()
             this.initpage();
         },
 
+        // 通过查看数据进行的删除边
         deleteEdge(index) {
             this.savedgraph.links.splice(index, 1);
             this.clearSelection()
             this.initpage();
         },
 
+        // 通过查看数据进行的添加节点
         addNode() {
             let that = this;
             this.$refs['addNodeForm'].validate((valid) => {
@@ -2553,16 +2570,19 @@ export default {
             })
         },
 
+        // 在第index位置添加节点item
         addNodeAt(index, item) {
             this.savedgraph.nodes.splice(index, 0, item);
             this.initpage()
         },
 
+        // 在第index位置添加边item
         addEdgeAt(index, item) {
             this.savedgraph.links.splice(index, 0, item);
             this.initpage();
         },
 
+        // 通过查看数据进行的添加节点/边的结果提交并修改相应图谱，valid为表单验证结果
         isValid(valid, mode) {
             let that = this;
             if (valid) {
@@ -2650,10 +2670,12 @@ export default {
         // 开启在线编辑
         startGraphicalEdit() {
             this.editmode = 'beginning';
+            // 将当前图谱复制，用另一个变量存储，该变量保存的是退出编辑时的图谱形式
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
             this.clearSelection()
         },
 
+        // 点击两节点生成新的边
         addEdgeOfSelectedNodes() {
             let that = this;
             const newEdge = {
@@ -2672,7 +2694,9 @@ export default {
             that.editions.push(op)
         },
 
+        // 结束图形化编辑
         endGraphicalEdit() {
+            // 恢复savedgraph为上一次保存（或未经修改）的版本copiedgraph，并将copiedgraph清空
             this.savedgraph = JSON.parse(JSON.stringify(this.copiedgraph));
             this.copiedgraph = '';
             this.editmode = 'none';
@@ -2694,42 +2718,38 @@ export default {
             this.$refs['graphicalAddNodeForm'].validate((valid) => {
                 if (valid) {
                     alert('submit!')
-                    that.checkFormAndAdd();
+                    // that.checkFormAndAdd();
+                    const newNode = {
+                        id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id + 1,
+                        name: that.graphicalAddNodeForm.name,
+                        category: parseInt(that.graphicalAddNodeForm.category),
+                        itemStyle: that.graphicalAddNodeForm.itemStyle,
+                        symbolSize: that.graphicalAddNodeForm.symbolSize,
+                        label: that.graphicalAddNodeForm.label,
+                        x: that.graphicalAddNodeForm.x,
+                        y: that.graphicalAddNodeForm.y,
+                        pic_name: that.savedgraph.nodes[0].pic_name,
+                        symbol: that.graphicalAddNodeForm.symbol,
+                    };
+                    if (newNode.x === '') {
+                        newNode.x = Math.random() * 1000;
+                    }
+                    if (newNode.y === '') {
+                        newNode.y = Math.random() * 1000;
+                    }
+                    if (that.graphicalAddNodeForm.value !== '') {
+                        newNode.value = that.graphicalAddNodeForm.value;
+                    }
+                    that.savedgraph.nodes.push(newNode);
+                    that.initpage();
+                    this.$refs['graphicalAddNodeForm'].resetFields();
+                    that.editmode = 'addNode';
                 }
                 else {
                     alert("error!")
                     return false;
                 }
             })
-        },
-
-        checkFormAndAdd() {
-            let that = this;
-            const newNode = {
-                id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id + 1,
-                name: that.graphicalAddNodeForm.name,
-                category: parseInt(that.graphicalAddNodeForm.category),
-                itemStyle: that.graphicalAddNodeForm.itemStyle,
-                symbolSize: that.graphicalAddNodeForm.symbolSize,
-                label: that.graphicalAddNodeForm.label,
-                x: that.graphicalAddNodeForm.x,
-                y: that.graphicalAddNodeForm.y,
-                pic_name: that.savedgraph.nodes[0].pic_name,
-                symbol: that.graphicalAddNodeForm.symbol,
-            };
-            if (newNode.x === '') {
-                newNode.x = Math.random() * 1000;
-            }
-            if (newNode.y === '') {
-                newNode.y = Math.random() * 1000;
-            }
-            if (that.graphicalAddNodeForm.value !== '') {
-                newNode.value = that.graphicalAddNodeForm.value;
-            }
-            that.savedgraph.nodes.push(newNode);
-            that.initpage();
-            this.$refs['graphicalAddNodeForm'].resetFields();
-            that.editmode = 'addNode';
         },
 
 
