@@ -390,7 +390,11 @@
           <div class="recommend_title">
             <h4 @click="changeUserAndOther">协同过滤推荐</h4>
           </div>
-          <div class="recommend_list_items">
+          <div class="recommend_list_items" v-if="recommendByOther.length===0">
+            <div style="color:#5b9bde;">暂无用户与您口味一致哦！</div>
+            <img class="recommendImg" src="../img/KG-01.png"/>
+          </div>
+          <div class="recommend_list_items" v-if="recommendByOther.length!==0">
             <el-collapse>
               <el-collapse-item v-for="(v, index) in recommendByOther" :key="index">
                 <template slot="title">

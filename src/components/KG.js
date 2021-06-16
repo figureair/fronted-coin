@@ -1012,7 +1012,11 @@ export default {
                 let chartDom = document.getElementById('user_pic4');
                 let userPic4 = echarts.init(chartDom);
 
-                let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF','#1aff00','#ff0000']
+                let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A',
+                    '#FD866A', '#9E87FF', '#58D5FF','#1aff00','#ff0000',
+                    '#ff0000','#752c82','#1e4013','#e77d00',
+                    '#e3a1a1','#797357','#d25252','#001686',
+                ]
 
                 let option = {
                     title: {
