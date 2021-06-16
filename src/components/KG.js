@@ -5,6 +5,7 @@ export default {
     name: "KG",
     data() {
         return {
+            isRoam:false,
             message_array:[],
             message:'',
             isPerson:false,
@@ -97,6 +98,8 @@ export default {
 
             // 判断是用户推荐和电影推荐
             recommendUser:true,
+            // 判断是用户推荐还是协同过滤推荐
+            recommendOther:false,
             // 当前推荐最后一部电影的index
             recommendByUserIndex:0,
             recommendByMovieIndex:0,
@@ -196,6 +199,7 @@ export default {
                 "category": "",
                 "url": ""
             }],
+            recommendByOther:[],
             recommendByMovie:[{
                 "image": "",
                 "othername": "",
@@ -296,7 +300,6 @@ export default {
 
             graph_readOnly: false,
             usr_graph: [],
-
 
             labelComplete: (queryString, cb) => {
                 let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.label }))
@@ -473,6 +476,8 @@ export default {
     mounted() {
         this.uid=parseInt(this.$route.params.uid)
 
+        console.log(this.uid)
+
         // 方便刷新暂用
         // if (!this.uid) {
         //     this.uid = 5;
@@ -488,6 +493,33 @@ export default {
     },
 
     methods: {
+
+        // 功能:锁定缩放
+        fixRoam(){
+            if(this.isRoam) {
+                this.myChart.setOption({
+                    series: [
+                        {
+                            roam: false
+                        }
+                    ]
+                });
+            }
+            else {
+                this.myChart.setOption({
+                    series: [
+                        {
+                            roam: true
+                        }
+                    ]
+                });
+            }
+        },
+
+        // 功能:切换智能推荐和协同过滤推荐
+        changeUserAndOther(){
+          this.recommendOther=!this.recommendOther
+        },
 
         // 功能:获取电影知识图谱
         getMovie(){
@@ -609,6 +641,8 @@ export default {
                     url: 'http://47.99.190.169:8888/movie/recommend/u?uid='+id,
                     type: 'get',
                     success: function (res) {
+                        console.log(2)
+                        console.log(res)
                         if(res.content.rec.length!==0) {
                             // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                             that.recommendByUser = res.content.rec
@@ -625,6 +659,53 @@ export default {
                                 that.recommendByUserIndex = i
                                 that.recommendByUserShow.push(that.recommendByUser[i])
                             }
+                        }
+                        else{
+                            $.ajax({
+                                url: 'http://47.99.190.169:8888/movie/recommend/r',
+                                type: 'get',
+                                success: function (res) {
+                                    console.log(3)
+                                    console.log(res)
+                                    if(res.content.rec.length!==0) {
+                                        // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
+                                        that.recommendByUser = res.content.rec
+                                        for (let i = 0; i < that.recommendByUser.length; i++) {
+                                            if (that.recommendByUser[i]['id'] in that.mids) {
+                                                that.recommendByUser[i]['like'] = 1
+                                            } else {
+                                                that.recommendByUser[i]['like'] = 0
+                                            }
+                                        }
+                                        that.recommendByUserShow = []
+                                        // 添加前三个到推荐列表中
+                                        for (let i = 0; i < 3; i++) {
+                                            that.recommendByUserIndex = i
+                                            that.recommendByUserShow.push(that.recommendByUser[i])
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    }
+                })
+
+                // 调用接口获取协同过滤推荐列表
+                $.ajax({
+                    url: 'http://47.99.190.169:8888/movie/recommend/o?uid='+id,
+                    type: 'get',
+                    success: function (res) {
+                        if(res.content.rec.length!==0) {
+                            // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
+                            that.recommendByOther = res.content.rec
+                            for (let i = 0; i < that.recommendByOther.length; i++) {
+                                if (that.recommendByOther[i]['id'] in that.mids) {
+                                    that.recommendByOther[i]['like'] = 1
+                                } else {
+                                    that.recommendByOther[i]['like'] = 0
+                                }
+                            }
+
                         }
                     }
                 })
@@ -661,6 +742,11 @@ export default {
             // 利用key值重新渲染
             that.recommendCount++
 
+        },
+
+        // 功能:重新获取推荐
+        recommendAgain(){
+            this.recommendGet(this.uid);
         },
 
         // 功能:点击换一换，切换推荐
@@ -930,7 +1016,11 @@ export default {
                 let chartDom = document.getElementById('user_pic4');
                 let userPic4 = echarts.init(chartDom);
 
-                let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF','#1aff00','#ff0000']
+                let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A',
+                    '#FD866A', '#9E87FF', '#58D5FF','#1aff00','#ff0000',
+                    '#ff0000','#752c82','#1e4013','#e77d00',
+                    '#e3a1a1','#797357','#d25252','#001686',
+                ]
 
                 let option = {
                     title: {
@@ -1004,7 +1094,11 @@ export default {
                 let personPic = echarts.init(chartDom);
 
                 // 调色盘
-                let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF', '#58D5FF', '#1aff00', '#ff0000']
+                let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A',
+                    '#FD866A', '#9E87FF', '#58D5FF', '#1aff00',
+                    '#ff0000','#752c82','#1e4013','#e77d00',
+                    '#e3a1a1','#797357','#d25252','#001686',
+                ]
 
                 let option = {
                     title: {
@@ -1233,6 +1327,7 @@ export default {
 
         },
 
+        // 表单验证:节点相关表单的category项
         checkCategory (rule, value, callback) {
             let that = this;
             if (value === '') {
@@ -1253,18 +1348,21 @@ export default {
             }
         },
 
+        // 表单验证:搜索边表单source项
         checkSource(rule, value, callback){
             if (value === '') {
                 return callback(new Error('起点不能为空'))
             }
         },
 
+        // 表单验证:搜索边表单source项
         checkTarget(rule, value, callback) {
             if (value === '') {
                 return callback(new Error('终点不能为空'))
             }
         },
 
+        // 表单验证:添加节点表单symbolSize项
         checkSymbolSize(rule, value, callback) {
             if (value === '') {
                 return callback(new Error('图形大小不能为空'));
@@ -1280,6 +1378,7 @@ export default {
             }
         },
 
+        // 表单验证:添加节点表单name项
         checkName (rule, value, callback) {
             let that = this;
             if (value === '') {
@@ -1295,6 +1394,7 @@ export default {
             }
         },
 
+        // 表单验证:在线编辑边表单source项
         checkEditSource (rule, value, callback) {
             if (value === '') {
                 return callback(new Error('起点不能为空'))
@@ -1310,6 +1410,7 @@ export default {
             }
         },
 
+        // 表单验证:在线编辑边表单target项
         checkEditTarget (rule, value, callback) {
             if (value === '') {
                 return callback(new Error('终点不能为空'))
@@ -1325,6 +1426,7 @@ export default {
             }
         },
 
+        // 表单验证:添加节点表单name项
         checkEditName (rule, value, callback) {
             if (value === '') {
                 return callback(new Error('名称不能为空'))
@@ -1341,11 +1443,13 @@ export default {
             }
         },
 
+        // 表单验证:添加节点表单label项
         checkLabel (rule, value, callback) {
             console.log(value);
             callback();
         },
 
+        // 表单验证:添加节点表单x, y项
         checkPosition (rule, value, callback) {
             if (value === '') {
                 callback();
@@ -1460,6 +1564,7 @@ export default {
                                     }
                                 }
                                 else {
+                                    // 此时取消选中的条件是点到上次选中的那个节点
                                     if (that.selectedItem.length !== 0 && that.selectedItem[0].id === item.id) {
                                         that.clearSelection();
                                     }
@@ -1482,6 +1587,7 @@ export default {
                                 that.deleteEdge(id);
                             }
                             else {
+                                // 此时取消选中的条件是点到上次选中的那条边
                                 if (that.selectedItem.length !== 0 && that.selectedItem[0].source === item.source && that.selectedItem[0].target === item.target) {
                                     that.clearSelection();
                                 }
@@ -1498,7 +1604,7 @@ export default {
             })
         },
 
-        // 重新设置选中对象
+        // 功能:重新设置选中对象
         resetSelectedItem(item, id, type) {
             this.selectedItem.length = 0;
             this.selectedItem.push(item);
@@ -1506,7 +1612,7 @@ export default {
             this.selectedType = type;
         },
 
-        // 清空选中
+        // 功能:清空选中
         clearSelection() {
             this.selectedItem = [];
             this.selectedType = '';
@@ -2072,19 +2178,18 @@ export default {
         fixLayoutChange(){
             if(this.changeLayout) {
                 this.$message.info("关闭roam以方便操作!")
-                this.myChart.setOption({
-                    series:[
-                        {
-                            roam:false
-                        }
-                    ]
-                });
+
+                // 如果目前roam开启
+                if(this.isRoam){
+                    this.fixRoam()
+                }
 
                 this.initInvisibleGraphic();
             }
             else{
                 this.$message.info("开启roam!")
                 this.previouschangeLayout=[]
+                this.isRoam=true
                 this.myChart.setOption({
                     graphic:[],
                     series:[
@@ -2219,6 +2324,9 @@ export default {
                     that.changedFontSize=option.series[0].data[0].label.fontSize;
                 that.zoom_value=option.series[0].zoom
                 that.zoom_old_value=option.series[0].zoom
+
+                that.isRoam=false
+
                 return true
             }
 
@@ -2449,9 +2557,9 @@ export default {
             pom.click();
         },
 
+        // 功能:提交在线编辑表单时的验证
         handleEdit(mode) {
             let that = this;
-            // console.log(this.input)
             if (mode === 'edge') {
                 that.$refs['input'].validate((valid) => {
                     that.checkValidEdit(valid, mode)
@@ -2493,8 +2601,10 @@ export default {
             }
         },
 
+        // 功能:开启通过查看数据进行在线编辑
         startEdit(mode) {
             let that = this;
+            // input是被编辑的表单，节点或边通用
             that.input = {};
             let data = that.selectedItem[0];
 
@@ -2522,6 +2632,7 @@ export default {
             that.editable = true;
         },
 
+        // 功能:通过查看数据进行节点/边的删除
         handleDelete(type) {
             let index = this.selectedItem[0].index
             if (type === 'node') {
@@ -2533,18 +2644,21 @@ export default {
             this.editable = false;
         },
 
+        // 功能:通过查看数据进行的删除节点
         deleteNode(index) {
             this.savedgraph.nodes.splice(index, 1);
             this.clearSelection()
             this.initpage();
         },
 
+        // 功能:通过查看数据进行的删除边
         deleteEdge(index) {
             this.savedgraph.links.splice(index, 1);
             this.clearSelection()
             this.initpage();
         },
 
+        // 功能:通过查看数据进行的添加节点
         addNode() {
             let that = this;
             this.$refs['addNodeForm'].validate((valid) => {
@@ -2552,16 +2666,19 @@ export default {
             })
         },
 
+        // 功能:在第index位置添加节点item
         addNodeAt(index, item) {
             this.savedgraph.nodes.splice(index, 0, item);
             this.initpage()
         },
 
+        // 功能:在第index位置添加边item
         addEdgeAt(index, item) {
             this.savedgraph.links.splice(index, 0, item);
             this.initpage();
         },
 
+        // 功能:通过查看数据进行的添加节点/边的结果提交并修改相应图谱，valid为表单验证结果
         isValid(valid, mode) {
             let that = this;
             if (valid) {
@@ -2617,7 +2734,7 @@ export default {
             }
         },
 
-        // 在线编辑撤回
+        // 功能:在线编辑撤回
         backtrack() {
             let op = this.editions[this.editions.length - 1];
             if (!op) {
@@ -2646,13 +2763,15 @@ export default {
             this.editions.splice(this.editions.length - 1, 1);
         },
 
-        // 开启在线编辑
+        // 功能:开启在线编辑
         startGraphicalEdit() {
             this.editmode = 'beginning';
+            // 将当前图谱复制，用另一个变量存储，该变量保存的是退出编辑时的图谱形式
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
             this.clearSelection()
         },
 
+        // 功能:点击两节点生成新的边
         addEdgeOfSelectedNodes() {
             let that = this;
             const newEdge = {
@@ -2671,7 +2790,9 @@ export default {
             that.editions.push(op)
         },
 
+        // 功能:结束图形化编辑
         endGraphicalEdit() {
+            // 恢复savedgraph为上一次保存（或未经修改）的版本copiedgraph，并将copiedgraph清空
             this.savedgraph = JSON.parse(JSON.stringify(this.copiedgraph));
             this.copiedgraph = '';
             this.editmode = 'none';
@@ -2680,20 +2801,45 @@ export default {
             console.log('end edit');
         },
 
-        // 保存编辑结果
+        // 功能:保存编辑结果
         saveGraphicalEdit() {
             this.copiedgraph = JSON.parse(JSON.stringify(this.savedgraph));
             this.uploadJSON();
             if (this.editions.length === 0) this.$message.info('毫无变化');
         },
 
-        // 添加新节点
+        // 功能:添加新节点
         graphicalAddNode() {
             let that = this;
             this.$refs['graphicalAddNodeForm'].validate((valid) => {
                 if (valid) {
                     alert('submit!')
-                    that.checkFormAndAdd();
+                    // that.checkFormAndAdd();
+                    const newNode = {
+                        id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id + 1,
+                        name: that.graphicalAddNodeForm.name,
+                        category: parseInt(that.graphicalAddNodeForm.category),
+                        itemStyle: that.graphicalAddNodeForm.itemStyle,
+                        symbolSize: that.graphicalAddNodeForm.symbolSize,
+                        label: that.graphicalAddNodeForm.label,
+                        x: that.graphicalAddNodeForm.x,
+                        y: that.graphicalAddNodeForm.y,
+                        pic_name: that.savedgraph.nodes[0].pic_name,
+                        symbol: that.graphicalAddNodeForm.symbol,
+                    };
+                    if (newNode.x === '') {
+                        newNode.x = Math.random() * 1000;
+                    }
+                    if (newNode.y === '') {
+                        newNode.y = Math.random() * 1000;
+                    }
+                    if (that.graphicalAddNodeForm.value !== '') {
+                        newNode.value = that.graphicalAddNodeForm.value;
+                    }
+                    that.savedgraph.nodes.push(newNode);
+                    that.initpage();
+                    this.$refs['graphicalAddNodeForm'].resetFields();
+                    that.editmode = 'addNode';
                 }
                 else {
                     alert("error!")
@@ -2702,41 +2848,12 @@ export default {
             })
         },
 
-        checkFormAndAdd() {
-            let that = this;
-            const newNode = {
-                id: that.savedgraph.nodes[that.savedgraph.nodes.length - 1].id + 1,
-                name: that.graphicalAddNodeForm.name,
-                category: parseInt(that.graphicalAddNodeForm.category),
-                itemStyle: that.graphicalAddNodeForm.itemStyle,
-                symbolSize: that.graphicalAddNodeForm.symbolSize,
-                label: that.graphicalAddNodeForm.label,
-                x: that.graphicalAddNodeForm.x,
-                y: that.graphicalAddNodeForm.y,
-                pic_name: that.savedgraph.nodes[0].pic_name,
-                symbol: that.graphicalAddNodeForm.symbol,
-            };
-            if (newNode.x === '') {
-                newNode.x = Math.random() * 1000;
-            }
-            if (newNode.y === '') {
-                newNode.y = Math.random() * 1000;
-            }
-            if (that.graphicalAddNodeForm.value !== '') {
-                newNode.value = that.graphicalAddNodeForm.value;
-            }
-            that.savedgraph.nodes.push(newNode);
-            that.initpage();
-            this.$refs['graphicalAddNodeForm'].resetFields();
-            that.editmode = 'addNode';
-        },
-
 
         // resetGraphicalAddNodeForm() {
         //     this.$refs['graphicalAddNodeForm'].resetFields();
         // },
 
-        // 节点搜索
+        // 功能:节点搜索
         handleNodeSearch() {
             let that = this;
             this.$refs['searchNodeForm'].validate((valid) => {
@@ -2787,7 +2904,7 @@ export default {
             })
         },
 
-        // 边搜索
+        // 功能:边搜索
         handleEdgeSearch() {
             let that = this;
             console.log(this.myChart.getOption().series[0])
@@ -2842,13 +2959,13 @@ export default {
             })
         },
 
-        // 重置两个搜索表单
+        // 功能:重置两个搜索表单
         resetSearchForm() {
             this.$refs['searchNodeForm'].resetFields();
             this.$refs['searchEdgeForm'].resetFields();
         },
 
-        // 设置编辑模式，目前有addNode, addEdge, delete, none(默认)
+        // 功能:设置编辑模式，目前有addNode, addEdge, delete, none(默认)
         setEditMode(mode) {
             this.$message.info('Now in ' + mode + ' mode');
             this.editmode = mode;
@@ -2862,7 +2979,7 @@ export default {
             else if(this.nowOption===4)this.myChart.setOption(this.option4);
         },
 
-        // 获取用户所有的知识图谱
+        // 功能:获取用户所有的知识图谱
         getUserGraph() {
             let that = this
             $.ajax({
@@ -2884,7 +3001,7 @@ export default {
             })
         },
 
-        // 选中对应知识图谱时调用冰
+        // 功能:选中对应知识图谱时调用冰
         selectGraph(index, indexPath) {
             if (indexPath[0] === 'first') {
                 let that = this;
@@ -2927,12 +3044,12 @@ export default {
             }
         },
 
-        // 点电影节点取消喜欢
+        // 功能:点电影节点取消喜欢
         cancelLLoveNode() {
             let that = this;
             // 调后端接口取消喜欢
             $.ajax({
-                url: 'http://47.99.190.169:8888/movie/unlike?id=' + that.selectedItem[0].mid + '&uid=' + that.uid,
+                url: 'http://47.99.190.169:8888/movie/unlike?id=' + that.selectedItem[0].id + '&uid=' + that.uid,
                 type: 'get',
                 success: function (res) {
                     if (res.success) {
@@ -2946,13 +3063,13 @@ export default {
             })
         },
 
-        //滚动条到底部
+        // 功能:滚动条到底部
         scrollBottm() {
             let el = this.$refs["chat-box"];
             el.scrollTop = el.scrollHeight;
         },
 
-        //发送询问信息
+        // 功能:发送询问信息
         dealMessage() {
             this.message_array.push("Question: "+this.message);
             let params={'message':this.message}
