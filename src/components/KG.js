@@ -442,8 +442,6 @@ export default {
 
         this.showUserPic()
         this.recommendGet(this.uid)
-
-
     },
 
     methods: {
@@ -603,7 +601,6 @@ export default {
                     url: 'http://47.99.190.169:8888/movie/recommend/u?uid='+id,
                     type: 'get',
                     success: function (res) {
-                        console.log(2)
                         console.log(res)
                         if(res.content.rec.length!==0) {
                             // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
@@ -1457,7 +1454,7 @@ export default {
 
                 // 触发点击（点或边）事件
                 that.myChart.on('click', 'series.graph', function (event) {
-                    // console.log(event);
+                    console.log(event);
                     let id = event.data.index;
                     let item;
                     switch (event.dataType) {
@@ -1769,6 +1766,9 @@ export default {
                     graph.zoom=0.6
                 }
 
+                // 重置index
+                index = 0;
+
                 // 为每个node添加相关属性
                 graph.nodes.forEach(function (node) {
                     node.label = {
@@ -1851,6 +1851,9 @@ export default {
             // 预存option3
             function setOption3(){
                 let graph = JSON.parse(JSON.stringify(that.savedgraph))
+
+                // 重置index
+                index = 0;
 
                 // 为每个node添加相关属性
                 graph.nodes.forEach(function (node) {
@@ -1946,6 +1949,9 @@ export default {
                 else{
                     graph.zoom=0.6
                 }
+
+                // 重置index
+                index = 0;
 
                 // 为每个node添加相关属性
                 graph.nodes.forEach(function (node) {
@@ -2073,6 +2079,7 @@ export default {
             setOption4()
 
             that.cancelLoveButton = false;
+            that.clearSelection();
 
             // 启用配置一
             that.value=1;
@@ -2966,7 +2973,7 @@ export default {
                     console.log(graphs)
                     if (idx === -1) {
                         // 对于没有movie知识图谱的，自动生成一个空的知识图谱（）
-                        graphs.push('movie')
+                        graphs.unshift('movie')
                     }
                     else if (idx !== 0) {
                         graphs.splice(idx, 1)
@@ -3036,6 +3043,7 @@ export default {
                     } else {
                         console.log('取消喜欢失败!')
                     }
+
                 }
             })
         },

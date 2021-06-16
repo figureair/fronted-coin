@@ -84,7 +84,7 @@
         <el-tab-pane label="基础信息" name="first">
           <div id="selector-box" class="box-item">
             <div id="selector-title">样式选择:</div>
-            <el-select id="selector" v-model="value" @change="changeTo">
+            <el-select :disabled="savedgraph===''" id="selector" v-model="value" @change="changeTo">
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -117,8 +117,8 @@
           </div>
 
           <div class="box-item">
-            <el-checkbox v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
-            <el-button type="primary" plain @click="revokeAction" v-if="changeLayout && nowOption===1">撤销</el-button>
+            <el-checkbox :disabled="savedgraph===''" v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
+            <el-button :disabled="savedgraph===''" type="primary" plain @click="revokeAction" v-if="changeLayout && nowOption===1">撤销</el-button>
             <el-button type="primary" plain @click="saveLayout" :disabled="true">保存布局</el-button>
           </div>
 
@@ -137,7 +137,7 @@
 
         </el-tab-pane>
 
-        <el-tab-pane label="展示效果" name="second">
+        <el-tab-pane :disabled="savedgraph===''" label="展示效果" name="second">
             <div class="style-box-item">
               <span class="demonstration">调整线条曲度(长度)</span>
               <el-slider v-model="changedCurveness" @change="changeCurveness" :min=0.1 :max=1 :step=0.1></el-slider>
@@ -164,7 +164,7 @@
 
         </el-tab-pane>
 
-        <el-tab-pane label="图元编辑" name="third">
+        <el-tab-pane :disabled="savedgraph===''" label="图元编辑" name="third">
           <div class="block">
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
                        class="edit-button" @click="startGraphicalEdit" :disabled="graph_readOnly">创建删除模式</el-button>
@@ -281,7 +281,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="搜索" name="fourth">
+        <el-tab-pane :disabled="savedgraph===''" label="搜索" name="fourth">
           <el-tabs type="card" id="search-tab" v-model="searchTab">
             <el-tab-pane label="搜索节点" name="fourth-1">
               <div class="search-box-item">
@@ -348,7 +348,7 @@
           </el-tabs>
         </el-tab-pane>
 
-        <el-tab-pane label="下载" name="fifth">
+        <el-tab-pane :disabled="savedgraph===''" label="下载" name="fifth">
           <div class="download-box">
             <div class="download-box-item">
               <el-button type="primary" plain icon="el-icon-download" @click="downloadImg">下载Img
