@@ -284,11 +284,9 @@
 }
 
 #menu {
-    position: fixed;
-    left: 0;
-    top: 100px;
-    opacity: 0.65;
-    z-index: 10;
+    position: absolute;
+    left: 240px;
+    top: 89px;
 }
 
 #menu-content:not(.el-menu--collapse)  {
@@ -311,11 +309,9 @@
 }
 
 #chat {
-    position: fixed;
-    right: 0;
-    top: 100px;
-    opacity: 0.65;
-    z-index: 10;
+    position: absolute;
+    left: 120px;
+    top: 89px;
 }
 
 .recommendImg{

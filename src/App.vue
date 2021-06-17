@@ -10,6 +10,12 @@ export default {
   name: 'App',
   components: {
   },
+  created(){
+    if(this.$router.path !=="/"){
+      this.$router.replace("/")
+    }
+  },
+
 }
 </script>
 

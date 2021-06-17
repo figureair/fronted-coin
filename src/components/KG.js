@@ -3051,50 +3051,30 @@ export default {
         // 功能:发送询问信息
         dealMessage() {
             this.message_array.push({message:"Question: "+this.Message.message,from:0});
-            let params={'message':this.Message.message,'from':this.Message.from}
+            console.log(this.Message.message)
             $.ajax({
-                url:'',
-                type:'POST',
-                dataType:'json',
-                data:JSON.stringify(params),
-                contentType:'application/json; charset=UTF-8',
+                url:'http://47.99.190.169:8888/movie/answer' + '?question=' + this.Message.message,
+                type:'GET',
                 success: function (params){
-                    if(params.success){
-                        console.log("Answer: "+params.content)
-                        this.message_array.push({message:"Answer: "+params.content,from:1});
-                        this.$nextTick(() => {
-                            let msg = document.getElementById('bottom') // 获取对象
-                            msg.scrollTop = msg.scrollHeight // 滚动高度
-                        })
-                    }else{
-                        console.log("Answer: Not found")
-                        this.message_array.push({message:"Answer: Not found",from:1});
-                        this.$nextTick(() => {
-                            let msg = document.getElementById('bottom') // 获取对象
-                            msg.scrollTop = msg.scrollHeight // 滚动高度
-                        })
-                    }
+                    console.log("Answer: "+params.content)
+                    this.message_array.push({message:"Answer: "+params.content,from:1});
+                    this.$nextTick(() => {
+                        let msg = document.getElementById('bottom') // 获取对象
+                        msg.scrollTop = msg.scrollHeight // 滚动高度
+                    })
                 }
             })
             this.Message.message='';
-            clearTimeout(this.timer);  //清除延迟执行
-            this.timer = setTimeout(()=>{   //设置延迟执行
-                this.message_array.push({message:"Answer: Not found",from:1});
-                this.$nextTick(() => {
-                    let msg = document.getElementById('bottom') // 获取对象
-                    msg.scrollTop = msg.scrollHeight // 滚动高度
-                })
-            },500);
-            this.$nextTick(() => {
-                let msg = document.getElementById('bottom') // 获取对象
-                msg.scrollTop = msg.scrollHeight // 滚动高度
-            })
         },
 
         initialJSONUpload(file) {
             this.beforeJSONUpload(file);
             this.initialDialog = false;
         },
+
+        logout(){
+            this.$router.replace("/")
+        }
     },
 
 }

@@ -1,6 +1,9 @@
 <template>
   <div id="main">
     <h1>知识图谱可视化系统</h1>
+    <div style="text-align: left; margin: 0">
+      <el-button @click="logout">退出登录</el-button>
+    </div>
     <div id="menu">
       <el-menu id="menu-content" :collapse="true" @select="selectGraph">
         <el-submenu index="first">
@@ -54,7 +57,7 @@
             trigger="hover"
             >
             <el-form id="bottom">
-              <div v-for="item in message_array" v-bind:key="item">
+              <div v-for="(item,index) in message_array" v-bind:key="index">
                 <el-form-item style="border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===0">
                   {{item.message}}
                 </el-form-item>
