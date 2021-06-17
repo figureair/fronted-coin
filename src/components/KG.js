@@ -1646,7 +1646,6 @@ export default {
                                                 that.isPerson = false;
                                                 break;
                                             default:
-                                                that.isMovie = false;
                                                 break;
                                         }
                                         if (item.id === before.id) {
@@ -1656,6 +1655,7 @@ export default {
                                     }
                                     that.resetSelectedItem(item, id, 'node');
                                     // 再根据当下选中的节点类型进行操作
+                                    console.log(item.category)
                                     switch (item.category) {
                                         case 'movie':
                                             that.isPerson=false
@@ -1665,6 +1665,7 @@ export default {
                                             that.cancelLoveButton = true;
                                             break;
                                         case 'person':
+
                                             that.isMovie=false
                                             that.showInfoPic(item.name);
                                             that.cancelLoveButton = false;
@@ -1728,6 +1729,8 @@ export default {
             this.selectedItem = [];
             this.selectedType = '';
             this.cancelLoveButton = false;
+            this.isMovie = false;
+            this.isPerson = false;
         },
 
         // 功能:初始化各个配置并加载配置一
@@ -2408,8 +2411,13 @@ export default {
 
             // 拖拽结果存入savedgraph中
             let tmpSeries=this.option1.series[0]
+
+            for(let i=0;i<tmpSeries.data.length;i++){
+                tmpSeries.data[i].category=tmpSeries.categories[tmpSeries.data[i].category].name
+            }
+
             this.savedgraph={uid:tmpSeries.uid,nodes:tmpSeries.data,links:tmpSeries.links,categories:tmpSeries.categories,
-                itemStyle:tmpSeries.itemStyle,lineStyle:tmpSeries.lineStyle,pic_name:tmpSeries.pic_name,
+                itemStyle:tmpSeries.itemStyle,lineStyle:tmpSeries.lineStyle,pic_name:this.savedgraph.pic_name,
                 label:tmpSeries.label,tooltip:tmpSeries.tooltip}
 
             // 启用变更
@@ -2420,6 +2428,8 @@ export default {
         // 功能:下拉框选择样式进行改变
         changeTo(value) {
             let that = this
+
+            that.clearSelection()
 
             // 改变关系图样式
             function changeOption(option){
@@ -2464,6 +2474,8 @@ export default {
                     changeOption(that.option4);
                     return 4
             }
+
+
 
 
         },
