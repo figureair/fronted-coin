@@ -20,7 +20,7 @@ export default {
             graphChange: 0,
             isPerson:false,
             isMovie:false,
-            mids:[1701],
+            mids:[],
             avgRate:0,
             oldShowtime:2100,
             newShowtime:0,
@@ -528,8 +528,12 @@ export default {
                         that.initpage()
                     }
                     else{
+                        that.info=''
+                        that.recommendUser=true
                         that.recommendAgain()
                         that.myChart.clear()
+                        that.isMovie=false
+                        that.isPerson=false
                     }
                     that.showUserPic()
                     that.isMovie=false
@@ -573,6 +577,7 @@ export default {
                             // 调用接口重新获取电影知识图谱
                             that.getMovie()
                         } else {
+                            movie.like = 1
                             console.log('取消喜欢失败!')
                         }
                     }
@@ -600,6 +605,7 @@ export default {
                         that.getMovie()
                     }
                     else{
+                        movie.like=0
                         console.log('喜欢失败!')
                     }
                 }
@@ -618,7 +624,6 @@ export default {
                     url: 'http://47.99.190.169:8888/movie/recommend/u?uid='+id,
                     type: 'get',
                     success: function (res) {
-                        console.log(res)
                         if(res.content.rec.length!==0) {
                             that.ifRecommendAgain=false
 
@@ -639,14 +644,11 @@ export default {
                             }
                         }
                         else{
-                            console.log(12314)
                             that.ifRecommendAgain=true
                             $.ajax({
                                 url: 'http://47.99.190.169:8888/movie/recommend/r',
                                 type: 'get',
                                 success: function (res) {
-                                    console.log(3)
-                                    console.log(res)
                                     if(res.content.rec.length!==0) {
                                         // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                                         that.recommendByUser = res.content.rec
@@ -720,7 +722,8 @@ export default {
             }
 
             // 利用key值重新渲染
-            that.recommendCount++
+            this.recommendCount++
+
 
         },
 
@@ -1165,6 +1168,34 @@ export default {
                     // 接收数据
                     that.person=res.content
 
+                    for (let i = 0; i < that.person['play'].length; i++) {
+                        if (that.person['play'][i]['id'] in that.mids) {
+                            that.person['play'][i]['like'] = 1
+                        } else {
+                            that.person['play'][i]['like'] = 0
+                        }
+                    }
+                    for (let i = 0; i < that.person['direct'].length; i++) {
+                        console.log(7890)
+                        if (that.person['direct'][i]['id'] in that.mids) {
+
+                            that.person['direct'][i]['like'] = 1
+                        } else {
+                            that.person['direct'][i]['like'] = 0
+                        }
+                    }
+                    for (let i = 0; i < that.person['write'].length; i++) {
+                        if (that.person['write'][i]['id'] in that.mids) {
+                            that.person['write'][i]['like'] = 1
+                        } else {
+                            that.person['write'][i]['like'] = 0
+                        }
+                    }
+
+                    console.log(123)
+                    console.log(that.mids)
+                    console.log(that.person)
+
                     // 切换为演员详细信息板块
                     that.isPerson=true
                     createPic()
@@ -1557,8 +1588,10 @@ export default {
                                             break;
                                         case 'person':
                                             that.showInfoPic(item.name);
+                                            that.cancelLoveButton = false;
                                             break;
                                         default:
+                                            that.cancelLoveButton = false;
                                             break;
                                     }
                                 }
@@ -3044,7 +3077,6 @@ export default {
                             }
                         }
                         else{
-                            that.haveGraphInDatabase=true
                             that.tmpgraph=res.content
                             if (!('x' in that.tmpgraph.nodes[0]) || !('y' in that.tmpgraph.nodes[0])) {
                                 for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
@@ -3067,8 +3099,19 @@ export default {
                                     type: 'success'
                                 });
 
-                                // 很多变量要重置，到时改
+                                // 存储已喜欢的电影ID
+                                that.mids = []
+
+                                for (let i = 0; i < that.tmpgraph.nodes.length; i++) {
+                                    let prop = that.tmpgraph.nodes[i]
+                                    if (prop.category === 'movie') {
+                                        that.mids.push(prop.mid)
+                                    }
+                                }
+
                             }
+                            that.savedgraph = that.tmpgraph
+                            that.initpage()
                         }
                         if(pic_name==='movie'){
                             that.isMoviePic=true
