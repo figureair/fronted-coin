@@ -58,10 +58,10 @@
             >
             <el-form id="bottom">
               <div v-for="(item,index) in message_array" v-bind:key="index">
-                <el-form-item style="border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===0">
+                <el-form-item style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===0">
                   {{item.message}}
                 </el-form-item>
-                <el-form-item style="border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===1">
+                <el-form-item style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===1">
                   {{item.message}}
                 </el-form-item>
               </div>

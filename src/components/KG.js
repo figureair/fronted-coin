@@ -3079,15 +3079,8 @@ export default {
                                 }else if(params.content[i]["m.district"]!==null&&params.content[i]["m.district"]!==undefined){
                                     this_.message_array.push({message:"电影地区: " + params.content[i]["m.district"] ,from:1});
                                 }else if(params.content[i].m!==null){
-                                    this_.message_array.push({message:"电影名字: " + params.content[i].m.name ,from:1});
-                                    this_.message_array.push({message:"电影别名: " + params.content[i].m.othername ,from:1});
-                                    this_.message_array.push({message:"电影地区: " + params.content[i].m.district ,from:1});
-                                    this_.message_array.push({message:"电影题材: " + params.content[i].m.genre ,from:1});
-                                    this_.message_array.push({message:"上映时间: " + params.content[i].m.showtime ,from:1});
-                                    this_.message_array.push({message:"电影长度: " + params.content[i].m.length ,from:1});
-                                    this_.message_array.push({message:"电影评分: " + params.content[i].m.rate ,from:1});
-                                    this_.message_array.push({message:"电影语言: " + params.content[i].m.language ,from:1});
-                                    this_.message_array.push({message:"电影详情: " + params.content[i].m.url ,from:1});
+                                    let temp="电影名字: "+params.content[i].m.name + "\n" + "电影别名: " + params.content[i].m.othername +"\n" + "电影地区: " + params.content[i].m.district +"\n" + "电影题材: " + params.content[i].m.genre+ "\n" + "上映时间: " + params.content[i].m.showtime+ "\n" + "电影长度: " + params.content[i].m.length +"\n" + "电影评分: " + params.content[i].m.rate+ "\n" + "电影语言: " + params.content[i].m.language+ "\n" + "电影详情: " + params.content[i].m.url
+                                    this_.message_array.push({message:temp ,from:1});
                                 }else if(params.content[i].g!==null){
                                     this_.message_array.push({message:"题材对象: " + params.content[i].g.name ,from:1});
                                 }else if(params.content[i].p!==null){
