@@ -5,6 +5,7 @@ export default {
     name: "KG",
     data() {
         return {
+            ifRecommendAgain:false,
             isAnswered:false,
             isMoviePic:false,
             isRoam:false,
@@ -252,7 +253,6 @@ export default {
             isCollapse: true,
             user_graphs: [],
 
-            graph_readOnly: false,
             usr_graph: [],
 
             labelComplete: (queryString, cb) => {
@@ -528,10 +528,13 @@ export default {
                         that.initpage()
                     }
                     else{
+                        that.recommendAgain()
                         that.myChart.clear()
-
                     }
                     that.showUserPic()
+                    that.isMovie=false
+                    that.recommendUser=true
+                    that.cancelLoveButton=false
                 }
             })
         },
@@ -617,6 +620,8 @@ export default {
                     success: function (res) {
                         console.log(res)
                         if(res.content.rec.length!==0) {
+                            that.ifRecommendAgain=false
+
                             // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                             that.recommendByUser = res.content.rec
                             for (let i = 0; i < that.recommendByUser.length; i++) {
@@ -634,6 +639,8 @@ export default {
                             }
                         }
                         else{
+                            console.log(12314)
+                            that.ifRecommendAgain=true
                             $.ajax({
                                 url: 'http://47.99.190.169:8888/movie/recommend/r',
                                 type: 'get',
@@ -2396,7 +2403,9 @@ export default {
                                         prop.target= prop.target+""
                                     }
 
-                                    that.graph_readOnly = tmpjson.pic_name === 'movie'
+                                    if(tmpjson.pic_name === 'movie'){
+                                        that.isMoviePic=true
+                                    }
                                 }
                             }
                         })
@@ -3051,7 +3060,6 @@ export default {
                                 prop.target= prop.target+""
                             }
 
-                            that.graph_readOnly = pic_name === 'movie'
                             if (pic_name === 'movie') {
                                 that.$notify({
                                     title: '电影知识图谱',
@@ -3090,6 +3098,7 @@ export default {
                         console.log('取消喜欢成功!')
                         // // 调用接口重新获取电影知识图谱
                         that.getMovie()
+
                     } else {
                         console.log('取消喜欢失败!')
                     }

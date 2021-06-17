@@ -167,7 +167,7 @@
         <el-tab-pane :disabled="savedgraph===''" label="图元编辑" name="third">
           <div class="block">
             <el-button type="text" v-if="editmode==='none'" icon="el-icon-edit"
-                       class="edit-button" @click="startGraphicalEdit" :disabled="graph_readOnly">创建删除模式</el-button>
+                       class="edit-button" @click="startGraphicalEdit" :disabled="isMoviePic">创建删除模式</el-button>
             <el-button-group v-if="editmode!=='none'">
               <el-popover ref="addnodepopover" placement="left" trigger="click" width="330px" class="popover4">
                 <el-form v-if="editmode==='add'" ref="graphicalAddNodeForm" :model="graphicalAddNodeForm"
@@ -239,10 +239,10 @@
                   </el-table-column>
                 </el-table>
                 <el-form-item>
-                  <el-button v-if="!editable" @click="startEdit('edge')" :disabled="graph_readOnly">编辑</el-button>
+                  <el-button v-if="!editable" @click="startEdit('edge')" :disabled="isMoviePic">编辑</el-button>
                   <el-button type="primary" v-if="editable" @click="handleEdit('edge')">确认</el-button>
                   <el-button v-if="editable" @click="editable=false">取消</el-button>
-                  <el-button type="danger" @click="handleDelete('edge')" :disabled="graph_readOnly">删除</el-button>
+                  <el-button type="danger" @click="handleDelete('edge')" :disabled="isMoviePic">删除</el-button>
                 </el-form-item>
               </el-form>
 
@@ -267,8 +267,8 @@
                   </el-table-column>
                 </el-table>
                 <el-form-item>
-                  <el-button v-if="!editable" @click="startEdit('node')" :disabled="graph_readOnly">编辑</el-button>
-                  <el-button type="danger" @click="handleDelete('node')" :disabled="graph_readOnly">删除</el-button>
+                  <el-button v-if="!editable" @click="startEdit('node')" :disabled="isMoviePic">编辑</el-button>
+                  <el-button type="danger" @click="handleDelete('node')" :disabled="isMoviePic">删除</el-button>
                   <el-button type="primary" v-if="editable" @click="handleEdit('node')">确认</el-button>
                   <el-button v-if="editable" @click="editable=false">取消</el-button>
                 </el-form-item>
@@ -426,7 +426,7 @@
         </div>
         <div class="recommend_bottom">
           <el-button type="text" @click="recommendChange">换一换</el-button>
-          <el-button type="text" @click="recommendAgain">重新获取</el-button>
+          <el-button type="text" @click="recommendAgain" v-show="ifRecommendAgain">重新获取</el-button>
         </div>
       </div>
         <div class="recommend_item" v-if="recommendUser && recommendOther">
