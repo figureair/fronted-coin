@@ -6,6 +6,7 @@ export default {
     data() {
         return {
             isAnswered:false,
+            isMoviePic:false,
             isRoam:false,
             cancelLoveButton: false,
             initialDialog:false,
@@ -444,9 +445,6 @@ export default {
         this.initialDialog = true;
 
         this.initdata()
-
-        this.showUserPic()
-        this.recommendGet(this.uid)
     },
 
     methods: {
@@ -816,11 +814,11 @@ export default {
                         {
                             type: 'pie',
                             itemStyle: {
-                                normal: {
+
                                     color: function(params) {
                                         return colorList[params.dataIndex]
                                     }
-                                }
+
                             },
                             label: {
                                 show: false
@@ -889,11 +887,11 @@ export default {
                         {
                             type: 'pie',
                             itemStyle: {
-                                normal: {
+
                                     color: function(params) {
                                         return colorList[params.dataIndex]
                                     }
-                                }
+
                             },
                             label: {
                                 show: false
@@ -962,11 +960,11 @@ export default {
                         {
                             type: 'pie',
                             itemStyle: {
-                                normal: {
+
                                     color: function(params) {
                                         return colorList[params.dataIndex]
                                     }
-                                }
+
                             },
                             label: {
                                 show: false
@@ -1021,11 +1019,11 @@ export default {
                         {
                             type: 'pie',
                             itemStyle: {
-                                normal: {
+
                                     color: function(params) {
                                         return colorList[params.dataIndex]
                                     }
-                                }
+
                             },
                             label: {
                                 show: false
@@ -1106,11 +1104,11 @@ export default {
                             avoidLabelOverlap: true,
                             hoverOffset: 15,
                             itemStyle: {
-                                normal: {
+
                                     color: function (params) {
                                         return colorList[params.dataIndex]
                                     }
-                                }
+
                             },
                             label: {
                                 show: true,
@@ -1130,12 +1128,12 @@ export default {
                                 }
                             },
                             labelLine: {
-                                normal: {
+
                                     length: 10,
                                     length2: 20,
                                     lineStyle: {
                                         width: 1
-                                    }
+
                                 }
                             },
                             data: personData
@@ -3016,6 +3014,18 @@ export default {
                     success: function (res) {
                         if (!res.success) {
                             console.log(res)
+                            if(pic_name==='movie'){
+                                that.$notify.info({
+                                    title: '电影知识图谱',
+                                    message: '目前您还没有喜欢的电影!请前往网页右下方推荐区域开始你的旅途!'
+                                });
+                            }
+                            else {
+                                that.$notify.error({
+                                    title: '网络波动!',
+                                    message: '目前暂时无法拉取图谱!请稍后重新尝试!'
+                                });
+                            }
                         }
                         else{
                             that.haveGraphInDatabase=true
@@ -3036,8 +3046,22 @@ export default {
 
                             that.graph_readOnly = pic_name === 'movie'
                             if (pic_name === 'movie') {
+                                that.$notify({
+                                    title: '电影知识图谱',
+                                    message: '欢迎进入!',
+                                    type: 'success'
+                                });
+
                                 // 很多变量要重置，到时改
                             }
+                        }
+                        if(pic_name==='movie'){
+                            that.isMoviePic=true
+                            that.showUserPic()
+                            that.recommendGet(that.uid)
+                        }
+                        else{
+                            that.isMoviePic=false
                         }
                     }
                 })

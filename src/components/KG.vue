@@ -118,7 +118,7 @@
           <div class="box-item">
             <el-checkbox :disabled="savedgraph===''" v-if="nowOption===1" v-model="changeLayout" @change="fixLayoutChange" border>改变布局</el-checkbox>
             <el-button :disabled="savedgraph===''" type="primary" plain @click="revokeAction" v-if="changeLayout && nowOption===1">撤销</el-button>
-            <el-button type="primary" plain @click="saveLayout" :disabled="true">保存布局</el-button>
+            <el-button type="primary" plain @click="saveLayout" :disabled="isMoviePic||savedgraph===''">保存布局</el-button>
           </div>
 
 
@@ -368,7 +368,7 @@
     </div>
 
   </div>
-    <div class="box">
+    <div class="box" v-if="isMoviePic">
       <div id="user_pic" :key="'user_pic_count'+user_pic_count">
       <div id="user_pic_box1">
         <div id="user_pic_box1_item1">
@@ -483,7 +483,7 @@
       </div>
     </div>
     </div>
-    <div class="box">
+    <div class="box" v-show="isMoviePic">
     <div id="person_info" v-show="isPerson">
           <div id="person_info_box1">
             <div id="simple_person_info">
