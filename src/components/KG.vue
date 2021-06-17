@@ -14,7 +14,7 @@
                 {{item}}
             </el-menu-item>
         </el-submenu>
-        <el-menu-item index="QA">
+        <el-menu-item index="QA" v-show="isMoviePic">
           <template>
             <el-popover
                     placement="bottom"

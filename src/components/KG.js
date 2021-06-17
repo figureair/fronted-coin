@@ -1073,6 +1073,13 @@ export default {
 
                 let echarts = require('echarts');
                 let chartDom = document.getElementById('person_pic');
+
+                if (chartDom == null) {
+                    return
+                }
+
+                echarts.dispose(chartDom)
+
                 let personPic = echarts.init(chartDom);
 
                 // 调色盘
