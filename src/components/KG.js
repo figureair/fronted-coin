@@ -435,6 +435,9 @@ export default {
         // }
 
         console.log('uid: ' + this.uid)
+
+        this.openNotify()
+
         this.getUserGraph()
         this.initialDialog = true;
 
@@ -445,6 +448,17 @@ export default {
     },
 
     methods: {
+
+        // 功能:用户进入时提示
+        openNotify() {
+
+            this.$notify({
+                title: '使用提示',
+                message: '欢迎使用知识图谱系统!请本地导入或数据库拉取图谱,你也可以点击图谱列表创建专属电影知识图谱!',
+                type: 'success'
+            });
+        },
+
         // 功能:锁定缩放
         fixRoam(){
             if(this.isRoam) {
