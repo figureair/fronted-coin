@@ -486,11 +486,11 @@
     </div>
     <div class="box" v-show="isMoviePic">
     <div id="person_info" v-show="isPerson">
-          <div id="person_info_box1" v-if="isPerson">
+          <div id="person_info_box1">
             <div id="simple_person_info">
               <h1>姓名: {{person['info'][0]['name']}} 参演电影平均评分: {{person['info'][0]['rate']}}</h1>
             </div>
-            <div id="movie_list">
+            <div id="movie_list" :key="'movie_list'+recommendCount">
               <div class="movie_list_item">
                 <h2>出演电影</h2>
                 <div class="movie_list_items">

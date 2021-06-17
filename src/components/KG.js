@@ -490,6 +490,48 @@ export default {
         getMovie(){
             let that=this
 
+            // 功能:getMovie后更新person和recommend列表
+            function listCheck(){
+                if(that.person['info']['name']!=='') {
+
+                    that.personListChange=false
+
+                    for (let i = 0; i < that.person['play'].length; i++) {
+                        if (that.mids.indexOf(that.person['play'][i]['id']) !== -1) {
+                            that.person['play'][i]['like'] = 1
+                        } else {
+                            that.person['play'][i]['like'] = 0
+                        }
+                    }
+                    for (let i = 0; i < that.person['direct'].length; i++) {
+                        if (that.mids.indexOf(that.person['direct'][i]['id']) !== -1) {
+
+                            that.person['direct'][i]['like'] = 1
+                        } else {
+                            that.person['direct'][i]['like'] = 0
+                        }
+                    }
+                    for (let i = 0; i < that.person['write'].length; i++) {
+                        if (that.mids.indexOf(that.person['write'][i]['id']) !== -1) {
+                            that.person['write'][i]['like'] = 1
+                        } else {
+                            that.person['write'][i]['like'] = 0
+                        }
+                    }
+
+                }
+                for (let i = 0; i < that.recommendByUser.length; i++) {
+                    if (that.mids.indexOf(that.recommendByUser[i]['id'])!==-1) {
+                        that.recommendByUser[i]['like'] = 1
+                    } else {
+                        that.recommendByUser[i]['like'] = 0
+                    }
+                }
+                that.recommendCount++
+
+
+            }
+
             // 调用接口获取图谱
             $.ajax({
                 url: 'http://47.99.190.169:8888/?pic_name=movie' + '&uid='+that.uid,
@@ -525,9 +567,11 @@ export default {
                             }
                         }
 
+                        that.ifRecommendAgain=false
                         that.initpage()
                     }
                     else{
+                        that.mids=[]
                         that.info=''
                         that.recommendUser=true
                         that.recommendAgain()
@@ -536,6 +580,7 @@ export default {
                         that.isPerson=false
                     }
                     that.showUserPic()
+                    listCheck()
                     that.isMovie=false
                     that.recommendUser=true
                     that.cancelLoveButton=false
@@ -630,7 +675,7 @@ export default {
                             // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                             that.recommendByUser = res.content.rec
                             for (let i = 0; i < that.recommendByUser.length; i++) {
-                                if (that.recommendByUser[i]['id'] in that.mids) {
+                                if (that.mids.indexOf(that.recommendByUser[i]['id'])!==-1) {
                                     that.recommendByUser[i]['like'] = 1
                                 } else {
                                     that.recommendByUser[i]['like'] = 0
@@ -642,6 +687,9 @@ export default {
                                 that.recommendByUserIndex = i
                                 that.recommendByUserShow.push(that.recommendByUser[i])
                             }
+
+                            // 利用key值重新渲染
+                            that.recommendCount++
                         }
                         else{
                             that.ifRecommendAgain=true
@@ -653,7 +701,7 @@ export default {
                                         // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                                         that.recommendByUser = res.content.rec
                                         for (let i = 0; i < that.recommendByUser.length; i++) {
-                                            if (that.recommendByUser[i]['id'] in that.mids) {
+                                            if (that.mids.indexOf(that.recommendByUser[i]['id'])!==-1) {
                                                 that.recommendByUser[i]['like'] = 1
                                             } else {
                                                 that.recommendByUser[i]['like'] = 0
@@ -665,6 +713,9 @@ export default {
                                             that.recommendByUserIndex = i
                                             that.recommendByUserShow.push(that.recommendByUser[i])
                                         }
+
+                                        // 利用key值重新渲染
+                                        that.recommendCount++
                                     }
                                 }
                             })
@@ -681,12 +732,15 @@ export default {
                             // 添加like属性,判断电影是否在知识图谱中,则爱心为红心
                             that.recommendByOther = res.content.rec
                             for (let i = 0; i < that.recommendByOther.length; i++) {
-                                if (that.recommendByOther[i]['id'] in that.mids) {
+                                if (that.mids.indexOf(that.recommendByOther[i]['id'] )!==-1) {
                                     that.recommendByOther[i]['like'] = 1
                                 } else {
                                     that.recommendByOther[i]['like'] = 0
                                 }
                             }
+
+                            // 利用key值重新渲染
+                            that.recommendCount++
 
                         }
                     }
@@ -704,7 +758,7 @@ export default {
                             that.recommendByMovie = res.content.rec
                             console.log(that.recommendByMovie)
                             for (let i = 0; i < that.recommendByMovie.length; i++) {
-                                if (that.recommendByMovie[i]['id'] in that.mids) {
+                                if (that.mids.indexOf(that.recommendByMovie[i]['id'] )!==-1) {
                                     that.recommendByMovie[i]['like'] = 1
                                 } else {
                                     that.recommendByMovie[i]['like'] = 0
@@ -716,14 +770,13 @@ export default {
                                 that.recommendByMovieIndex = i
                                 that.recommendByMovieShow.push(that.recommendByMovie[i])
                             }
+
+                            // 利用key值重新渲染
+                            that.recommendCount++
                         }
                     }
                 })
             }
-
-            // 利用key值重新渲染
-            this.recommendCount++
-
 
         },
 
@@ -796,6 +849,13 @@ export default {
                 //生成评分饼图
                 let echarts = require('echarts');
                 let chartDom = document.getElementById('user_pic1');
+
+                if (chartDom == null) {
+                    return
+                }
+
+                echarts.dispose(chartDom)
+
                 let userPic1 = echarts.init(chartDom);
 
                 let colorList = ['#73DDFF', '#ff7373', '#FDD56A', '#6afd94']
@@ -869,6 +929,13 @@ export default {
                 //生成时长饼图
                 let echarts = require('echarts');
                 let chartDom = document.getElementById('user_pic2');
+
+                if (chartDom == null) {
+                    return
+                }
+
+                echarts.dispose(chartDom)
+
                 let userPic2 = echarts.init(chartDom);
 
                 let colorList = ['#73DDFF', '#ff7373', '#FDD56A', '#6afd94']
@@ -942,6 +1009,13 @@ export default {
                 //生成年代饼图
                 let echarts = require('echarts');
                 let chartDom = document.getElementById('user_pic3');
+
+                if (chartDom == null) {
+                    return
+                }
+
+                echarts.dispose(chartDom)
+
                 let userPic3 = echarts.init(chartDom);
 
                 let colorList = ['#73DDFF', '#ff7373', '#FDD56A', '#6afd94']
@@ -997,6 +1071,13 @@ export default {
 
                 let echarts = require('echarts');
                 let chartDom = document.getElementById('user_pic4');
+
+                if (chartDom == null) {
+                    return
+                }
+
+                echarts.dispose(chartDom)
+
                 let userPic4 = echarts.init(chartDom);
 
                 let colorList = ['#73DDFF', '#73ACFF', '#FDD56A', '#FDB36A',
@@ -1169,15 +1250,14 @@ export default {
                     that.person=res.content
 
                     for (let i = 0; i < that.person['play'].length; i++) {
-                        if (that.person['play'][i]['id'] in that.mids) {
+                        if (that.mids.indexOf(that.person['play'][i]['id'])!==-1) {
                             that.person['play'][i]['like'] = 1
                         } else {
                             that.person['play'][i]['like'] = 0
                         }
                     }
                     for (let i = 0; i < that.person['direct'].length; i++) {
-                        console.log(7890)
-                        if (that.person['direct'][i]['id'] in that.mids) {
+                        if (that.mids.indexOf(that.person['direct'][i]['id'])!==-1) {
 
                             that.person['direct'][i]['like'] = 1
                         } else {
@@ -1185,16 +1265,12 @@ export default {
                         }
                     }
                     for (let i = 0; i < that.person['write'].length; i++) {
-                        if (that.person['write'][i]['id'] in that.mids) {
+                        if (that.mids.indexOf(that.person['write'][i]['id'])!==-1) {
                             that.person['write'][i]['like'] = 1
                         } else {
                             that.person['write'][i]['like'] = 0
                         }
                     }
-
-                    console.log(123)
-                    console.log(that.mids)
-                    console.log(that.person)
 
                     // 切换为演员详细信息板块
                     that.isPerson=true
@@ -1570,6 +1646,7 @@ export default {
                                                 that.isPerson = false;
                                                 break;
                                             default:
+                                                that.isMovie = false;
                                                 break;
                                         }
                                         if (item.id === before.id) {
@@ -1581,12 +1658,14 @@ export default {
                                     // 再根据当下选中的节点类型进行操作
                                     switch (item.category) {
                                         case 'movie':
+                                            that.isPerson=false
                                             that.showMovieInfo(item.mid);
                                             that.recommendUser = false;
                                             that.recommendGet(item.mid);
                                             that.cancelLoveButton = true;
                                             break;
                                         case 'person':
+                                            that.isMovie=false
                                             that.showInfoPic(item.name);
                                             that.cancelLoveButton = false;
                                             break;
@@ -2225,7 +2304,7 @@ export default {
             else{
                 this.$message.info("开启roam!")
                 this.previouschangeLayout=[]
-                this.isRoam=true
+                this.isRoam=false
                 this.myChart.setOption({
                     graphic:[],
                     series:[
