@@ -5,10 +5,12 @@ export default {
     name: "KG",
     data() {
         return {
+            isAnswered:false,
             isRoam:false,
             cancelLoveButton: false,
             initialDialog:false,
             message_array:[],
+            tmpMessage:'',
             Message:{
                 message:'',
                 from: Number, //0:Question 1:Answer
@@ -3066,6 +3068,7 @@ export default {
         dealMessage() {
             let this_=this
             this_.message_array.push({message:"Question: "+this.Message.message,from:0});
+            this_.tmpMessage=this_.Message.message
             console.log(this.Message.message)
             $.ajax({
                 url:'http://47.99.190.169:8888/movie/answer' + '?question=' + this.Message.message,
@@ -3121,11 +3124,26 @@ export default {
                     }
                 }
             })
+            this_.isAnswered=true
             this_.$nextTick(() => {
                 let msg = document.getElementById('bottom') // 获取对象
                 msg.scrollTop = msg.scrollHeight // 滚动高度
             })
             this.Message.message='';
+        },
+
+        //差评
+        badAnswer(){
+            let this_=this
+            console.log(this_.tmpMessage)
+            $.ajax({
+                url:'http://47.99.190.169:8888/movie/feedback' + '?question=' + this_.tmpMessage,
+                type:'GET',
+                success: function (params){
+                    console.log(params)
+                }
+            })
+            this_.isAnswered=false
         },
 
         initialJSONUpload(file) {

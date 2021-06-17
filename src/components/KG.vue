@@ -50,6 +50,18 @@
                 </el-form-item>
               </div>
             </el-form>
+          <el-form :inline="true" >
+            <div v-if="isAnswered">
+              <div style="text-align: center">
+                <el-form-item>
+                  <el-button style="width: 150px" type="success" @click="isAnswered=false" round>好评</el-button>
+                </el-form-item>
+                <el-form-item>
+                  <el-button style="width: 150px" type="danger" @click="badAnswer" round>差评</el-button>
+                </el-form-item>
+              </div>
+            </div>
+          </el-form>
           <el-form :inline="true">
             <el-form-item>
               <el-input v-model="Message.message" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
