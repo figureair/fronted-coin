@@ -3001,7 +3001,7 @@ export default {
 
         // 功能:选中对应知识图谱时调用冰
         selectGraph(index, indexPath) {
-            if (indexPath[0] === 'first') {
+            if (indexPath[0] === 'user_graphs') {
                 let that = this;
                 let pic_name = this.usr_graph[Number(index)];
 
@@ -3065,6 +3065,9 @@ export default {
                         }
                     }
                 })
+            }
+            else if (indexPath[0] === 'logout') {
+                this.logout()
             }
         },
 

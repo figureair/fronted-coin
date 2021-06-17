@@ -1,23 +1,67 @@
 <template>
   <div id="main">
     <h1>知识图谱可视化系统</h1>
-    <div style="text-align: left; margin: 0">
-      <el-button @click="logout">退出登录</el-button>
-    </div>
+
     <div id="menu">
-      <el-menu id="menu-content" :collapse="true" @select="selectGraph">
-        <el-submenu index="first">
+      <el-menu id="menu-content" @select="selectGraph" mode="horizontal" menu-trigger="click">
+
+        <el-submenu index="user_graphs">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span slot="title">用户知识图谱列表</span>
           </template>
-          <el-menu-item-group >
-            <span slot="title">用户知识图谱列表</span>
-            <el-menu-item v-for="(item, index) in usr_graph" :key="index" :index="String(index)">
-              {{item}}
+          <el-menu-item v-for="(item, index) in usr_graph" :key="index" :index="String(index)">
+                {{item}}
             </el-menu-item>
-          </el-menu-item-group>
         </el-submenu>
+        <el-menu-item index="QA">
+          <template>
+            <el-popover
+                    placement="bottom"
+                    width="400"
+                    trigger="click"
+            >
+              <el-form id="bottom">
+                <div v-for="(item,index) in message_array" v-bind:key="index">
+                  <el-form-item style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===0">
+                    {{item.message}}
+                  </el-form-item>
+                  <el-form-item style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===1">
+                    {{item.message}}
+                  </el-form-item>
+                </div>
+              </el-form>
+              <el-form :inline="true" >
+                <div v-if="isAnswered">
+                  <div style="text-align: center">
+                    <el-form-item>
+                      <el-button style="width: 150px" type="success" @click="isAnswered=false" round>好评</el-button>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button style="width: 150px" type="danger" @click="badAnswer" round>差评</el-button>
+                    </el-form-item>
+                  </div>
+                </div>
+              </el-form>
+              <el-form :inline="true">
+                <el-form-item>
+                  <el-input v-model="Message.message" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="dealMessage">发送</el-button>
+                </el-form-item>
+              </el-form>
+              <el-menu-item index="second" slot="reference">
+                <template slot="title">
+                  <span slot="title">智能问答</span>
+                </template>
+              </el-menu-item>
+            </el-popover>
+          </template>
+        </el-menu-item>
+        <el-menu-item index="logout" id="logout">
+          <template slot="title">退出登录</template>
+        </el-menu-item>
       </el-menu>
     </div>
 
@@ -31,49 +75,6 @@
             <el-button type="primary" @click="importFromDatabase(true)">确 定</el-button>
           </span>
     </el-dialog>
-
-
-    <div id="chat">
-      <template>
-        <el-popover
-            placement="bottom"
-            width="400"
-            trigger="hover"
-            >
-            <el-form id="bottom">
-              <div v-for="(item,index) in message_array" v-bind:key="index">
-                <el-form-item style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===0">
-                  {{item.message}}
-                </el-form-item>
-                <el-form-item style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; " v-if="item.from===1">
-                  {{item.message}}
-                </el-form-item>
-              </div>
-            </el-form>
-          <el-form :inline="true" >
-            <div v-if="isAnswered">
-              <div style="text-align: center">
-                <el-form-item>
-                  <el-button style="width: 150px" type="success" @click="isAnswered=false" round>好评</el-button>
-                </el-form-item>
-                <el-form-item>
-                  <el-button style="width: 150px" type="danger" @click="badAnswer" round>差评</el-button>
-                </el-form-item>
-              </div>
-            </div>
-          </el-form>
-          <el-form :inline="true">
-            <el-form-item>
-              <el-input v-model="Message.message" @keyup.enter.native="dealMessage" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="dealMessage">发送</el-button>
-            </el-form-item>
-          </el-form>
-          <el-button slot="reference">智能问答</el-button>
-        </el-popover>
-      </template>
-    </div>
 
     <div class="box">
     <div id="myChart"></div>

@@ -283,16 +283,9 @@
     position: relative;
 }
 
-#menu {
-    position: absolute;
-    left: 240px;
-    top: 89px;
-}
+#menu-content {
+    /*width: 100%;*/
 
-#menu-content:not(.el-menu--collapse)  {
-    width: 200px;
-    min-height: 500px;
-    transition: all ease 0.5s;
 }
 
 .like-text {
@@ -322,4 +315,12 @@
 }
 #bottom{
     max-height: 40vh;
+}
+
+.el-menu {
+    display: flex;
+}
+
+#logout {
+    margin-left: auto;
 }
