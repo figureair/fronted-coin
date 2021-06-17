@@ -3050,19 +3050,73 @@ export default {
 
         // 功能:发送询问信息
         dealMessage() {
-            this.message_array.push({message:"Question: "+this.Message.message,from:0});
+            let this_=this
+            this_.message_array.push({message:"Question: "+this.Message.message,from:0});
             console.log(this.Message.message)
             $.ajax({
                 url:'http://47.99.190.169:8888/movie/answer' + '?question=' + this.Message.message,
                 type:'GET',
                 success: function (params){
-                    console.log("Answer: "+params.content)
-                    this.message_array.push({message:"Answer: "+params.content,from:1});
-                    this.$nextTick(() => {
-                        let msg = document.getElementById('bottom') // 获取对象
-                        msg.scrollTop = msg.scrollHeight // 滚动高度
-                    })
+                    if(params.success){
+                        console.log(params)
+                        if(params.content.length!==0){
+                            let i=0
+                            while(i<params.content.length){
+                                if(params.content[i]["m.showtime"]!==null&&params.content[i]["m.showtime"]!==undefined){
+                                    this_.message_array.push({message:"上映时间: " + params.content[i]["m.showtime"] ,from:1});
+                                }else if(params.content[i]["m.rate"]!==null&&params.content[i]["m.rate"]!==undefined){
+                                    this_.message_array.push({message:"电影评分: " + params.content[i]["m.rate"] ,from:1});
+                                }else if(params.content[i]["count(m)"]!==null&&params.content[i]["count(m)"]!==undefined){
+                                    this_.message_array.push({message:"电影数量: " + params.content[i]["count(m)"],from:1});
+                                }else if(params.content[i]["m.othername"]!==null&&params.content[i]["m.othername"]!==undefined){
+                                    this_.message_array.push({message:"电影别名: " + params.content[i]["m.othername"] ,from:1});
+                                }else if(params.content[i]["m.url"]!==null&&params.content[i]["m.url"]!==undefined){
+                                    this_.message_array.push({message:"电影详情: " + params.content[i]["m.url"] ,from:1});
+                                }else if(params.content[i]["m.length"]!==null&&params.content[i]["m.length"]!==undefined){
+                                    this_.message_array.push({message:"电影长度: " + params.content[i]["m.length"] ,from:1});
+                                }else if(params.content[i]["m.language"]!==null&&params.content[i]["m.language"]!==undefined){
+                                    this_.message_array.push({message:"电影语言: " + params.content[i]["m.language"] ,from:1});
+                                }else if(params.content[i]["m.district"]!==null&&params.content[i]["m.district"]!==undefined){
+                                    this_.message_array.push({message:"电影地区: " + params.content[i]["m.district"] ,from:1});
+                                }else if(params.content[i].m!==null){
+                                    this_.message_array.push({message:"电影名字: " + params.content[i].m.name ,from:1});
+                                    this_.message_array.push({message:"电影别名: " + params.content[i].m.othername ,from:1});
+                                    this_.message_array.push({message:"电影地区: " + params.content[i].m.district ,from:1});
+                                    this_.message_array.push({message:"电影题材: " + params.content[i].m.genre ,from:1});
+                                    this_.message_array.push({message:"上映时间: " + params.content[i].m.showtime ,from:1});
+                                    this_.message_array.push({message:"电影长度: " + params.content[i].m.length ,from:1});
+                                    this_.message_array.push({message:"电影评分: " + params.content[i].m.rate ,from:1});
+                                    this_.message_array.push({message:"电影语言: " + params.content[i].m.language ,from:1});
+                                    this_.message_array.push({message:"电影详情: " + params.content[i].m.url ,from:1});
+                                }else if(params.content[i].g!==null){
+                                    this_.message_array.push({message:"题材对象: " + params.content[i].g.name ,from:1});
+                                }else if(params.content[i].p!==null){
+                                    this_.message_array.push({message:"演员: " + params.content[i].p.name ,from:1});
+                                }
+                                this_.$nextTick(() => {
+                                    let msg = document.getElementById('bottom') // 获取对象
+                                    msg.scrollTop = msg.scrollHeight // 滚动高度
+                                })
+                                i++
+                            }
+                        }else {
+                            this_.message_array.push({message:"Answer: Not Found",from:1});
+                            this_.$nextTick(() => {
+                                let msg = document.getElementById('bottom') // 获取对象
+                                msg.scrollTop = msg.scrollHeight // 滚动高度
+                            })
+                        }
+                        //this.message_array.push({message:"Answer: "+params.content,from:1});
+
+                    }else{
+                        console.log("Answer: Error")
+                        this_.message_array.push({message:"Answer: Error",from:1});
+                    }
                 }
+            })
+            this_.$nextTick(() => {
+                let msg = document.getElementById('bottom') // 获取对象
+                msg.scrollTop = msg.scrollHeight // 滚动高度
             })
             this.Message.message='';
         },
