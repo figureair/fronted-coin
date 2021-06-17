@@ -11,11 +11,10 @@ export default {
   components: {
   },
   created(){
-    if(this.$router.path !=="/"){
+    if(this.$route.path !=="/"){
       this.$router.replace("/")
     }
   },
-
 }
 </script>
 
