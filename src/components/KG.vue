@@ -43,9 +43,9 @@
                   </div>
                 </div>
               </el-form>
-              <el-form :inline="true">
+              <el-form :inline="true" @submit.native.prevent>
                 <el-form-item>
-                  <el-input v-model="Message.message"  οnsubmit="return false;" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
+                  <el-input v-model="Message.message" οnsubmit="return false;" placeholder="请输入想询问的内容" style="width: 310px" clearable></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" @click="dealMessage">发送</el-button>
