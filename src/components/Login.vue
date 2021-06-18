@@ -66,7 +66,6 @@ export default{
       let _this = this;
       if(this.username === "" || this.password === ""){
         alert("请输入用户名或密码")
-        this.$router.push('/KG')
       }else{
         let res = {'name':this.username,'password':this.password}
         $.ajax({
