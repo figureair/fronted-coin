@@ -3159,6 +3159,12 @@ export default {
                                     title: '电影知识图谱',
                                     message: '目前您还没有喜欢的电影!请前往网页右下方推荐区域开始你的旅途!'
                                 });
+                                that.$nextTick(() => {
+                                that.$notify.info({
+                                    title: '推荐操作',
+                                    message: '点击"智能推荐电影"可切换为协同过滤推荐模式,点击知识图谱上的电影节点可切换到类似电影推荐!'
+                                });
+                                });
                             }
                             else {
                                 that.$notify.error({
@@ -3188,6 +3194,13 @@ export default {
                                     title: '电影知识图谱',
                                     message: '欢迎进入!',
                                     type: 'success'
+                                });
+                                that.$nextTick(() => {
+                                    that.$notify({
+                                        title: '推荐操作',
+                                        message: '点击"智能推荐电影"可切换为协同过滤推荐模式,点击知识图谱上的电影节点可切换到类似电影推荐!',
+                                        type: 'success'
+                                    });
                                 });
 
                                 // 存储已喜欢的电影ID
