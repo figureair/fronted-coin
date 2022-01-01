@@ -12,7 +12,7 @@
       </div>
       <div id="system_tools">
         <div id="tools_box">
-          <div id="system_tools_title">工具</div>
+          <div class="system_tools_title">工具</div>
           <div class="system_tools_box">
             <div class="system_tools_pic">
               <img class="toolsImg" src="../img/light.png"/>
@@ -31,15 +31,21 @@
             </div>
             <div class="system_tools_text_box">用户画像</div>
           </div>
+          <div class="system_tools_title">其他</div>
           <div class="system_tools_box">
             <div class="system_tools_pic">
               <img class="toolsImg" src="../img/help.png"/>
             </div>
             <div class="system_tools_text_box">需要帮助</div>
           </div>
+          <div class="system_tools_box" @click="logout">
+            <div class="system_tools_pic">
+              <img class="toolsImg" src="../img/exit.png"/>
+            </div>
+            <div class="system_tools_text_box">退出登录</div>
+          </div>
         </div>
       </div>
-
     </div>
   <div id="main">
     <div id="menu">
@@ -100,9 +106,6 @@
               </el-menu-item>
             </el-popover>
           </template>
-        </el-menu-item>
-        <el-menu-item index="logout" id="logout">
-          <template slot="title">退出登录</template>
         </el-menu-item>
       </el-menu>
     </div>
@@ -621,7 +624,6 @@
       </div>
     </div>
   </div>
-    <h6 id="tools">KG666小组呈现</h6>
   </div>
   </div>
 </template>
