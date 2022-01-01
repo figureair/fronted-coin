@@ -1,10 +1,20 @@
 <template>
-  <div id="main">
-    <h1>知识图谱可视化系统</h1>
+  <div id="all">
+    <div id="sidebar">
+      <div id="system_title">
+        <div id="system_title_pic">
+          <img id="movieImg" src="../img/play.png"/>
+        </div>
+        <div id="system_title_text">
+          <div class="system_title_text_box">电影图谱</div>
+          <div class="system_title_text_box">可视化系统</div>
+        </div>
+      </div>
 
+    </div>
+  <div id="main">
     <div id="menu">
       <el-menu id="menu-content" @select="selectGraph" mode="horizontal" menu-trigger="click">
-
         <el-submenu index="user_graphs">
           <template slot="title">
             <i class="el-icon-location"></i>
@@ -35,10 +45,13 @@
                 <div v-if="isAnswered">
                   <div style="text-align: center">
                     <el-form-item>
-                      <el-button style="width: 150px" type="success" @click="isAnswered=false" round>好评</el-button>
+                      <el-button style="width: 100px" v-if="QALikeShow" @click="QALike" type="primary" round>喜欢</el-button>
                     </el-form-item>
                     <el-form-item>
-                      <el-button style="width: 150px" type="danger" @click="badAnswer" round>差评</el-button>
+                      <el-button style="width: 100px" type="success" @click="isAnswered=false" round>好评</el-button>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button style="width: 100px" type="danger" @click="badAnswer" round>差评</el-button>
                     </el-form-item>
                   </div>
                 </div>
@@ -580,6 +593,7 @@
     </div>
   </div>
     <h6 id="tools">KG666小组呈现</h6>
+  </div>
   </div>
 </template>
 
