@@ -5,6 +5,7 @@ export default {
     name: "KG",
     data() {
         return {
+            activePart:1,
             QAID:0,
             QALikeShow:false,
             ifRecommendAgain:true,
@@ -450,6 +451,10 @@ export default {
     },
 
     methods: {
+
+        changePart(index){
+            this.activePart=index
+        },
 
         // 功能:用户进入时提示
         openNotify() {
