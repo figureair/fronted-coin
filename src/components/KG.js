@@ -1712,6 +1712,8 @@ export default {
                             break;
                     }
                 })
+
+                that.selectGraph(0,['user_graphs'])
             })
         },
 
@@ -3148,7 +3150,7 @@ export default {
         selectGraph(index, indexPath) {
             if (indexPath[0] === 'user_graphs') {
                 let that = this;
-                let pic_name = this.usr_graph[Number(index)];
+                let pic_name = 'movie';
 
                 // 这个请求这段用了前面一摸一样的 考虑拉出来自成一个方法
                 $.ajax({
@@ -3232,9 +3234,6 @@ export default {
                         }
                     }
                 })
-            }
-            else if (indexPath[0] === 'logout') {
-                this.logout()
             }
             else if (indexPath[0]==='QA'){
                 this    ``.$nextTick(() => {

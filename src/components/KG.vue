@@ -50,15 +50,6 @@
   <div id="main">
     <div id="menu">
       <el-menu id="menu-content" @select="selectGraph" mode="horizontal" menu-trigger="click">
-        <el-submenu index="user_graphs">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">用户知识图谱列表</span>
-          </template>
-          <el-menu-item v-for="(item, index) in usr_graph" :key="index" :index="String(index)">
-                {{item}}
-            </el-menu-item>
-        </el-submenu>
         <el-menu-item index="QA" v-show="isMoviePic">
           <template>
             <el-popover
