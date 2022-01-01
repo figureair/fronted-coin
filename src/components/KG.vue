@@ -10,6 +10,35 @@
           <div class="system_title_text_box">可视化系统</div>
         </div>
       </div>
+      <div id="system_tools">
+        <div id="tools_box">
+          <div id="system_tools_title">工具</div>
+          <div class="system_tools_box">
+            <div class="system_tools_pic">
+              <img class="toolsImg" src="../img/light.png"/>
+            </div>
+            <div class="system_tools_text_box">知识图谱</div>
+          </div>
+          <div class="system_tools_box">
+            <div class="system_tools_pic">
+              <img class="toolsImg" src="../img/search.png"/>
+            </div>
+            <div class="system_tools_text_box">搜索问答</div>
+          </div>
+          <div class="system_tools_box">
+            <div class="system_tools_pic">
+              <img class="toolsImg" src="../img/who.png"/>
+            </div>
+            <div class="system_tools_text_box">用户画像</div>
+          </div>
+          <div class="system_tools_box">
+            <div class="system_tools_pic">
+              <img class="toolsImg" src="../img/help.png"/>
+            </div>
+            <div class="system_tools_text_box">需要帮助</div>
+          </div>
+        </div>
+      </div>
 
     </div>
   <div id="main">

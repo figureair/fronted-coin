@@ -84,7 +84,6 @@ export default{
           }
         })
       }
-      _this.$router.push({name:'KG', params: { uid:0 }})
     },
     register() {
       if(this.newUsername === "" || this.newPassword === ""){
