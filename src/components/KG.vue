@@ -169,8 +169,12 @@
       <div class="box" v-show="activePart===6">
         <div id="person_info" v-show="isPerson">
           <div id="person_info_box1">
-            <div id="simple_person_info">
-              <h1>姓名: {{ person['info'][0]['name'] }} 参演电影平均评分: {{ person['info'][0]['rate'] }}</h1>
+            <div class="simple_person_info">
+              <div style="height: 100%;width: 70%;display: flex;flex-direction: column;text-align: left;justify-content: center">
+                <h2>姓名: {{ person['info'][0]['name'] }} </h2>
+                <h2>参与电影综合评分: {{ person['info'][0]['rate'] }}</h2>
+              </div>
+
             </div>
             <div id="movie_list" :key="'movie_list'+recommendCount">
               <div class="movie_list_item">
@@ -245,8 +249,13 @@
             </div>
           </div>
           <div id="person_info_box2">
+            <div class="simple_person_info">
+              <div style="height: 100%;width: 70%;display: flex;flex-direction: column;text-align: left;justify-content: center">
             <h2>演员电影类型占比</h2>
-            <div id="person_pic"></div>
+              </div>
+            </div>
+            <div style="width: 70%;height: 100%;display: flex;flex-direction: column;justify-content: center">
+            <div id="person_pic"></div></div>
           </div>
         </div>
         <div id="movie_info" v-show="isMovie">
@@ -257,11 +266,11 @@
             <div class="movie_info" >
               <div class="movie_info_item" style="margin: 0">
                 <div class="movie_info" id="rate_info">
-                  <div id="rate_words">
+                  <div class="rate_words">
                     <span style="font-size: 15px">电影评分</span>
                     <span id="rate_number">{{ movie['info'][0]['rate'] }}</span>
                   </div>
-                  <div id="rate_stars">
+                  <div class="rate_stars">
                     <el-rate
                         :value="movie['info'][0]['rate'] / 2"
                         disabled
@@ -279,19 +288,6 @@
               <div class="movie_info_item">时长: {{ movie['info'][0]['length'] }}分钟</div>
               <div class="movie_info_item">别名: {{ movie['info'][0]['othername'] }}</div>
             </div>
-<!--            <div class="movie_info" id="rate_info">-->
-<!--              <div id="rate_words">-->
-<!--                <span style="font-size: 15px">电影评分</span>-->
-<!--                <span id="rate_number">{{ movie['info'][0]['rate'] }}</span>-->
-<!--              </div>-->
-<!--              <div id="rate_stars">-->
-<!--                <el-rate-->
-<!--                    :value="movie['info'][0]['rate'] / 2"-->
-<!--                    disabled-->
-<!--                    text-color="#ff9900">-->
-<!--                </el-rate>-->
-<!--              </div>-->
-<!--            </div>-->
           </div>
         </div>
       </div>

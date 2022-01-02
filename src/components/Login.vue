@@ -1,7 +1,7 @@
 <template>
   <div id="first">
       <div class="login-box" v-show="showLogin">
-        <h2>知识图谱可视化系统</h2>
+        <h2>电影图谱可视化系统</h2>
         <p v-show="showTishi">{{tishi}}</p>
         <div class="form">
           <div class="item">
@@ -42,7 +42,6 @@ import $ from 'jquery'
 export default{
   data(){
     return{
-      imgSrc: require('../img/01.jpg'),
       showLogin: true,
       showRegister: false,
       showTishi: false,
@@ -132,9 +131,8 @@ export default{
 
 <style>
 #first {
-  background: url('../img/04.jpg');
-  background-repeat: no-repeat;
-  background-size: 100% auto;
+  background: url('../img/movie.jpg') no-repeat;
+  background-size: cover;
   height: 100%;
   position: fixed;
   width: 100%;
