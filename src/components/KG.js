@@ -9,6 +9,7 @@ export default {
             activePart:1,
             QAID:0,
             QALikeShow:false,
+            helpShow:0,
             ifRecommendAgain:true,
             isAnswered:false,
             isMoviePic:false,
@@ -264,6 +265,40 @@ export default {
             user_graphs: [],
 
             usr_graph: [],
+            help_list1: [
+                {id:0, image:require("../img/help-01-01.png")},
+                {id:1, image:require("../img/help-01-02.png")},
+            ],
+            help_list2: [
+                {id:0, image:require("../img/help-02-01.png")},
+                {id:1, image:require("../img/help-02-02.png")},
+            ],
+            help_list3: [
+                {id:0, image:require("../img/help-03-01.png")},
+            ],
+            help_list4: [
+                {id:0, image:require("../img/help-04-01.png")},
+            ],
+            help_list5: [
+                {id:0, image:require("../img/help-05-01.png")},
+                {id:1, image:require("../img/help-05-02.png")},
+                {id:2, image:require("../img/help-05-03.png")},
+                {id:3, image:require("../img/help-05-04.png")},
+            ],
+            help_list6: [
+                {id:0, image:require("../img/help-06-01.png")},
+                {id:1, image:require("../img/help-06-02.png")},
+                {id:2, image:require("../img/help-06-03.png")},
+                {id:3, image:require("../img/help-06-04.png")},
+                {id:4, image:require("../img/help-06-05.png")},
+                {id:5, image:require("../img/help-06-06.png")},
+            ],
+            help_list7: [
+                {id:0, image:require("../img/help-07-01.png")},
+            ],
+            help_list8: [
+                {id:0, image:require("../img/help-08-01.png")},
+            ],
 
             labelComplete: (queryString, cb) => {
                 let labels = this.searchNodeHistory.map((item) => Object.assign({}, { value: item.label }))
@@ -3405,7 +3440,32 @@ export default {
 
         logout(){
             this.$router.replace("/")
-        }
+        },
+
+        help1(){
+            this.helpShow=1
+        },
+        help2(){
+            this.helpShow=2
+        },
+        help3(){
+            this.helpShow=3
+        },
+        help4(){
+            this.helpShow=4
+        },
+        help5(){
+            this.helpShow=5
+        },
+        help6(){
+            this.helpShow=6
+        },
+        help7(){
+            this.helpShow=7
+        },
+        help8(){
+            this.helpShow=8
+        },
     },
 
 }

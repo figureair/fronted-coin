@@ -164,7 +164,78 @@
           </div>
         </div>
       </div>
-      <div class="box" v-show="activePart===4"></div>
+      <div class="box" v-show="activePart===4">
+        <div id="helpButton">
+          <el-row>
+            <el-button style="margin-right: 20px" @click="help1">知识图谱-节点隐藏/显示</el-button>
+            <el-button style="margin-right: 20px" @click="help2">知识图谱-样式选择</el-button>
+            <el-button style="margin-right: 20px" @click="help3">知识图谱-搜索关系/节点</el-button>
+            <el-button style="margin-left: 20px" @click="help4">知识图谱-调整知识图谱</el-button>
+          </el-row>
+          <el-row style="margin-top: 20px">
+            <el-button style="margin-right: 20px" @click="help5">知识图谱-电影/人物详情</el-button>
+            <el-button style="margin-right: 20px" @click="help6">知识图谱-推荐相关</el-button>
+            <el-button style="margin-right: 20px" @click="help7">搜索问答</el-button>
+            <el-button style="margin-left: 20px" @click="help8">用户画像</el-button>
+          </el-row>
+        </div>
+        <div class="helpPic" v-show="helpShow===1">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list1" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===2">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list2" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===3">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list3" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===4">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list4" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===5">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list5" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===6">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list6" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===7">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list7" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <div class="helpPic" v-show="helpShow===8">
+          <el-carousel height="520px">
+            <el-carousel-item v-for="item in help_list8" :key="item.id">
+              <h3 class="small"><img :src="item.image" style="height: 100%;width: 100%;"/></h3>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+      </div>
 
       <div class="box" v-show="activePart===6">
         <div id="person_info" v-show="isPerson">

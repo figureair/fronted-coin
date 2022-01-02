@@ -508,6 +508,7 @@
     background: #454444;
 }
 
+
 .toolsImg{
     margin-left: 20px;
     max-width: 100%;
@@ -531,6 +532,22 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 150px;
+    margin: auto;
+}
+
+.el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+    background-color: #d3dce6;
 }
 
 #QA_box{
@@ -627,3 +644,17 @@
     }
 }
 
+#helpButton{
+    position: absolute;
+    height: 100px;
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.helpPic{
+    width: 720px;
+    text-align: center;
+    margin: auto auto 30px auto;
+
+}
