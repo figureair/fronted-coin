@@ -76,18 +76,24 @@ export default{
           contentType: 'application/json; charset=UTF-8',
           success: function(res){
             if(res.success){
-              alert('登录成功!')
               _this.$router.push({name:'KG', params: { uid:res.content }})
             }else{
-              alert('登录失败!')
+              _this.$notify({
+                title: '登录失败!',
+                type: 'error'
+              });
             }
           }
         })
       }
     },
     register() {
+      let that=this
       if(this.newUsername === "" || this.newPassword === ""){
-        alert("请输入用户名或密码")
+        that.$notify({
+          title: '请输入用户名和密码',
+          type: 'success'
+        });
       }else{
         let res = {'name':this.newUsername,'password':this.newPassword}
         console.log(res)
@@ -100,9 +106,16 @@ export default{
           success: function(res){
             console.log(res)
             if(res.success){
-              alert('注册成功!')
+              that.$notify({
+                title: '注册成功!',
+                type: 'success'
+              });
             }else{
-              alert('注册失败! '+res.message)
+              that.$notify({
+                title: '注册失败!',
+                message:res.message,
+                type: 'error'
+              });
             }
           }
         })

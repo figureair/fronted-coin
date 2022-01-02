@@ -5,6 +5,7 @@ export default {
     name: "KG",
     data() {
         return {
+            isShowRecommend:false,
             activePart:1,
             QAID:0,
             QALikeShow:false,
@@ -452,6 +453,10 @@ export default {
 
     methods: {
 
+        showRecommend(){
+          this.isShowRecommend=!this.isShowRecommend;
+        },
+
         changePart(index){
             this.activePart=index
         },
@@ -460,8 +465,8 @@ export default {
         openNotify() {
 
             this.$notify({
-                title: '使用提示',
-                message: '欢迎使用知识图谱系统!请本地导入或数据库拉取图谱,你也可以点击图谱列表创建专属电影知识图谱!',
+                title: '登陆成功!',
+                message: '欢迎使用电影图谱可视化系统!相关说明可参见需要帮助模块!',
                 type: 'success'
             });
         },
@@ -3167,15 +3172,13 @@ export default {
                         if (!res.success) {
                             console.log(res)
                             if(pic_name==='movie'){
-                                that.$notify.info({
-                                    title: '电影知识图谱',
-                                    message: '目前您还没有喜欢的电影!请前往网页右下方推荐区域开始你的旅途!'
-                                });
                                 that.$nextTick(() => {
-                                that.$notify.info({
-                                    title: '推荐操作',
-                                    message: '点击"智能推荐电影"可切换为协同过滤推荐模式,点击知识图谱上的电影节点可切换到类似电影推荐!'
-                                });
+                                    setTimeout(function(){
+                                        that.$notify.info({
+                                            title: '电影知识图谱',
+                                            message: '目前您还没有喜欢的电影!请点击搜索问答或右下角推荐模块开始你的旅途!'
+                                        });
+                                    } ,3000)
                                 });
                             }
                             else {
@@ -3202,18 +3205,6 @@ export default {
                             }
 
                             if (pic_name === 'movie') {
-                                that.$notify({
-                                    title: '电影知识图谱',
-                                    message: '欢迎进入!',
-                                    type: 'success'
-                                });
-                                that.$nextTick(() => {
-                                    that.$notify({
-                                        title: '推荐操作',
-                                        message: '点击"智能推荐电影"可切换为协同过滤推荐模式,点击知识图谱上的电影节点可切换到类似电影推荐!',
-                                        type: 'success'
-                                    });
-                                });
 
                                 // 存储已喜欢的电影ID
                                 that.mids = []

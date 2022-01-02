@@ -38,12 +38,6 @@
             </div>
             <div class="system_tools_text_box">需要帮助</div>
           </div>
-          <div class="system_tools_box" :class="{system_tools_box_primary:activePart===5,system_tools_box:activePart!==5}" @click="changePart(5)">
-            <div class="system_tools_pic">
-              <img class="toolsImg" src="../img/website.png"/>
-            </div>
-            <div class="system_tools_text_box">配色修改</div>
-          </div>
           <div class="system_tools_box" @click="logout">
             <div class="system_tools_pic">
               <img class="toolsImg" src="../img/exit.png"/>
@@ -54,6 +48,7 @@
       </div>
     </div>
     <div id="main">
+
       <div class="box" v-show="activePart===1">
 
         <div id="myChart"></div>
@@ -339,7 +334,7 @@
             </div>
           </div>
         </el-popover>
-        <div id="options">
+        <div class="options">
 
           <el-row class="option" style="top: 0">
             <el-button icon="el-icon-more" circle v-popover:basicInfoPopover></el-button>
@@ -352,6 +347,9 @@
           </el-row>
           <el-row class="option" style="top: 60px">
             <el-button icon="el-icon-edit" circle v-popover:editPopover></el-button>
+          </el-row>
+          <el-row class="option" style="top: 80px" v-show="isPerson||isMovie">
+            <el-button icon="el-icon-s-unfold" circle @click="changePart(6)"></el-button>
           </el-row>
 
         </div>
@@ -434,195 +432,209 @@
           </div>
         </div>
       </div>
-<!--      <div id="recommend" :key="'recommendCount'+recommendCount">-->
-<!--        <div class="recommend_item" v-if="recommendUser && (!recommendOther)">-->
-<!--          <div class="recommend_title">-->
-<!--            <h4 @click="changeUserAndOther">智能推荐电影</h4>-->
-<!--          </div>-->
-<!--          <div class="recommend_list_items">-->
-<!--            <el-collapse>-->
-<!--              <el-collapse-item v-for="(v, index) in recommendByUserShow" :key="index">-->
-<!--                <template slot="title">-->
-<!--                  <div style="width:100%;height:100%;overflow:hidden;color:#123963;">-->
-<!--                    {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}-->
-<!--                  </div>-->
-<!--                </template>-->
-<!--                <h4>别名: {{ v.othername }}</h4>-->
-<!--                <h4>年代：{{ v.showtime }}</h4>-->
-<!--                <h4>国家: {{ v.district }}</h4>-->
-<!--                <h4>时长: {{ v.length }}分钟</h4>-->
-<!--                <h4>语言: {{ v.language }}</h4>-->
-<!--                <div class="love_button">-->
-<!--                  <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"-->
-<!--                                   @clap="handleLoveClap(v)"/>-->
-<!--                </div>-->
-<!--              </el-collapse-item>-->
-<!--            </el-collapse>-->
-<!--          </div>-->
-<!--          <div class="recommend_bottom">-->
-<!--            <el-button type="text" @click="recommendChange">换一换</el-button>-->
-<!--            <el-button type="text" @click="recommendAgain" v-show="ifRecommendAgain">重新获取</el-button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="recommend_item" v-if="recommendUser && recommendOther">-->
-<!--          <div class="recommend_title">-->
-<!--            <h4 @click="changeUserAndOther">协同过滤推荐</h4>-->
-<!--          </div>-->
-<!--          <div class="recommend_list_items" v-if="recommendByOther.length===0">-->
-<!--            <div style="color:#5b9bde;">暂无用户与您口味一致哦！</div>-->
-<!--            <img class="recommendImg" src="../img/KG-01.png"/>-->
-<!--          </div>-->
-<!--          <div class="recommend_list_items" v-if="recommendByOther.length!==0">-->
-<!--            <el-collapse>-->
-<!--              <el-collapse-item v-for="(v, index) in recommendByOther" :key="index">-->
-<!--                <template slot="title">-->
-<!--                  <div style="width:100%;height:100%;overflow:hidden;color:#123963;">-->
-<!--                    {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}-->
-<!--                  </div>-->
-<!--                </template>-->
-<!--                <h4>别名: {{ v.othername }}</h4>-->
-<!--                <h4>年代：{{ v.showtime }}</h4>-->
-<!--                <h4>国家: {{ v.district }}</h4>-->
-<!--                <h4>时长: {{ v.length }}分钟</h4>-->
-<!--                <h4>语言: {{ v.language }}</h4>-->
-<!--                <div class="love_button">-->
-<!--                  <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"-->
-<!--                                   @clap="handleLoveClap(v)"/>-->
-<!--                </div>-->
-<!--              </el-collapse-item>-->
-<!--            </el-collapse>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="recommend_item" v-if="!recommendUser">-->
-<!--          <div class="recommend_title">-->
-<!--            <h4>当前电影类似推荐</h4>-->
-<!--          </div>-->
-<!--          <div class="recommend_list_items">-->
-<!--            <el-collapse>-->
-<!--              <el-collapse-item v-for="(v, index) in recommendByMovieShow" :key="index">-->
-<!--                <template slot="title">-->
-<!--                  <div style="width:100%;height:100%;overflow:hidden;color:#123963;">-->
-<!--                    {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}-->
-<!--                  </div>-->
-<!--                </template>-->
-<!--                <h4>别名: {{ v.othername }}</h4>-->
-<!--                <h4>年代：{{ v.showtime }}</h4>-->
-<!--                <h4>国家: {{ v.district }}</h4>-->
-<!--                <h4>时长: {{ v.length }}分钟</h4>-->
-<!--                <h4>语言: {{ v.language }}</h4>-->
-<!--                <div class="love_button">-->
-<!--                  <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"-->
-<!--                                   @clap="handleLoveClap(v)"/>-->
-<!--                </div>-->
-<!--              </el-collapse-item>-->
-<!--            </el-collapse>-->
-<!--          </div>-->
-<!--          <div class="recommend_bottom">-->
-<!--            <el-button type="text" @click="recommendChange">换一换</el-button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="box" v-show="isMoviePic">-->
-<!--        <div id="person_info" v-show="isPerson">-->
-<!--          <div id="person_info_box1">-->
-<!--            <div id="simple_person_info">-->
-<!--              <h1>姓名: {{ person['info'][0]['name'] }} 参演电影平均评分: {{ person['info'][0]['rate'] }}</h1>-->
-<!--            </div>-->
-<!--            <div id="movie_list" :key="'movie_list'+recommendCount">-->
-<!--              <div class="movie_list_item">-->
-<!--                <h2>出演电影</h2>-->
-<!--                <div class="movie_list_items">-->
-<!--                  <el-collapse v-model="play">-->
-<!--                    <el-collapse-item v-for="(v, idx) in person['play']" :key="idx">-->
-<!--                      <template slot="title">-->
-<!--                        <div style="width:100%;height:100%;overflow:hidden;color:#123963;">-->
-<!--                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                      <h4>别名: {{ v.othername }}</h4>-->
-<!--                      <h4>年代：{{ v.showtime }}</h4>-->
-<!--                      <h4>国家: {{ v.district }}</h4>-->
-<!--                      <h4>时长: {{ v.length }}分钟</h4>-->
-<!--                      <h4>语言: {{ v.language }}</h4>-->
-<!--                      <div class="love_button">-->
-<!--                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"-->
-<!--                                         @clap="handleLoveClap(v)"/>-->
-<!--                      </div>-->
-<!--                    </el-collapse-item>-->
-<!--                  </el-collapse>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="movie_list_item">-->
-<!--                <h2>担任导演</h2>-->
-<!--                <div class="movie_list_items">-->
-<!--                  <el-collapse v-model="direct">-->
-<!--                    <el-collapse-item v-for="(v, idx) in person['direct']" :key="idx">-->
-<!--                      <template slot="title">-->
-<!--                        <div style="width:100%;height:100%;overflow:hidden;color:#471263;">-->
-<!--                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                      <h4>别名: {{ v.othername }}</h4>-->
-<!--                      <h4>年代：{{ v.showtime }}</h4>-->
-<!--                      <h4>国家: {{ v.district }}</h4>-->
-<!--                      <h4>时长: {{ v.length }}分钟</h4>-->
-<!--                      <h4>语言: {{ v.language }}</h4>-->
-<!--                      <div class="love_button">-->
-<!--                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"-->
-<!--                                         @clap="handleLoveClap(v)"/>-->
-<!--                      </div>-->
-<!--                    </el-collapse-item>-->
-<!--                  </el-collapse>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="movie_list_item">-->
-<!--                <h2>担任编剧</h2>-->
-<!--                <div class="movie_list_items">-->
-<!--                  <el-collapse v-model="write">-->
-<!--                    <el-collapse-item v-for="(v, index) in person['write']" :key="index">-->
-<!--                      <template slot="title">-->
-<!--                        <div style="width:100%;height:100%;overflow:hidden;color:#0e5727;">-->
-<!--                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}-->
-<!--                        </div>-->
-<!--                      </template>-->
-<!--                      <h4>别名: {{ v.othername }}</h4>-->
-<!--                      <h4>年代：{{ v.showtime }}</h4>-->
-<!--                      <h4>国家: {{ v.district }}</h4>-->
-<!--                      <h4>时长: {{ v.length }}分钟</h4>-->
-<!--                      <h4>语言: {{ v.language }}</h4>-->
-<!--                      <div class="love_button">-->
-<!--                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"-->
-<!--                                         @clap="handleLoveClap(v)"/>-->
-<!--                      </div>-->
-<!--                    </el-collapse-item>-->
-<!--                  </el-collapse>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div id="person_info_box2">-->
-<!--            <h2>演员电影类型占比</h2>-->
-<!--            <div id="person_pic"></div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div id="movie_info" v-show="isMovie">-->
-<!--          <div id="movie_info_box1">-->
-<!--            <h2>电影名称: {{ movie['info'][0]['name'] }} 电影评分: {{ movie['info'][0]['rate'] }}</h2>-->
-<!--          </div>-->
-<!--          <div id="movie_info_box2">-->
-<!--            <div class="movie_info_item">-->
-<!--              <h4>别名: {{ movie['info'][0]['othername'] }}</h4>-->
-<!--              <h4>上映时间: {{ movie['info'][0]['showtime'] }}年 时长: {{ movie['info'][0]['length'] }}分钟</h4>-->
-<!--              <h4>地区: {{ movie['info'][0]['district'] }}</h4>-->
-<!--              <h4>语言: {{ movie['info'][0]['language'] }}</h4>-->
-<!--            </div>-->
-<!--            <div class="movie_info_item">-->
-<!--              <h4>导演: {{ movie['director'][0] }} 编剧: {{ movie['composer'][0] }}</h4>-->
-<!--              <h4>主演: {{ actors }}</h4>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="box" v-show="activePart===4"></div>
+
+      <div class="box" v-show="activePart===6">
+        <div id="person_info" v-show="isPerson">
+          <div id="person_info_box1">
+            <div id="simple_person_info">
+              <h1>姓名: {{ person['info'][0]['name'] }} 参演电影平均评分: {{ person['info'][0]['rate'] }}</h1>
+            </div>
+            <div id="movie_list" :key="'movie_list'+recommendCount">
+              <div class="movie_list_item">
+                <h2>出演电影</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="play">
+                    <el-collapse-item v-for="(v, idx) in person['play']" :key="idx">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#123963;">
+                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                        </div>
+                      </template>
+                      <h4>别名: {{ v.othername }}</h4>
+                      <h4>年代：{{ v.showtime }}</h4>
+                      <h4>国家: {{ v.district }}</h4>
+                      <h4>时长: {{ v.length }}分钟</h4>
+                      <h4>语言: {{ v.language }}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+              <div class="movie_list_item">
+                <h2>担任导演</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="direct">
+                    <el-collapse-item v-for="(v, idx) in person['direct']" :key="idx">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#471263;">
+                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                        </div>
+                      </template>
+                      <h4>别名: {{ v.othername }}</h4>
+                      <h4>年代：{{ v.showtime }}</h4>
+                      <h4>国家: {{ v.district }}</h4>
+                      <h4>时长: {{ v.length }}分钟</h4>
+                      <h4>语言: {{ v.language }}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+              <div class="movie_list_item">
+                <h2>担任编剧</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="write">
+                    <el-collapse-item v-for="(v, index) in person['write']" :key="index">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#0e5727;">
+                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                        </div>
+                      </template>
+                      <h4>别名: {{ v.othername }}</h4>
+                      <h4>年代：{{ v.showtime }}</h4>
+                      <h4>国家: {{ v.district }}</h4>
+                      <h4>时长: {{ v.length }}分钟</h4>
+                      <h4>语言: {{ v.language }}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="person_info_box2">
+            <h2>演员电影类型占比</h2>
+            <div id="person_pic"></div>
+          </div>
+        </div>
+        <div id="movie_info" v-show="isMovie">
+          <div id="movie_info_box1">
+            <h2>电影名称: {{ movie['info'][0]['name'] }} 电影评分: {{ movie['info'][0]['rate'] }}</h2>
+          </div>
+          <div id="movie_info_box2">
+            <div class="movie_info_item">
+              <h4>别名: {{ movie['info'][0]['othername'] }}</h4>
+              <h4>上映时间: {{ movie['info'][0]['showtime'] }}年 时长: {{ movie['info'][0]['length'] }}分钟</h4>
+              <h4>地区: {{ movie['info'][0]['district'] }}</h4>
+              <h4>语言: {{ movie['info'][0]['language'] }}</h4>
+            </div>
+            <div class="movie_info_item">
+              <h4>导演: {{ movie['director'][0] }} 编剧: {{ movie['composer'][0] }}</h4>
+              <h4>主演: {{ actors }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="options">
+          <el-row class="option" style="top: 0">
+            <el-button icon="el-icon-s-fold" circle @click="changePart(1)"></el-button>
+          </el-row>
+        </div>
+      </div>
+
+    </div>
+    <el-button round class="mini_button" v-show="activePart===1" @click="showRecommend">
+      展开推荐
+    </el-button>
+    <div class="mini_box" v-show="isShowRecommend&activePart===1">
+      <i class="el-icon-bottom-right" id="recommend_exit" @click="showRecommend"></i>
+      <div id="recommend" :key="'recommendCount'+recommendCount">
+        <div class="recommend_item" v-if="recommendUser && (!recommendOther)">
+          <div class="recommend_title">
+            <h4 @click="changeUserAndOther">智能推荐电影(点这儿切换推荐)</h4>
+          </div>
+          <div class="recommend_list_items">
+            <el-collapse>
+              <el-collapse-item v-for="(v, index) in recommendByUserShow" :key="index" style="text-align: left">
+                <template slot="title">
+                  <div style="width:100%;height:100%;overflow:hidden;color:#123963;text-align: left">
+                    {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                  </div>
+                </template>
+                <h4>别名: {{ v.othername }}</h4>
+                <h4>年代：{{ v.showtime }}</h4>
+                <h4>国家: {{ v.district }}</h4>
+                <h4>时长: {{ v.length }}分钟</h4>
+                <h4>语言: {{ v.language }}</h4>
+                <div class="love_button">
+                  <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                   @clap="handleLoveClap(v)"/>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <div class="recommend_bottom">
+            <el-button type="text" @click="recommendChange">换一换</el-button>
+            <el-button type="text" @click="recommendAgain" v-show="ifRecommendAgain">重新获取</el-button>
+          </div>
+        </div>
+        <div class="recommend_item" v-if="recommendUser && recommendOther">
+          <div class="recommend_title">
+            <h4 @click="changeUserAndOther">协同过滤推荐(点这儿切换推荐)</h4>
+          </div>
+          <div class="recommend_list_items" v-if="recommendByOther.length===0">
+            <div style="color:#5b9bde;">暂无用户与您口味一致哦！</div>
+            <img class="recommendImg" src="../img/KG-01.png"/>
+          </div>
+          <div class="recommend_list_items" v-if="recommendByOther.length!==0">
+            <el-collapse>
+              <el-collapse-item v-for="(v, index) in recommendByOther" :key="index">
+                <template slot="title">
+                  <div style="width:100%;height:100%;overflow:hidden;color:#123963;">
+                    {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                  </div>
+                </template>
+                <h4>别名: {{ v.othername }}</h4>
+                <h4>年代：{{ v.showtime }}</h4>
+                <h4>国家: {{ v.district }}</h4>
+                <h4>时长: {{ v.length }}分钟</h4>
+                <h4>语言: {{ v.language }}</h4>
+                <div class="love_button">
+                  <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                   @clap="handleLoveClap(v)"/>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+        </div>
+        <div class="recommend_item" v-if="!recommendUser">
+          <div class="recommend_title">
+            <h4>当前电影类似推荐</h4>
+          </div>
+          <div class="recommend_list_items">
+            <el-collapse>
+              <el-collapse-item v-for="(v, index) in recommendByMovieShow" :key="index">
+                <template slot="title">
+                  <div style="width:100%;height:100%;overflow:hidden;color:#123963;">
+                    {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                  </div>
+                </template>
+                <h4>别名: {{ v.othername }}</h4>
+                <h4>年代：{{ v.showtime }}</h4>
+                <h4>国家: {{ v.district }}</h4>
+                <h4>时长: {{ v.length }}分钟</h4>
+                <h4>语言: {{ v.language }}</h4>
+                <div class="love_button">
+                  <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                   @clap="handleLoveClap(v)"/>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <div class="recommend_bottom">
+            <el-button type="text" @click="recommendChange">换一换</el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
