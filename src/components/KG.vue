@@ -228,18 +228,31 @@
         </div>
         <div id="movie_info" v-show="isMovie">
           <div id="movie_info_box1">
-            <h2>电影名称: {{ movie['info'][0]['name'] }} 电影评分: {{ movie['info'][0]['rate'] }}</h2>
+            <h2>电影名称: {{ movie['info'][0]['name'] }}</h2>
           </div>
           <div id="movie_info_box2">
-            <div class="movie_info_item">
-              <h4>别名: {{ movie['info'][0]['othername'] }}</h4>
-              <h4>上映时间: {{ movie['info'][0]['showtime'] }}年 时长: {{ movie['info'][0]['length'] }}分钟</h4>
-              <h4>地区: {{ movie['info'][0]['district'] }}</h4>
-              <h4>语言: {{ movie['info'][0]['language'] }}</h4>
+            <div class="movie_info" style="flex: 3">
+              <div class="movie_info_item">导演: {{ movie['director'][0] }}</div>
+              <div class="movie_info_item">编剧: {{ movie['composer'][0] }}</div>
+              <div class="movie_info_item">主演: {{ actors }}</div>
+              <div class="movie_info_item">地区: {{ movie['info'][0]['district'] }}</div>
+              <div class="movie_info_item">语言: {{ movie['info'][0]['language'] }}</div>
+              <div class="movie_info_item">上映时间: {{ movie['info'][0]['showtime'] }}年</div>
+              <div class="movie_info_item">时长: {{ movie['info'][0]['length'] }}分钟</div>
+              <div class="movie_info_item">别名: {{ movie['info'][0]['othername'] }}</div>
             </div>
-            <div class="movie_info_item">
-              <h4>导演: {{ movie['director'][0] }} 编剧: {{ movie['composer'][0] }}</h4>
-              <h4>主演: {{ actors }}</h4>
+            <div class="movie_info" id="rate_info">
+              <div id="rate_words">
+                <span style="font-size: 15px">电影评分</span>
+                <span id="rate_number">{{ movie['info'][0]['rate'] }}</span>
+              </div>
+              <div id="rate_stars">
+                <el-rate
+                    :value="movie['info'][0]['rate'] / 2"
+                    disabled
+                    text-color="#ff9900">
+                </el-rate>
+              </div>
             </div>
           </div>
         </div>
@@ -252,13 +265,13 @@
               <el-tab-pane label="搜索节点" name="fourth-1">
                 <div class="search-box-item">
                   <el-form style="max-height: 1000px" ref="searchNodeForm" :model="searchNodeForm" class="search-form">
-                    <el-form-item label="category" prop="label">
+                    <el-form-item label="类型" prop="label">
                       <el-autocomplete
                           class="inline-input"
                           v-model="searchNodeForm.label"
                           :fetch-suggestions="labelComplete"></el-autocomplete>
                     </el-form-item>
-                    <el-form-item label="name" prop="name">
+                    <el-form-item label="节点名" prop="name">
                       <el-autocomplete
                           class="inline-input"
                           v-model="searchNodeForm.name"
@@ -274,13 +287,13 @@
               <el-tab-pane label="搜索关系" name="fourth-2">
                 <div class="search-box-item">
                   <el-form ref="searchEdgeForm" :model="searchEdgeForm" class="search-form">
-                    <el-form-item label="source" prop="source">
+                    <el-form-item label="起点" prop="source">
                       <el-autocomplete
                           class="inline-input"
                           v-model="searchEdgeForm.source"
                           :fetch-suggestions="sourceComplete"></el-autocomplete>
                     </el-form-item>
-                    <el-form-item label="target" prop="target">
+                    <el-form-item label="终点" prop="target">
                       <el-autocomplete
                           class="inline-input"
                           v-model="searchEdgeForm.target"
@@ -503,7 +516,7 @@
               <el-checkbox v-model="showTooltip" @change="changeTooltip">是否显示标签</el-checkbox>
             </div>
             <div class="style-box-item">
-              <el-checkbox v-model="isRoam" @change="fixRoam" border>ROAM关闭</el-checkbox>
+              <el-checkbox v-model="isRoam" @change="fixRoam" >ROAM关闭</el-checkbox>
             </div>
           </div>
         </el-popover>
