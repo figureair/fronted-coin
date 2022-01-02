@@ -110,33 +110,52 @@
       <div class="box" v-show="activePart===3">
         <div id="user_pic" :key="'user_pic_count'+user_pic_count">
           <div id="user_pic_box1">
-            <div id="user_pic_box1_item1">
-              <h2>总结报告</h2>
+            <div style="width: 100%;">
+              <img id="conImg" src="../img/person.png"/>
             </div>
-            <div class="user_pic_box1_item2" v-if="ifUserPic">
-              <h3>喜欢电影平均评分: {{ avgRate }}</h3>
-              <h3>喜欢电影最老年代: {{ oldShowtime }}年</h3>
-              <h3>喜欢电影最新年代: {{ newShowtime }}年</h3>
-              <h3>喜欢电影平均时长: {{ avgLength }}分钟</h3>
-            </div>
-            <div class="user_pic_box1_item2" v-if="!ifUserPic">
-              <div style="color:#5b9bde;">请添加新的电影来生成用户画像!</div>
-              <img class="recommendImg" src="../img/KG-02.jpeg"/>
+            <div style="width: 100%;display: flex;flex-direction: row;justify-content: center">
+              <div style="width: 80%;text-align: left">
+                <div id="user_pic_box1_item1">
+                  总结报告
+                </div>
+                <div class="user_pic_box1_item2" v-if="ifUserPic">
+                  <h3>喜欢电影平均评分: </h3>
+                  <h3>{{ avgRate }}</h3>
+                  <h3>喜欢电影最老年代: </h3>
+                  <h3>{{ oldShowtime }}年</h3>
+                  <h3>喜欢电影最新年代: </h3>
+                  <h3>{{ newShowtime }}年</h3>
+                  <h3>喜欢电影平均时长: </h3>
+                  <h3>{{ avgLength }}分钟</h3>
+                </div>
+                <div class="user_pic_box1_item2" v-if="!ifUserPic">
+                  <h3>没有电影数据哦!</h3>
+                  <h3>暂时无法生成总结报告!</h3>
+                </div>
+              </div>
             </div>
           </div>
           <div id="user_pic_box2">
+            <div class="four">
             <div class="user_pic_box2_item" id="user_pic1">
-              <img class="recommendImg" src="../img/KG-03.png"/>
+
             </div>
+            </div>
+            <div class="four">
             <div class="user_pic_box2_item" id="user_pic2">
-              <img class="recommendImg" src="../img/KG-04.png"/>
+
             </div>
+            </div>
+              <div class="four">
             <div class="user_pic_box2_item" id="user_pic3">
-              <img class="recommendImg" src="../img/KG-05.png"/>
+
             </div>
+              </div>
+                <div class="four">
             <div class="user_pic_box2_item" id="user_pic4">
-              <img class="recommendImg" src="../img/KG-06.png"/>
+
             </div>
+                </div>
           </div>
         </div>
       </div>
