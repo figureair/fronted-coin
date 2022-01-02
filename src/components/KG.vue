@@ -56,18 +56,18 @@
       </div>
       <div class="box" v-show="activePart===2">
         <div id="QA_box">
+          <div style="width: 20%;">
+            <img id="chatImg" src="../img/chatbot.png"/>
+          </div>
           <div id="QA_inner_box">
             <el-form id="bottom">
               <div v-for="(item,index) in message_array" v-bind:key="index">
-                <el-form-item
-                    v-if="item.from===0">
+                <el-form-item v-if="item.from===0">
                   <div style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: left;text-align:left">
                     {{ item.message }}
                   </div>
                 </el-form-item>
-                <el-form-item
-
-                    v-if="item.from===1">
+                <el-form-item v-if="item.from===1">
                   <div style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: right;text-align:left">
                     {{ item.message }}
                   </div>
@@ -79,8 +79,7 @@
                 <div style="text-align: center">
                   <el-form-item>
                     <el-tooltip content="点击喜欢加入图谱!" placement="top" effect="light">
-                      <el-button style="width: 100px" v-if="QALikeShow" @click="QALike" type="primary" round>喜欢
-                      </el-button>
+                      <el-button style="width: 100px" v-show="QALikeShow" @click="QALike" type="primary" round>喜欢</el-button>
                     </el-tooltip>
                   </el-form-item>
                   <el-form-item>
@@ -96,13 +95,13 @@
                 </div>
               </div>
             </el-form>
-            <el-form :inline="true" @submit.native.prevent :rules="MessageRules" ref="QA">
-              <el-form-item prop="message">
+            <el-form :inline="true" @submit.native.prevent>
+              <el-form-item>
                 <el-input v-model="Message.message" οnsubmit="return false;" placeholder="请输入想搜索询问的内容"
                           style="width: 310px" clearable></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="sendMessage">发送</el-button>
+                <el-button type="primary" @click="dealMessage">发送</el-button>
               </el-form-item>
             </el-form>
           </div>
