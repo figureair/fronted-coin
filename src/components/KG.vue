@@ -360,29 +360,38 @@
             <el-form id="bottom">
               <div v-for="(item,index) in message_array" v-bind:key="index">
                 <el-form-item
-                    style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; "
                     v-if="item.from===0">
+                  <div style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: left;text-align:left">
                   {{ item.message }}
+                  </div>
                 </el-form-item>
                 <el-form-item
-                    style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; "
+
                     v-if="item.from===1">
+                  <div style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: right;text-align:left">
                   {{ item.message }}
+                  </div>
                 </el-form-item>
               </div>
             </el-form>
-            <el-form :inline="true">
+            <el-form :inline="true" style="margin-top: 10px">
               <div v-if="isAnswered">
                 <div style="text-align: center">
                   <el-form-item>
+                    <el-tooltip content="点击喜欢加入图谱!" placement="top" effect="light">
                     <el-button style="width: 100px" v-if="QALikeShow" @click="QALike" type="primary" round>喜欢
                     </el-button>
+                    </el-tooltip>
                   </el-form-item>
                   <el-form-item>
+                    <el-tooltip content="评价可以帮助我们优化模型!" placement="top" effect="light">
                     <el-button style="width: 100px" type="success" @click="isAnswered=false" round>好评</el-button>
+                    </el-tooltip>
                   </el-form-item>
                   <el-form-item>
+                    <el-tooltip content="评价可以帮助我们优化模型!" placement="top" effect="light">
                     <el-button style="width: 100px" type="danger" @click="badAnswer" round>差评</el-button>
+                    </el-tooltip>
                   </el-form-item>
                 </div>
               </div>
@@ -403,7 +412,7 @@
         <div id="user_pic" :key="'user_pic_count'+user_pic_count">
           <div id="user_pic_box1">
             <div id="user_pic_box1_item1">
-              <h2>用户画像</h2>
+              <h2>总结报告</h2>
             </div>
             <div class="user_pic_box1_item2" v-if="ifUserPic">
               <h3>喜欢电影平均评分: {{ avgRate }}</h3>
@@ -412,7 +421,7 @@
               <h3>喜欢电影平均时长: {{ avgLength }}分钟</h3>
             </div>
             <div class="user_pic_box1_item2" v-if="!ifUserPic">
-              <div style="color:#5b9bde;">请点击右侧推荐区域来喜欢新的电影!</div>
+              <div style="color:#5b9bde;">请添加新的电影来生成用户画像!</div>
               <img class="recommendImg" src="../img/KG-02.jpeg"/>
             </div>
           </div>
