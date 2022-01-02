@@ -254,7 +254,22 @@
             <h2>电影名称: {{ movie['info'][0]['name'] }}</h2>
           </div>
           <div id="movie_info_box2">
-            <div class="movie_info" style="flex: 3">
+            <div class="movie_info" >
+              <div class="movie_info_item" style="margin: 0">
+                <div class="movie_info" id="rate_info">
+                  <div id="rate_words">
+                    <span style="font-size: 15px">电影评分</span>
+                    <span id="rate_number">{{ movie['info'][0]['rate'] }}</span>
+                  </div>
+                  <div id="rate_stars">
+                    <el-rate
+                        :value="movie['info'][0]['rate'] / 2"
+                        disabled
+                        text-color="#ff9900">
+                    </el-rate>
+                  </div>
+                </div>
+              </div>
               <div class="movie_info_item">导演: {{ movie['director'][0] }}</div>
               <div class="movie_info_item">编剧: {{ movie['composer'][0] }}</div>
               <div class="movie_info_item">主演: {{ actors }}</div>
@@ -264,19 +279,19 @@
               <div class="movie_info_item">时长: {{ movie['info'][0]['length'] }}分钟</div>
               <div class="movie_info_item">别名: {{ movie['info'][0]['othername'] }}</div>
             </div>
-            <div class="movie_info" id="rate_info">
-              <div id="rate_words">
-                <span style="font-size: 15px">电影评分</span>
-                <span id="rate_number">{{ movie['info'][0]['rate'] }}</span>
-              </div>
-              <div id="rate_stars">
-                <el-rate
-                    :value="movie['info'][0]['rate'] / 2"
-                    disabled
-                    text-color="#ff9900">
-                </el-rate>
-              </div>
-            </div>
+<!--            <div class="movie_info" id="rate_info">-->
+<!--              <div id="rate_words">-->
+<!--                <span style="font-size: 15px">电影评分</span>-->
+<!--                <span id="rate_number">{{ movie['info'][0]['rate'] }}</span>-->
+<!--              </div>-->
+<!--              <div id="rate_stars">-->
+<!--                <el-rate-->
+<!--                    :value="movie['info'][0]['rate'] / 2"-->
+<!--                    disabled-->
+<!--                    text-color="#ff9900">-->
+<!--                </el-rate>-->
+<!--              </div>-->
+<!--            </div>-->
           </div>
         </div>
       </div>
