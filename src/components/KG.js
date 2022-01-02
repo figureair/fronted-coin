@@ -2236,8 +2236,8 @@ export default {
             that.clearSelection();
 
             // 启用配置一
-            that.value=1;
-            that.changeTo(1)
+            that.value=3;
+            that.changeTo(3)
         },
 
         // 功能:撤销改变布局中的操作

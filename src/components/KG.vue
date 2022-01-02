@@ -53,6 +53,204 @@
 
         <div id="myChart"></div>
 
+      </div>
+      <div class="box" v-show="activePart===2">
+        <div id="QA_box">
+          <div id="QA_inner_box">
+            <el-form id="bottom">
+              <div v-for="(item,index) in message_array" v-bind:key="index">
+                <el-form-item
+                    v-if="item.from===0">
+                  <div style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: left;text-align:left">
+                    {{ item.message }}
+                  </div>
+                </el-form-item>
+                <el-form-item
+
+                    v-if="item.from===1">
+                  <div style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: right;text-align:left">
+                    {{ item.message }}
+                  </div>
+                </el-form-item>
+              </div>
+            </el-form>
+            <el-form :inline="true" style="margin-top: 10px">
+              <div v-if="isAnswered">
+                <div style="text-align: center">
+                  <el-form-item>
+                    <el-tooltip content="点击喜欢加入图谱!" placement="top" effect="light">
+                      <el-button style="width: 100px" v-if="QALikeShow" @click="QALike" type="primary" round>喜欢
+                      </el-button>
+                    </el-tooltip>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-tooltip content="评价可以帮助我们优化模型!" placement="top" effect="light">
+                      <el-button style="width: 100px" type="success" @click="isAnswered=false" round>好评</el-button>
+                    </el-tooltip>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-tooltip content="评价可以帮助我们优化模型!" placement="top" effect="light">
+                      <el-button style="width: 100px" type="danger" @click="badAnswer" round>差评</el-button>
+                    </el-tooltip>
+                  </el-form-item>
+                </div>
+              </div>
+            </el-form>
+            <el-form :inline="true" @submit.native.prevent>
+              <el-form-item>
+                <el-input v-model="Message.message" οnsubmit="return false;" placeholder="请输入想搜索询问的内容"
+                          style="width: 310px" clearable></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="dealMessage">发送</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+        </div>
+      </div>
+      <div class="box" v-show="activePart===3">
+        <div id="user_pic" :key="'user_pic_count'+user_pic_count">
+          <div id="user_pic_box1">
+            <div id="user_pic_box1_item1">
+              <h2>总结报告</h2>
+            </div>
+            <div class="user_pic_box1_item2" v-if="ifUserPic">
+              <h3>喜欢电影平均评分: {{ avgRate }}</h3>
+              <h3>喜欢电影最老年代: {{ oldShowtime }}年</h3>
+              <h3>喜欢电影最新年代: {{ newShowtime }}年</h3>
+              <h3>喜欢电影平均时长: {{ avgLength }}分钟</h3>
+            </div>
+            <div class="user_pic_box1_item2" v-if="!ifUserPic">
+              <div style="color:#5b9bde;">请添加新的电影来生成用户画像!</div>
+              <img class="recommendImg" src="../img/KG-02.jpeg"/>
+            </div>
+          </div>
+          <div id="user_pic_box2">
+            <div class="user_pic_box2_item" id="user_pic1">
+              <img class="recommendImg" src="../img/KG-03.png"/>
+            </div>
+            <div class="user_pic_box2_item" id="user_pic2">
+              <img class="recommendImg" src="../img/KG-04.png"/>
+            </div>
+            <div class="user_pic_box2_item" id="user_pic3">
+              <img class="recommendImg" src="../img/KG-05.png"/>
+            </div>
+            <div class="user_pic_box2_item" id="user_pic4">
+              <img class="recommendImg" src="../img/KG-06.png"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box" v-show="activePart===4"></div>
+
+      <div class="box" v-show="activePart===6">
+        <div id="person_info" v-show="isPerson">
+          <div id="person_info_box1">
+            <div id="simple_person_info">
+              <h1>姓名: {{ person['info'][0]['name'] }} 参演电影平均评分: {{ person['info'][0]['rate'] }}</h1>
+            </div>
+            <div id="movie_list" :key="'movie_list'+recommendCount">
+              <div class="movie_list_item">
+                <h2>出演电影</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="play">
+                    <el-collapse-item v-for="(v, idx) in person['play']" :key="idx">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#123963;">
+                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                        </div>
+                      </template>
+                      <h4>别名: {{ v.othername }}</h4>
+                      <h4>年代：{{ v.showtime }}</h4>
+                      <h4>国家: {{ v.district }}</h4>
+                      <h4>时长: {{ v.length }}分钟</h4>
+                      <h4>语言: {{ v.language }}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+              <div class="movie_list_item">
+                <h2>担任导演</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="direct">
+                    <el-collapse-item v-for="(v, idx) in person['direct']" :key="idx">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#471263;">
+                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                        </div>
+                      </template>
+                      <h4>别名: {{ v.othername }}</h4>
+                      <h4>年代：{{ v.showtime }}</h4>
+                      <h4>国家: {{ v.district }}</h4>
+                      <h4>时长: {{ v.length }}分钟</h4>
+                      <h4>语言: {{ v.language }}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+              <div class="movie_list_item">
+                <h2>担任编剧</h2>
+                <div class="movie_list_items">
+                  <el-collapse v-model="write">
+                    <el-collapse-item v-for="(v, index) in person['write']" :key="index">
+                      <template slot="title">
+                        <div style="width:100%;height:100%;overflow:hidden;color:#0e5727;">
+                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
+                        </div>
+                      </template>
+                      <h4>别名: {{ v.othername }}</h4>
+                      <h4>年代：{{ v.showtime }}</h4>
+                      <h4>国家: {{ v.district }}</h4>
+                      <h4>时长: {{ v.length }}分钟</h4>
+                      <h4>语言: {{ v.language }}</h4>
+                      <div class="love_button">
+                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
+                                         @clap="handleLoveClap(v)"/>
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="person_info_box2">
+            <h2>演员电影类型占比</h2>
+            <div id="person_pic"></div>
+          </div>
+        </div>
+        <div id="movie_info" v-show="isMovie">
+          <div id="movie_info_box1">
+            <h2>电影名称: {{ movie['info'][0]['name'] }} 电影评分: {{ movie['info'][0]['rate'] }}</h2>
+          </div>
+          <div id="movie_info_box2">
+            <div class="movie_info_item">
+              <h4>别名: {{ movie['info'][0]['othername'] }}</h4>
+              <h4>上映时间: {{ movie['info'][0]['showtime'] }}年 时长: {{ movie['info'][0]['length'] }}分钟</h4>
+              <h4>地区: {{ movie['info'][0]['district'] }}</h4>
+              <h4>语言: {{ movie['info'][0]['language'] }}</h4>
+            </div>
+            <div class="movie_info_item">
+              <h4>导演: {{ movie['director'][0] }} 编剧: {{ movie['composer'][0] }}</h4>
+              <h4>主演: {{ actors }}</h4>
+            </div>
+          </div>
+        </div>
+        <div class="options">
+          <el-row class="option" style="top: 0">
+            <el-button icon="el-icon-s-fold" circle @click="changePart(1)"></el-button>
+          </el-row>
+        </div>
+      </div>
+      <div style="height: 100%; width: 10%; right: 0; position: fixed" v-show="activePart===1">
+
         <el-popover ref="searchPopover" placement="left" trigger="click">
           <div>
             <el-tabs type="card" id="search-tab" v-model="searchTab">
@@ -262,29 +460,27 @@
             </el-select>
           </div>
 
-          <div class="box-item ">
+          <div class="box-item" v-if="false">
             <el-upload
                 action=""
                 :before-upload="beforeJSONUpload"
             >
               <el-button type="primary" plain icon="el-icon-upload" id="upload_button">导入知识图谱</el-button>
-
             </el-upload>
             <el-button type="text" id="tip" @click="dialogVisible=true">导入须知</el-button>
             <el-dialog
                 title="导入须知"
                 :visible.sync="dialogVisible"
                 width="30%">
-          <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories，pic_name四个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。
-          </span>
+              <span>目前只支持json文件。<br/>json对象中必须包含nodes，links，categories，pic_name四个属性。<br/>每一个node须包含name，symbolSize，category属性。<br/>每一个link须包含source，target属性。<br/>每一个category须包含name属性。</span>
               <span slot="footer" class="dialog-footer">
-            <el-button type="primary" id="tipclose" @click="dialogVisible=false">确 定</el-button>
-          </span>
+                <el-button type="primary" id="tipclose" @click="dialogVisible=false">确 定</el-button>
+              </span>
             </el-dialog>
 
           </div>
 
-          <div class="box-item">
+          <div class="box-item" v-if="false">
             <el-checkbox :disabled="savedgraph===''" v-if="nowOption===1" v-model="changeLayout"
                          @change="fixLayoutChange" border>改变布局
             </el-checkbox>
@@ -345,208 +541,13 @@
           <el-row class="option" style="top: 40px">
             <el-button icon="el-icon-view" circle v-popover:viewPopover></el-button>
           </el-row>
-          <el-row class="option" style="top: 60px">
+          <el-row class="option" style="top: 60px" v-if="false">
             <el-button icon="el-icon-edit" circle v-popover:editPopover></el-button>
           </el-row>
           <el-row class="option" style="top: 80px" v-show="isPerson||isMovie">
             <el-button icon="el-icon-s-unfold" circle @click="changePart(6)"></el-button>
           </el-row>
 
-        </div>
-      </div>
-      <div class="box" v-show="activePart===2">
-        <div id="QA_box">
-          <div id="QA_inner_box">
-            <el-form id="bottom">
-              <div v-for="(item,index) in message_array" v-bind:key="index">
-                <el-form-item
-                    v-if="item.from===0">
-                  <div style="white-space:pre-line;border-radius: 30px;background: #3a8ee6; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: left;text-align:left">
-                  {{ item.message }}
-                  </div>
-                </el-form-item>
-                <el-form-item
-
-                    v-if="item.from===1">
-                  <div style="white-space:pre-line;border-radius: 30px;background: #13ce66; margin-bottom: 10px; padding-left: 10px; padding-right: 10px; color:#ffffff; width: fit-content; float: right;text-align:left">
-                  {{ item.message }}
-                  </div>
-                </el-form-item>
-              </div>
-            </el-form>
-            <el-form :inline="true" style="margin-top: 10px">
-              <div v-if="isAnswered">
-                <div style="text-align: center">
-                  <el-form-item>
-                    <el-tooltip content="点击喜欢加入图谱!" placement="top" effect="light">
-                    <el-button style="width: 100px" v-if="QALikeShow" @click="QALike" type="primary" round>喜欢
-                    </el-button>
-                    </el-tooltip>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-tooltip content="评价可以帮助我们优化模型!" placement="top" effect="light">
-                    <el-button style="width: 100px" type="success" @click="isAnswered=false" round>好评</el-button>
-                    </el-tooltip>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-tooltip content="评价可以帮助我们优化模型!" placement="top" effect="light">
-                    <el-button style="width: 100px" type="danger" @click="badAnswer" round>差评</el-button>
-                    </el-tooltip>
-                  </el-form-item>
-                </div>
-              </div>
-            </el-form>
-            <el-form :inline="true" @submit.native.prevent>
-              <el-form-item>
-                <el-input v-model="Message.message" οnsubmit="return false;" placeholder="请输入想搜索询问的内容"
-                          style="width: 310px" clearable></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="dealMessage">发送</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-        </div>
-      </div>
-      <div class="box" v-show="activePart===3">
-        <div id="user_pic" :key="'user_pic_count'+user_pic_count">
-          <div id="user_pic_box1">
-            <div id="user_pic_box1_item1">
-              <h2>总结报告</h2>
-            </div>
-            <div class="user_pic_box1_item2" v-if="ifUserPic">
-              <h3>喜欢电影平均评分: {{ avgRate }}</h3>
-              <h3>喜欢电影最老年代: {{ oldShowtime }}年</h3>
-              <h3>喜欢电影最新年代: {{ newShowtime }}年</h3>
-              <h3>喜欢电影平均时长: {{ avgLength }}分钟</h3>
-            </div>
-            <div class="user_pic_box1_item2" v-if="!ifUserPic">
-              <div style="color:#5b9bde;">请添加新的电影来生成用户画像!</div>
-              <img class="recommendImg" src="../img/KG-02.jpeg"/>
-            </div>
-          </div>
-          <div id="user_pic_box2">
-            <div class="user_pic_box2_item" id="user_pic1">
-              <img class="recommendImg" src="../img/KG-03.png"/>
-            </div>
-            <div class="user_pic_box2_item" id="user_pic2">
-              <img class="recommendImg" src="../img/KG-04.png"/>
-            </div>
-            <div class="user_pic_box2_item" id="user_pic3">
-              <img class="recommendImg" src="../img/KG-05.png"/>
-            </div>
-            <div class="user_pic_box2_item" id="user_pic4">
-              <img class="recommendImg" src="../img/KG-06.png"/>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="box" v-show="activePart===4"></div>
-
-      <div class="box" v-show="activePart===6">
-        <div id="person_info" v-show="isPerson">
-          <div id="person_info_box1">
-            <div id="simple_person_info">
-              <h1>姓名: {{ person['info'][0]['name'] }} 参演电影平均评分: {{ person['info'][0]['rate'] }}</h1>
-            </div>
-            <div id="movie_list" :key="'movie_list'+recommendCount">
-              <div class="movie_list_item">
-                <h2>出演电影</h2>
-                <div class="movie_list_items">
-                  <el-collapse v-model="play">
-                    <el-collapse-item v-for="(v, idx) in person['play']" :key="idx">
-                      <template slot="title">
-                        <div style="width:100%;height:100%;overflow:hidden;color:#123963;">
-                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
-                        </div>
-                      </template>
-                      <h4>别名: {{ v.othername }}</h4>
-                      <h4>年代：{{ v.showtime }}</h4>
-                      <h4>国家: {{ v.district }}</h4>
-                      <h4>时长: {{ v.length }}分钟</h4>
-                      <h4>语言: {{ v.language }}</h4>
-                      <div class="love_button">
-                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
-                                         @clap="handleLoveClap(v)"/>
-                      </div>
-                    </el-collapse-item>
-                  </el-collapse>
-                </div>
-              </div>
-              <div class="movie_list_item">
-                <h2>担任导演</h2>
-                <div class="movie_list_items">
-                  <el-collapse v-model="direct">
-                    <el-collapse-item v-for="(v, idx) in person['direct']" :key="idx">
-                      <template slot="title">
-                        <div style="width:100%;height:100%;overflow:hidden;color:#471263;">
-                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
-                        </div>
-                      </template>
-                      <h4>别名: {{ v.othername }}</h4>
-                      <h4>年代：{{ v.showtime }}</h4>
-                      <h4>国家: {{ v.district }}</h4>
-                      <h4>时长: {{ v.length }}分钟</h4>
-                      <h4>语言: {{ v.language }}</h4>
-                      <div class="love_button">
-                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
-                                         @clap="handleLoveClap(v)"/>
-                      </div>
-                    </el-collapse-item>
-                  </el-collapse>
-                </div>
-              </div>
-              <div class="movie_list_item">
-                <h2>担任编剧</h2>
-                <div class="movie_list_items">
-                  <el-collapse v-model="write">
-                    <el-collapse-item v-for="(v, index) in person['write']" :key="index">
-                      <template slot="title">
-                        <div style="width:100%;height:100%;overflow:hidden;color:#0e5727;">
-                          {{ v.name + ' 评分:' + v.rate + ' 年代:' + v.showtime }}
-                        </div>
-                      </template>
-                      <h4>别名: {{ v.othername }}</h4>
-                      <h4>年代：{{ v.showtime }}</h4>
-                      <h4>国家: {{ v.district }}</h4>
-                      <h4>时长: {{ v.length }}分钟</h4>
-                      <h4>语言: {{ v.language }}</h4>
-                      <div class="love_button">
-                        <vue-clap-button icon="love" :size="10" :initClicked="v.like" @cancel="handleLoveCancel(v)"
-                                         @clap="handleLoveClap(v)"/>
-                      </div>
-                    </el-collapse-item>
-                  </el-collapse>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="person_info_box2">
-            <h2>演员电影类型占比</h2>
-            <div id="person_pic"></div>
-          </div>
-        </div>
-        <div id="movie_info" v-show="isMovie">
-          <div id="movie_info_box1">
-            <h2>电影名称: {{ movie['info'][0]['name'] }} 电影评分: {{ movie['info'][0]['rate'] }}</h2>
-          </div>
-          <div id="movie_info_box2">
-            <div class="movie_info_item">
-              <h4>别名: {{ movie['info'][0]['othername'] }}</h4>
-              <h4>上映时间: {{ movie['info'][0]['showtime'] }}年 时长: {{ movie['info'][0]['length'] }}分钟</h4>
-              <h4>地区: {{ movie['info'][0]['district'] }}</h4>
-              <h4>语言: {{ movie['info'][0]['language'] }}</h4>
-            </div>
-            <div class="movie_info_item">
-              <h4>导演: {{ movie['director'][0] }} 编剧: {{ movie['composer'][0] }}</h4>
-              <h4>主演: {{ actors }}</h4>
-            </div>
-          </div>
-        </div>
-        <div class="options">
-          <el-row class="option" style="top: 0">
-            <el-button icon="el-icon-s-fold" circle @click="changePart(1)"></el-button>
-          </el-row>
         </div>
       </div>
 
