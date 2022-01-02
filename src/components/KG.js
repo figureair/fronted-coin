@@ -878,7 +878,7 @@ export default {
                 let option = {
                     title: {
                         text: '评分区间比',
-                        top:'5%',
+                        top:'0%',
                         left:'center',
                         textStyle: {
                             fontSize: 20
@@ -958,7 +958,7 @@ export default {
                 let option = {
                     title: {
                         text: '时长区间比',
-                        top:'5%',
+                        top:'0%',
                         left:'center',
                         textStyle: {
                             fontSize: 20
@@ -1038,7 +1038,7 @@ export default {
                 let option = {
                     title: {
                         text: '年代区间比',
-                        top:'5%',
+                        top:'0%',
                         left:'center',
                         textStyle: {
                             fontSize: 20
@@ -1104,7 +1104,7 @@ export default {
                 let option = {
                     title: {
                         text: '类型区间比',
-                        top:'5%',
+                        top:'0%',
                         left:'center',
                         textStyle: {
                             fontSize: 20
