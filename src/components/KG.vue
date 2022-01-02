@@ -110,8 +110,10 @@
       <div class="box" v-show="activePart===3">
         <div id="user_pic" :key="'user_pic_count'+user_pic_count">
           <div id="user_pic_box1">
-            <div style="width: 100%;">
-              <img id="conImg" src="../img/person.png"/>
+            <div style="width: 100%;height:30%; display: flex;flex-direction: column;justify-content: center;align-items:center;">
+              <div style="width:20vh;height:20vh;border-radius: 50%;border: 1px solid rgba(140, 138, 138, 0.25);display: flex;flex-direction: column;justify-content: center;align-items:center;">
+                <img id="conImg" src="../img/face.png"/>
+              </div>
             </div>
             <div style="width: 100%;display: flex;flex-direction: row;justify-content: center">
               <div style="width: 80%;text-align: left">
