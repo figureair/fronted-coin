@@ -96,13 +96,13 @@
                 </div>
               </div>
             </el-form>
-            <el-form :inline="true" @submit.native.prevent>
-              <el-form-item>
+            <el-form :inline="true" @submit.native.prevent :rules="MessageRules" ref="QA">
+              <el-form-item prop="message">
                 <el-input v-model="Message.message" οnsubmit="return false;" placeholder="请输入想搜索询问的内容"
                           style="width: 310px" clearable></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="dealMessage">发送</el-button>
+                <el-button type="primary" @click="sendMessage">发送</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -243,13 +243,8 @@
             </div>
           </div>
         </div>
-        <div class="options">
-          <el-row class="option" style="top: 0">
-            <el-button icon="el-icon-s-fold" circle @click="changePart(1)"></el-button>
-          </el-row>
-        </div>
       </div>
-      <div style="height: 100%; width: 10%; right: 0; position: fixed" v-show="activePart===1">
+      <div style="height: 100%; width: 10%; right: 0; position: fixed" v-show="activePart===1 || activePart===6">
 
         <el-popover ref="searchPopover" placement="left" trigger="click">
           <div>
@@ -269,18 +264,6 @@
                           v-model="searchNodeForm.name"
                           :fetch-suggestions="nnameComplete"></el-autocomplete>
                     </el-form-item>
-                    <el-form-item label="lowerBound" prop="lowerbound">
-                      <el-autocomplete
-                          class="inline-input"
-                          v-model="searchNodeForm.lowerbound"
-                          :fetch-suggestions="lbComplete"></el-autocomplete>
-                    </el-form-item>
-                    <el-form-item label="upperBound" prop="upperbound">
-                      <el-autocomplete
-                          class="inline-input"
-                          v-model="searchNodeForm.upperbound"
-                          :fetch-suggestions="ubComplete"></el-autocomplete>
-                    </el-form-item>
                     <el-form-item>
                       <el-button type="primary" @click="handleNodeSearch" icon="el-icon-search">搜索</el-button>
                       <el-button @click="cancelSearch">取消</el-button>
@@ -291,12 +274,6 @@
               <el-tab-pane label="搜索关系" name="fourth-2">
                 <div class="search-box-item">
                   <el-form ref="searchEdgeForm" :model="searchEdgeForm" class="search-form">
-                    <el-form-item label="name" prop="name">
-                      <el-autocomplete
-                          class="inline-input"
-                          v-model="searchEdgeForm.name"
-                          :fetch-suggestions="enameComplete"></el-autocomplete>
-                    </el-form-item>
                     <el-form-item label="source" prop="source">
                       <el-autocomplete
                           class="inline-input"
@@ -533,19 +510,20 @@
         <div class="options">
 
           <el-row class="option" style="top: 0">
-            <el-button icon="el-icon-more" circle v-popover:basicInfoPopover></el-button>
+            <el-button v-show="activePart===1" icon="el-icon-more" circle v-popover:basicInfoPopover></el-button>
           </el-row>
-          <el-row class="option" style="top: 20px">
-            <el-button icon="el-icon-search" circle v-popover:searchPopover></el-button>
+          <el-row class="option" style="top: 20px" >
+            <el-button v-show="activePart===1" icon="el-icon-search" circle v-popover:searchPopover></el-button>
           </el-row>
-          <el-row class="option" style="top: 40px">
-            <el-button icon="el-icon-view" circle v-popover:viewPopover></el-button>
+          <el-row class="option" style="top: 40px" >
+            <el-button v-show="activePart===1" icon="el-icon-view" circle v-popover:viewPopover></el-button>
           </el-row>
           <el-row class="option" style="top: 60px" v-if="false">
             <el-button icon="el-icon-edit" circle v-popover:editPopover></el-button>
           </el-row>
-          <el-row class="option" style="top: 80px" v-show="isPerson||isMovie">
-            <el-button icon="el-icon-s-unfold" circle @click="changePart(6)"></el-button>
+          <el-row class="option" style="top: 60px" v-show="(isPerson||isMovie)">
+            <el-button v-show="activePart===1" icon="el-icon-s-unfold" circle @click="changePart(6)"></el-button>
+            <el-button v-show="activePart===6" icon="el-icon-s-fold" circle @click="changePart(1)"></el-button>
           </el-row>
 
         </div>

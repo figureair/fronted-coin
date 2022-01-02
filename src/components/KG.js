@@ -21,6 +21,12 @@ export default {
                 message:'',
                 from: Number, //0:Question 1:Answer
             },
+            MessageRules: {
+                message: [
+                    { validator: this.checkMessage, trigger: 'blur'}
+                ]
+            },
+
             graphChange: 0,
             isPerson:false,
             isMovie:false,
@@ -1569,6 +1575,14 @@ export default {
             }
             if (isNaN(value)) {
                 callback(new Error("请输入数字"))
+            }
+            callback();
+        },
+
+        // 问答输入框验证
+        checkMessage (rule, value, callback) {
+            if (value === '') {
+                callback(new Error("输入不能为空哦！"))
             }
             callback();
         },
@@ -3257,6 +3271,16 @@ export default {
                     }
 
                 }
+            })
+        },
+
+        sendMessage() {
+            let that = this;
+            this.$refs['QA'].validate((valid) => {
+                if (valid) {
+                    that.dealMessage();
+                }
+                else console.log("发送失败")
             })
         },
 
