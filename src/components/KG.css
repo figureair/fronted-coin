@@ -582,6 +582,14 @@
 
 }
 
+#emptyImg{
+    max-width: 90%;
+    max-height: 90%;
+    display: block;
+    margin: auto;
+
+}
+
 @-webkit-keyframes shadow-drop-2-center {
     0% {
         -webkit-transform: translateZ(0);

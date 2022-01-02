@@ -109,7 +109,7 @@
       </div>
       <div class="box" v-show="activePart===3">
         <div id="user_pic" :key="'user_pic_count'+user_pic_count">
-          <div id="user_pic_box1">
+          <div id="user_pic_box1" v-if="ifUserPic">
             <div style="width: 100%;height:30%; display: flex;flex-direction: column;justify-content: center;align-items:center;">
               <div style="width:20vh;height:20vh;border-radius: 50%;border: 1px solid rgba(140, 138, 138, 0.25);display: flex;flex-direction: column;justify-content: center;align-items:center;">
                 <img id="conImg" src="../img/face.png"/>
@@ -120,7 +120,7 @@
                 <div id="user_pic_box1_item1">
                   总结报告
                 </div>
-                <div class="user_pic_box1_item2" v-if="ifUserPic">
+                <div class="user_pic_box1_item2">
                   <h3>喜欢电影平均评分: </h3>
                   <h3>{{ avgRate }}</h3>
                   <h3>喜欢电影最老年代: </h3>
@@ -129,10 +129,6 @@
                   <h3>{{ newShowtime }}年</h3>
                   <h3>喜欢电影平均时长: </h3>
                   <h3>{{ avgLength }}分钟</h3>
-                </div>
-                <div class="user_pic_box1_item2" v-if="!ifUserPic">
-                  <h3>没有电影数据哦!</h3>
-                  <h3>暂时无法生成总结报告!</h3>
                 </div>
               </div>
             </div>
@@ -158,6 +154,13 @@
 
             </div>
                 </div>
+          </div>
+          <div style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;position: absolute" v-if="!ifUserPic">
+          <div style="width:30%;height:30%;">
+            <img id="emptyImg" src="../img/empty.jpg"/>
+            <h3>没有电影数据哦!</h3>
+            <h3>暂时无法生成总结报告!</h3>
+          </div>
           </div>
         </div>
       </div>
