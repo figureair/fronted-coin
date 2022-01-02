@@ -215,8 +215,43 @@
     flex-direction: row;
 }
 
-.movie_info_item{
+.movie_info{
     flex: 1;
+}
+
+.movie_info_item {
+    text-align: left;
+    display: block;
+    /* margin-block-start: 1.33em; */
+    /* margin-block-end: 1.33em; */
+    /* margin-inline-start: 0px; */
+    /* margin-inline-end: 0px; */
+    font-weight: bold;
+    margin: 0 0 20px;
+}
+
+#rate_info {
+    display: flex;
+    flex-direction: row;
+    flex: 2;
+    border-left: 1px solid rgba(140, 138, 138, 0.25);
+    height: auto;
+}
+
+#rate_words {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+#rate_stars {
+    margin: 30px 0;
+}
+
+#rate_number {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 10px 0;
 }
 
 .love_button{
