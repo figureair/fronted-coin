@@ -83,6 +83,7 @@
 
 .recommend_title{
     height: 10vh;
+    cursor:pointer
 }
 
 .recommend_bottom{
