@@ -587,7 +587,7 @@ export default {
 
             // 调用接口获取图谱
             $.ajax({
-                url: 'http://192.168.31.156:8888/?pic_name=movie' + '&uid='+that.uid,
+                url: 'http://192.168.137.1:8888/?pic_name=movie' + '&uid='+that.uid,
                 type: 'get',
                 success: function (res) {
                     if(res.content!==null) {
@@ -662,7 +662,7 @@ export default {
 
                 // 调用接口返回该电影id
                 $.ajax({
-                    url: 'http://192.168.31.156:8888/movie/unlike?id=' + unlike_id + '&uid=' + that.uid,
+                    url: 'http://192.168.137.1:8888/movie/unlike?id=' + unlike_id + '&uid=' + that.uid,
                     type: 'get',
                     success: function (res) {
                         if (res.success) {
@@ -689,7 +689,7 @@ export default {
 
             // 调用接口返回该电影id
             $.ajax({
-                url: 'http://192.168.31.156:8888/movie/like?id='+movie.id+'&uid='+that.uid,
+                url: 'http://192.168.137.1:8888/movie/like?id='+movie.id+'&uid='+that.uid,
                 type: 'get',
                 success: function (res) {
                     if(res.success){
@@ -718,7 +718,7 @@ export default {
             if(this.recommendUser) {
                 // 调用接口获取用户推荐列表
                 $.ajax({
-                    url: 'http://192.168.31.156:8888/movie/recommend/u?uid='+id,
+                    url: 'http://192.168.137.1:8888/movie/recommend/u?uid='+id,
                     type: 'get',
                     success: function (res) {
                         if(res.content.rec.length!==0) {
@@ -744,7 +744,7 @@ export default {
                         }
                         else{
                             $.ajax({
-                                url: 'http://192.168.31.156:8888/movie/recommend/r',
+                                url: 'http://192.168.137.1:8888/movie/recommend/r',
                                 type: 'get',
                                 success: function (res) {
                                     if(res.content.rec.length!==0) {
@@ -775,7 +775,7 @@ export default {
 
                 // 调用接口获取协同过滤推荐列表
                 $.ajax({
-                    url: 'http://192.168.31.156:8888/movie/recommend/o?uid='+id,
+                    url: 'http://192.168.137.1:8888/movie/recommend/o?uid='+id,
                     type: 'get',
                     success: function (res) {
                         if(res.content.rec.length!==0) {
@@ -800,7 +800,7 @@ export default {
             else{
                 // 调用接口
                 $.ajax({
-                    url: 'http://192.168.31.156:8888/movie/recommend/m?id='+id,
+                    url: 'http://192.168.137.1:8888/movie/recommend/m?id='+id,
                     type: 'get',
                     success: function (res) {
                         if (res.content.rec.length !== 0) {
@@ -1179,7 +1179,7 @@ export default {
 
             // 调用接口获取数据并生成
             $.ajax({
-                url: 'http://192.168.31.156:8888/movie/userdata?uid='+that.uid,
+                url: 'http://192.168.137.1:8888/movie/userdata?uid='+that.uid,
                 type: 'get',
                 success: function (res) {
                     if(res.content.movie.length!==0){
@@ -1293,7 +1293,7 @@ export default {
 
             // 调用接口获取人员数据
             $.ajax({
-                url: 'http://192.168.31.156:8888/movie/person?name='+name,
+                url: 'http://192.168.137.1:8888/movie/person?name='+name,
                 type: 'get',
                 success: function (res) {
                     // 接收数据
@@ -1335,7 +1335,7 @@ export default {
         showMovieInfo(id){
             let that=this
             $.ajax({
-                url: 'http://192.168.31.156:8888/movie/info?id='+id,
+                url: 'http://192.168.137.1:8888/movie/info?id='+id,
                 type: 'get',
                 success: function (res) {
                     that.movie=res.content
@@ -1796,7 +1796,7 @@ export default {
         // 功能:初始化各个配置并加载配置一
         initpage() {
             // 设置选项框为关系图
-            $("#selector").val('关系图');
+            $("#selector").val('力引导图');
 
             let that = this
 
@@ -2285,8 +2285,8 @@ export default {
             that.clearSelection();
 
             // 启用配置一
-            that.value=3;
-            that.changeTo(3)
+            that.value=2;
+            that.changeTo(2)
         },
 
         // 功能:撤销改变布局中的操作
@@ -2333,7 +2333,7 @@ export default {
             console.log(res)
 
             $.ajax({
-                url: 'http://192.168.31.156:8888/saveLayout',
+                url: 'http://192.168.137.1:8888/saveLayout',
                 type: 'post',
                 data: JSON.stringify(res),
                 dataType: 'json',
@@ -2343,7 +2343,7 @@ export default {
             })
 
             $.ajax({
-                url: 'http://192.168.31.156:8888/save',
+                url: 'http://192.168.137.1:8888/save',
                 type: 'post',
                 data: JSON.stringify(res),
                 dataType: 'json',
@@ -2562,7 +2562,7 @@ export default {
                         this.initpage()
                         let that=this
                         $.ajax({
-                            url: 'http://192.168.31.156:8888/?pic_name=' + tmpjson.pic_name + '&uid='+this.uid,
+                            url: 'http://192.168.137.1:8888/?pic_name=' + tmpjson.pic_name + '&uid='+this.uid,
                             type: 'get',
                             data: {},
                             dataType: 'json',
@@ -2626,7 +2626,7 @@ export default {
 
             // 上传数据
             $.ajax({
-                url: 'http://192.168.31.156:8888/save',
+                url: 'http://192.168.137.1:8888/save',
                 type: 'post',
                 data: JSON.stringify(res),
                 dataType: 'json',
@@ -2637,7 +2637,7 @@ export default {
 
             // 上传样式
             $.ajax({
-                url: 'http://192.168.31.156:8888/saveLayout',
+                url: 'http://192.168.137.1:8888/saveLayout',
                 type: 'post',
                 data: JSON.stringify(res),
                 dataType: 'json',
@@ -3065,7 +3065,7 @@ export default {
                     if(that.searchNodeForm.lowerbound!=="") {res['lowerBound']=that.searchNodeForm.lowerbound}
                     if(that.searchNodeForm.upperbound!=="") {res['upperBound']=that.searchNodeForm.upperbound}
                     $.ajax({
-                        url: 'http://192.168.31.156:8888/node/find',
+                        url: 'http://192.168.137.1:8888/node/find',
                         type: 'post',
                         data: JSON.stringify(res),
                         dataType: 'json',
@@ -3120,7 +3120,7 @@ export default {
                     if(that.searchEdgeForm.target!==""){res['target']=that.searchEdgeForm.target}
 
                     $.ajax({
-                        url: 'http://192.168.31.156:8888/relationship/find',
+                        url: 'http://192.168.137.1:8888/relationship/find',
                         type: 'post',
                         data: JSON.stringify(res),
                         dataType: 'json',
@@ -3182,7 +3182,7 @@ export default {
         getUserGraph() {
             let that = this
             $.ajax({
-                url: 'http://192.168.31.156:8888/graphName?uid=' + this.uid,
+                url: 'http://192.168.137.1:8888/graphName?uid=' + this.uid,
                 type: 'get',
                 // data: {},
                 dataType: 'json',
@@ -3213,7 +3213,7 @@ export default {
 
                 // 这个请求这段用了前面一摸一样的 考虑拉出来自成一个方法
                 $.ajax({
-                    url: 'http://192.168.31.156:8888/?pic_name=' + pic_name + '&uid=' + this.uid,
+                    url: 'http://192.168.137.1:8888/?pic_name=' + pic_name + '&uid=' + this.uid,
                     type: 'get',
                     data: {},
                     dataType: 'json',
@@ -3293,7 +3293,7 @@ export default {
             let that = this;
             // 调后端接口取消喜欢
             $.ajax({
-                url: 'http://192.168.31.156:8888/movie/unlike?id=' + that.selectedItem[0].id + '&uid=' + that.uid,
+                url: 'http://192.168.137.1:8888/movie/unlike?id=' + that.selectedItem[0].id + '&uid=' + that.uid,
                 type: 'get',
                 success: function (res) {
                     if (res.success) {
@@ -3334,7 +3334,7 @@ export default {
             this_.tmpMessage=this_.Message.message
             console.log(this.Message.message)
             $.ajax({
-                url:'http://192.168.31.156:8888/movie/answer' + '?question=' + this.Message.message,
+                url:'http://192.168.137.1:8888/movie/answer' + '?question=' + this.Message.message,
                 type:'GET',
                 success: function (params){
                     if(params.success){
@@ -3409,7 +3409,7 @@ export default {
 
             // 调用接口返回该电影id
             $.ajax({
-                url: 'http://192.168.31.156:8888/movie/like?id='+that.QAID+'&uid='+that.uid,
+                url: 'http://192.168.137.1:8888/movie/like?id='+that.QAID+'&uid='+that.uid,
                 type: 'get',
                 success: function (res) {
                     if(res.success){
@@ -3432,7 +3432,7 @@ export default {
             let this_=this
             console.log(this_.tmpMessage)
             $.ajax({
-                url:'http://192.168.31.156:8888/movie/feedback' + '?question=' + this_.tmpMessage,
+                url:'http://192.168.137.1:8888/movie/feedback' + '?question=' + this_.tmpMessage,
                 type:'GET',
                 success: function (params){
                     console.log(params)

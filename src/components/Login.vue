@@ -68,7 +68,7 @@ export default{
       }else{
         let res = {'name':this.username,'password':this.password}
         $.ajax({
-          url:'http://192.168.31.156:8888/user/login',
+          url:'http://192.168.137.1:8888/user/login',
           type: 'POST',
           dataType: 'json',
           data:JSON.stringify(res),
@@ -97,7 +97,7 @@ export default{
         let res = {'name':this.newUsername,'password':this.newPassword}
         console.log(res)
         $.ajax({
-          url:'http://192.168.31.156:8888/user/register',
+          url:'http://192.168.137.1:8888/user/register',
           type: 'POST',
           dataType: 'json',
           data:JSON.stringify(res),
