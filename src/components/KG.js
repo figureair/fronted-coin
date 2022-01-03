@@ -9,7 +9,7 @@ export default {
             activePart:1,
             QAID:0,
             QALikeShow:false,
-            helpShow:0,
+            helpShow:1,
             ifRecommendAgain:true,
             isAnswered:false,
             isMoviePic:false,
@@ -3322,6 +3322,14 @@ export default {
         // 功能:发送询问信息
         dealMessage() {
             let this_=this
+            if(this.Message.message==="") {
+                this_.$notify({
+                    title: '问题不能为空哦!',
+                    type: 'info'
+                });
+                return
+
+            }
             this_.message_array.push({message:"Question: "+this.Message.message,from:0});
             this_.tmpMessage=this_.Message.message
             console.log(this.Message.message)
